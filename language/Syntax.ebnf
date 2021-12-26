@@ -57,7 +57,7 @@ binaryModuloExpression = expression "%" expression ;
 
 binaryAdditionExpression = expression "+" expression ;
 binarySubtractionExpression = expression "-" expression ;
-binaryConcatenationExpression = expression "|>" expression ;
+binaryConcatenationExpression = expression ">" expression ;
 
 rangeExpression = expression ".." expression ;
 
