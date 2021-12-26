@@ -1,0 +1,68 @@
+program = line* ;
+line = label? statement ;
+
+label = IDENTIFIER ":" ;
+statement = assignment
+	| moveStatement
+	| swapStatement
+	| copyStatement ;
+
+assignment = IDENTIFIER "=" expression ;
+moveStatement = "move" expression "to" expression ;
+swapStatement = "swap" expression "with" expression ;
+copyStatement = "copy" expression "to" expression ;
+
+
+
+expression = primary ;
+primary = unary
+	| grouping
+	| variableExpression
+	| functionInvocationExpression
+	| hereExpression
+	| startExpression
+	| endExpression ;
+unary = multiplicative
+	| unaryPlusExpression
+	| unaryNegationExpression
+	| unaryFunctionPointerExpression
+	| unaryLinePointerExpression ;
+multiplicative = additive
+	| binaryMultiplicationExpression
+	| binaryDivisionExpression
+	| binaryModuloExpression ;
+additive = range
+	| binaryAdditionExpression
+	| binarySubtractionExpression
+	| binaryConcatenationExpression ;
+range = rangeExpression ;
+
+grouping = "(" expression ")" ;
+variableExpression = IDENTIFIER ;
+functionInvocationExpression = IDENTIFIER expression* ;
+hereExpression = "here" ;
+startExpression = "start" ;
+endExpression = "end" ;
+
+unaryPlusExpression = "+" expression ;
+unaryNegationExpression = "-" expression ;
+unaryFunctionPointerExpression = "*" IDENTIFIER ;
+unaryLinePointerExpression = "*" NUMBER | rangeExpression ;
+
+binaryMultiplicationExpression = expression "*" expression ;
+binaryDivisionExpression = expression "/" expression ;
+binaryModuloExpression = expression "%" expression ;
+
+binaryAdditionExpression = expression "+" expression ;
+binarySubtractionExpression = expression "-" expression ;
+binaryConcatenationExpression = expression "|>" expression ;
+
+rangeExpression = expression ".." expression ;
+
+
+
+NUMBER = DIGIT+ ;
+STRING = "\"" CHAR* "\"" ;
+IDENTIFIER = CHAR (CHAR | DIGIT)* ;
+CHAR = ("a" ... "z") | ("A" ... "Z") ;
+DIGIT = "0" ... "9" ;
