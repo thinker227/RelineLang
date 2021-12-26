@@ -10,6 +10,7 @@ public sealed class SourceViewer : IViewer<char> {
 	public string Source { get; }
 	public char Current => GetAt(position);
 	public char Next => GetAt(position + 1);
+	public bool IsAtEnd => position >= Source.Length;
 
 
 

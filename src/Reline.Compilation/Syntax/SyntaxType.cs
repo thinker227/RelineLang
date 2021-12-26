@@ -4,6 +4,7 @@
 /// Defines the type of a <see cref="SyntaxToken"/>.
 /// </summary>
 public enum SyntaxType {
+	// Single-character tokens
 	/// <summary>
 	/// '<c>.</c>'
 	/// </summary>
@@ -27,7 +28,7 @@ public enum SyntaxType {
 	/// <summary>
 	/// '<c>&lt;</c>'
 	/// </summary>
-	LessThanToken,
+	LesserThanToken,
 	/// <summary>
 	/// '<c>+</c>'
 	/// </summary>
@@ -76,12 +77,18 @@ public enum SyntaxType {
 	/// '<c>}</c>'
 	/// </summary>
 	CloseBraceToken,
+	/// <summary>
+	/// Newline character.
+	/// </summary>
+	Newline,
 
+	// Compound character tokens
 	/// <summary>
 	/// '<c>.</c>'
 	/// </summary>
 	DotDotToken,
 
+	// Keywords
 	/// <summary>
 	/// '<c>here</c>'
 	/// </summary>
@@ -115,6 +122,7 @@ public enum SyntaxType {
 	/// </summary>
 	WithKeyword,
 
+	// Literals
 	/// <summary>
 	/// A numeric literal.
 	/// </summary>
@@ -123,9 +131,18 @@ public enum SyntaxType {
 	/// A string literal.
 	/// </summary>
 	StringLiteral,
-
 	/// <summary>
 	/// An identifier.
 	/// </summary>
-	Identifier
+	Identifier,
+
+	// Special
+	/// <summary>
+	/// Whitespace exluding newline.
+	/// </summary>
+	Whitespace,
+	/// <summary>
+	/// End of file.
+	/// </summary>
+	EndOfFile
 }
