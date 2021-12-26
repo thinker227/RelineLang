@@ -16,7 +16,8 @@ copyStatement = "copy" expression "to" expression ;
 
 expression = primary ;
 primary = unary
-	| grouping
+	| literalExpression
+	| groupingExpression
 	| variableExpression
 	| functionInvocationExpression
 	| hereExpression
@@ -37,7 +38,8 @@ additive = range
 	| binaryConcatenationExpression ;
 range = rangeExpression ;
 
-grouping = "(" expression ")" ;
+literalExpression = NUMBER | STRING ;
+groupingExpression = "(" expression ")" ;
 variableExpression = IDENTIFIER ;
 functionInvocationExpression = IDENTIFIER expression* ;
 hereExpression = "here" ;
