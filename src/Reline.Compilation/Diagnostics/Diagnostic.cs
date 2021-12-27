@@ -11,4 +11,18 @@ public readonly record struct Diagnostic(
 	DiagnosticLevel Level,
 	string Description,
 	TextSpan? Location
-);
+) {
+
+	public override string ToString() {
+		string levelString = Level switch {
+			DiagnosticLevel.Hidden => "hidden",
+			DiagnosticLevel.Info => "info",
+			DiagnosticLevel.Warning => "warning",
+			DiagnosticLevel.Error => "error",
+			_ => "unknown"
+		};
+
+		return $"{Location} ({levelString}) \"{Description}\"";
+	}
+
+}

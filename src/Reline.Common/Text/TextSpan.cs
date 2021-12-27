@@ -19,6 +19,10 @@ public readonly struct TextSpan : IEquatable<TextSpan> {
 	/// The length of the span.
 	/// </summary>
 	public int Length => End - Start;
+	/// <summary>
+	/// Whether the span is empty.
+	/// </summary>
+	public bool IsEmpty => Length == 0;
 
 	/// <summary>
 	/// An empty <see cref="TextSpan"/>.

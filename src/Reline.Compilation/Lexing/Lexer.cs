@@ -63,9 +63,10 @@ public sealed class Lexer {
 			return CreateToken(SyntaxType.Whitespace);
 		}
 
-		var diagnostic = new Diagnostic(DiagnosticLevel.Error, $"Unexpected character '{current}' at position {viewer.Position} in source.", CurrentSpan);
-		diagnostics.Add(diagnostic);
 		viewer.MoveNext();
+
+		var diagnostic = new Diagnostic(DiagnosticLevel.Error, $"Unexpected character '{current}' at position {lexemeStartPosition} in source", CurrentSpan);
+		diagnostics.Add(diagnostic);
 		return CreateToken(SyntaxType.Unknown, diagnostic);
 	}
 

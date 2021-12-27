@@ -16,6 +16,12 @@ public readonly record struct SyntaxToken(
 	object? Literal
 ) {
 
+	public override string ToString() {
+		string literalString = Literal is null ? "" : $" ({Literal})";
+		string textString = Span.IsEmpty ? "" : $" {Span} \"{Text}\"";
+		return $"{Type}{literalString}{textString}";
+	}
+
 	/// <summary>
 	/// Tries to get <see cref="Literal"/> as a specified type.
 	/// </summary>
