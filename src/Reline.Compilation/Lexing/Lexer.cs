@@ -8,38 +8,35 @@ namespace Reline.Compilation.Lexing;
 /// </summary>
 public sealed class Lexer {
 
+	private readonly string source;
 	private readonly SourceViewer viewer;
 	private int lexemeStartPosition;
 	private readonly List<Diagnostic> diagnostics;
-
-
-
 	private TextSpan CurrentSpan =>
 		new(lexemeStartPosition, viewer.Position);
-	/// <summary>
-	/// The source text being lexed.
-	/// </summary>
-	public string Source { get; }
 
 
 
-	/// <summary>
-	/// Initializes a new <see cref="Lexer"/> instance.
-	/// </summary>
-	/// <param name="source">The source text being lexed.</param>
-	public Lexer(string source) {
+	private Lexer(string source) {
+		this.source = source;
 		viewer = new(source);
 		diagnostics = new();
-		Source = source;
 	}
 
 
 
 	/// <summary>
-	/// Lexes all characters in the source text.
+	/// Lexes a source string and returns a collection of syntax tokens.
 	/// </summary>
-	/// <returns>A <see cref="LexResult"/> containing the result of the operation.</returns>
-	public IOperationResult<ImmutableArray<SyntaxToken>> LexAll() {
+	/// <param name="source">The source string.</param>
+	/// <returns>An <see cref="IOperationResult{T}"/> of syntax tokens.</returns>
+	public static IOperationResult<ImmutableArray<SyntaxToken>> LexSource(string source) {
+		Lexer lexer = new(source);
+		var tokens = lexer.LexAll();
+		var diagnostics = lexer.diagnostics.ToImmutableArray();
+		return new LexResult(tokens, diagnostics);
+	}
+	private ImmutableArray<SyntaxToken> LexAll() {
 		List<SyntaxToken> tokens = new();
 		while (!viewer.IsAtEnd) {
 			var token = LexNext();
@@ -47,7 +44,7 @@ public sealed class Lexer {
 		}
 		tokens.Add(new(SyntaxType.EndOfFile, TextSpan.Empty, "", null));
 
-		return new LexResult(tokens.ToImmutableArray(), diagnostics.ToImmutableArray());
+		return tokens.ToImmutableArray();
 	}
 	private SyntaxToken LexNext() {
 		lexemeStartPosition = viewer.Position;
@@ -128,7 +125,7 @@ public sealed class Lexer {
 		int startPosition = viewer.Position;
 		viewer.MoveWhile(c => !SyntaxRules.IsQuote(c));
 		int endPosition = viewer.Position;
-		string literal = Source[startPosition..endPosition];
+		string literal = source[startPosition..endPosition];
 
 		viewer.MoveNext();
 
@@ -145,7 +142,7 @@ public sealed class Lexer {
 		int startPosition = viewer.Position;
 		viewer.MoveWhile(SyntaxRules.IsKeywordValid);
 		int endPosition = viewer.Position;
-		return Source[startPosition..endPosition];
+		return source[startPosition..endPosition];
 	}
 	private static SyntaxType? GetKeywordType(string s) =>
 		s switch {
@@ -169,6 +166,6 @@ public sealed class Lexer {
 	private SyntaxToken CreateToken(SyntaxType type) =>
 		CreateToken(type, null);
 	private SyntaxToken CreateToken(SyntaxType type, object? literal) =>
-		new(type, CurrentSpan, Source.Substring(CurrentSpan), literal);
+		new(type, CurrentSpan, source.Substring(CurrentSpan), literal);
 
 }

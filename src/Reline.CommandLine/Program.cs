@@ -8,8 +8,7 @@ var path = args[0];
 if (!File.Exists(path)) return;
 var text = File.ReadAllText(path);
 
-Lexer lexer = new(text);
-var lexResult = lexer.LexAll();
+var lexResult = Lexer.LexSource(text);
 
 Parser parser = new(lexResult);
 var parseResult = parser.ParseAll();
