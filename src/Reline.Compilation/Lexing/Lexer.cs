@@ -1,4 +1,5 @@
 ﻿using Reline.Compilation.Syntax;
+using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Lexing;
 
@@ -6,6 +7,7 @@ public sealed class Lexer {
 
 	private readonly SourceViewer viewer;
 	private int lexemeStartPosition;
+	private readonly List<Diagnostic> diagnostics;
 
 
 
@@ -17,24 +19,24 @@ public sealed class Lexer {
 
 	public Lexer(string source) {
 		viewer = new(source);
+		diagnostics = new();
 		Source = source;
 	}
 
 
 
-	public ImmutableArray<SyntaxToken> LexAll() {
+	public LexResult LexAll() {
 		List<SyntaxToken> tokens = new();
-
 		while (!viewer.IsAtEnd) {
 			var token = LexNext();
 			tokens.Add(token);
 		}
-
 		tokens.Add(new(SyntaxType.EndOfFile, TextSpan.Empty, "", null));
-		return tokens.ToImmutableArray();
+
+		return new(tokens.ToImmutableArray(), diagnostics.ToImmutableArray());
 	}
 
-	public SyntaxToken LexNext() {
+	private SyntaxToken LexNext() {
 		lexemeStartPosition = viewer.Position;
 		char current = viewer.Current;
 
@@ -51,7 +53,10 @@ public sealed class Lexer {
 			return CreateToken(SyntaxType.Whitespace);
 		}
 
-		throw new Exception($"Unexpected character '{current}' at position {viewer.Position}.");
+		var diagnostic = new Diagnostic(DiagnosticLevel.Error, $"Unexpected character '{current}' at position {viewer.Position} in source.", CurrentSpan);
+		diagnostics.Add(diagnostic);
+		viewer.MoveNext();
+		return CreateToken(SyntaxType.Unknown, diagnostic);
 	}
 
 	private SyntaxToken? GetCharacterToken(char c) {

@@ -146,6 +146,10 @@ public enum SyntaxType {
 	/// </summary>
 	Comment,
 	/// <summary>
+	/// An unknown type of syntax. Used for errors.
+	/// </summary>
+	Unknown,
+	/// <summary>
 	/// End of file.
 	/// </summary>
 	EndOfFile
