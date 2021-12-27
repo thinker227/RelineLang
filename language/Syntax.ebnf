@@ -1,13 +1,13 @@
 program = line* ;
-line = label? statement ;
+line = label? statement? "\n" ;
 
 label = IDENTIFIER ":" ;
-statement = assignment
+statement = assignmentStatement
 	| moveStatement
 	| swapStatement
 	| copyStatement ;
 
-assignment = IDENTIFIER "=" expression ;
+assignmentStatement = IDENTIFIER "=" expression ;
 moveStatement = "move" expression "to" expression ;
 swapStatement = "swap" expression "with" expression ;
 copyStatement = "copy" expression "to" expression ;
@@ -49,7 +49,7 @@ endExpression = "end" ;
 unaryPlusExpression = "+" expression ;
 unaryNegationExpression = "-" expression ;
 unaryFunctionPointerExpression = "*" IDENTIFIER ;
-unaryLinePointerExpression = "*" NUMBER | rangeExpression ;
+unaryLinePointerExpression = "*" expression ;
 
 binaryMultiplicationExpression = expression "*" expression ;
 binaryDivisionExpression = expression "/" expression ;
