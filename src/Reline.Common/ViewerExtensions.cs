@@ -2,7 +2,7 @@
 
 namespace Reline.Common;
 
-public static class Extensions {
+public static class ViewerExtensions {
 
 	/// <summary>
 	/// Calls <see cref="IViewer{T}.MoveNext"/> and returns the previous element.
@@ -24,6 +24,16 @@ public static class Extensions {
 	/// <param name="predicate">The predicate to call on each element.</param>
 	public static void MoveWhile<T>(this IViewer<T> viewer, Predicate<T> predicate) {
 		while (!viewer.IsAtEnd && predicate(viewer.Current)) viewer.MoveNext();
+	}
+
+	/// <summary>
+	/// Moves a <see cref="IViewer{T}"/> a specified distance.
+	/// </summary>
+	/// <typeparam name="T">The type of the <see cref="IViewer{T}"/>.</typeparam>
+	/// <param name="viewer">The source viewer.</param>
+	/// <param name="distance">The distance to move.</param>
+	public static void MoveDistance<T>(this IViewer<T> viewer, int distance) {
+		for (int i = 0; i < distance; i++) viewer.MoveNext();
 	}
 
 }

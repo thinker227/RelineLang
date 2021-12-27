@@ -24,10 +24,13 @@ public sealed class Lexer {
 
 	public ImmutableArray<SyntaxToken> LexAll() {
 		List<SyntaxToken> tokens = new();
+
 		while (!viewer.IsAtEnd) {
 			var token = LexNext();
 			tokens.Add(token);
 		}
+
+		tokens.Add(new(SyntaxType.EndOfFile, TextSpan.Empty, "", null));
 		return tokens.ToImmutableArray();
 	}
 
@@ -35,15 +38,14 @@ public sealed class Lexer {
 		lexemeStartPosition = viewer.Position;
 		char current = viewer.Current;
 
-		var single = GetSingleCharacterType(current);
-		if (single is not null) {
-			viewer.MoveNext();
-			return CreateToken(single.Value);
-		}
+		var characterToken = GetCharacterToken(current);
+		if (characterToken is not null) return characterToken.Value;
+
 
 		if (SyntaxRules.IsQuote(current)) return GetStringLiteral();
 		if (SyntaxRules.IsNumeric(current)) return GetNumericLiteral();
 		if (SyntaxRules.CanBeginIdentifier(current)) return GetIdentifierOrKeywordToken();
+		if (SyntaxRules.IsComment(viewer.GetString(2))) return GetComment();
 		if (SyntaxRules.IsWhitespace(current)) {
 			viewer.MoveNext();
 			return CreateToken(SyntaxType.Whitespace);
@@ -52,9 +54,8 @@ public sealed class Lexer {
 		throw new Exception($"Unexpected character '{current}' at position {viewer.Position}.");
 	}
 
-	private static SyntaxType? GetSingleCharacterType(char c) =>
-		c switch {
-			'.' => SyntaxType.DotToken,
+	private SyntaxToken? GetCharacterToken(char c) {
+		SyntaxType? single = c switch {
 			',' => SyntaxType.CommaToken,
 			':' => SyntaxType.ColonToken,
 			'=' => SyntaxType.EqualsToken,
@@ -63,7 +64,6 @@ public sealed class Lexer {
 			'+' => SyntaxType.PlusToken,
 			'-' => SyntaxType.MinusToken,
 			'*' => SyntaxType.StarToken,
-			'/' => SyntaxType.SlashToken,
 			'\\' => SyntaxType.BackslashToken,
 			'%' => SyntaxType.PercentToken,
 			'(' => SyntaxType.OpenBraceToken,
@@ -76,6 +76,31 @@ public sealed class Lexer {
 
 			_ => null
 		};
+		if (single is not null) {
+			viewer.MoveNext();
+			return CreateToken(single.Value);
+		}
+
+		switch (c) {
+			case '.':
+				if (viewer.Next == '.') {
+					viewer.MoveDistance(2);
+					return CreateToken(SyntaxType.DotDotToken);
+				}
+				return CreateToken(SyntaxType.DotToken);
+			case '/':
+				return viewer.Next == '/' ?
+					GetComment() : CreateToken(SyntaxType.SlashToken);
+		};
+
+		return null;
+	}
+
+	private SyntaxType? GetCompoundCharacterType() {
+		if (viewer.GetString(2) == "..") return SyntaxType.DotDotToken;
+
+		return null;
+	}
 
 	private SyntaxToken GetNumericLiteral() {
 		int literal = 0;
@@ -123,6 +148,11 @@ public sealed class Lexer {
 
 			_ => null
 		};
+
+	private SyntaxToken GetComment() {
+		viewer.MoveWhile(c => c != '\n');
+		return CreateToken(SyntaxType.Comment);
+	}
 
 	private SyntaxToken CreateToken(SyntaxType type) =>
 		CreateToken(type, null);

@@ -142,6 +142,10 @@ public enum SyntaxType {
 	/// </summary>
 	Whitespace,
 	/// <summary>
+	/// A comment.
+	/// </summary>
+	Comment,
+	/// <summary>
 	/// End of file.
 	/// </summary>
 	EndOfFile

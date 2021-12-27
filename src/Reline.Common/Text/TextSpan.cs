@@ -20,6 +20,11 @@ public readonly struct TextSpan : IEquatable<TextSpan> {
 	/// </summary>
 	public int Length => End - Start;
 
+	/// <summary>
+	/// An empty <see cref="TextSpan"/>.
+	/// </summary>
+	public static TextSpan Empty { get; } = new(0, 0);
+
 
 
 	/// <summary>
