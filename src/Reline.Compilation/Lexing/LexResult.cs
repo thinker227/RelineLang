@@ -11,12 +11,9 @@ namespace Reline.Compilation.Lexing;
 public readonly record struct LexResult(
 	ImmutableArray<SyntaxToken> Tokens,
 	ImmutableArray<Diagnostic> Diagnostics
-) {
+) : IOperationResult<ImmutableArray<SyntaxToken>> {
 
-	/// <summary>
-	/// Whether the result has any fatal errors.
-	/// </summary>
-	public bool HasErrors =>
-		Diagnostics.Any(d => d.Level == DiagnosticLevel.Error);
+	ImmutableArray<SyntaxToken> IOperationResult<ImmutableArray<SyntaxToken>>.Result =>
+		Tokens;
 
 }

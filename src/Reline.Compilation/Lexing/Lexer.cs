@@ -3,6 +3,9 @@ using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Lexing;
 
+/// <summary>
+/// Lexes a string of character into a series of syntax tokens.
+/// </summary>
 public sealed class Lexer {
 
 	private readonly SourceViewer viewer;
@@ -13,10 +16,17 @@ public sealed class Lexer {
 
 	private TextSpan CurrentSpan =>
 		new(lexemeStartPosition, viewer.Position);
+	/// <summary>
+	/// The source text being lexed.
+	/// </summary>
 	public string Source { get; }
 
 
 
+	/// <summary>
+	/// Initializes a new <see cref="Lexer"/> instance.
+	/// </summary>
+	/// <param name="source">The source text being lexed.</param>
 	public Lexer(string source) {
 		viewer = new(source);
 		diagnostics = new();
@@ -25,7 +35,11 @@ public sealed class Lexer {
 
 
 
-	public LexResult LexAll() {
+	/// <summary>
+	/// Lexes all characters in the source text.
+	/// </summary>
+	/// <returns>A <see cref="LexResult"/> containing the result of the operation.</returns>
+	public IOperationResult<ImmutableArray<SyntaxToken>> LexAll() {
 		List<SyntaxToken> tokens = new();
 		while (!viewer.IsAtEnd) {
 			var token = LexNext();
@@ -33,9 +47,8 @@ public sealed class Lexer {
 		}
 		tokens.Add(new(SyntaxType.EndOfFile, TextSpan.Empty, "", null));
 
-		return new(tokens.ToImmutableArray(), diagnostics.ToImmutableArray());
+		return new LexResult(tokens.ToImmutableArray(), diagnostics.ToImmutableArray());
 	}
-
 	private SyntaxToken LexNext() {
 		lexemeStartPosition = viewer.Position;
 		char current = viewer.Current;
@@ -97,12 +110,6 @@ public sealed class Lexer {
 				return viewer.Next == '/' ?
 					GetComment() : CreateToken(SyntaxType.SlashToken);
 		};
-
-		return null;
-	}
-
-	private SyntaxType? GetCompoundCharacterType() {
-		if (viewer.GetString(2) == "..") return SyntaxType.DotDotToken;
 
 		return null;
 	}
