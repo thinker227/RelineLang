@@ -77,7 +77,7 @@ public sealed class Lexer {
 			']' => SyntaxType.CloseSquareToken,
 			'{' => SyntaxType.OpenBraceToken,
 			'}' => SyntaxType.CloseBraceToken,
-			'\n' => SyntaxType.Newline,
+			'\n' => SyntaxType.NewlineToken,
 
 			_ => null
 		};

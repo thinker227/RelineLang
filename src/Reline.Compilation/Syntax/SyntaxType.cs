@@ -80,7 +80,7 @@ public enum SyntaxType {
 	/// <summary>
 	/// Newline character.
 	/// </summary>
-	Newline,
+	NewlineToken,
 
 	// Compound character tokens
 	/// <summary>
