@@ -65,6 +65,6 @@ rangeExpression = expression ".." expression ;
 
 NUMBER = DIGIT+ ;
 STRING = "\"" CHAR* "\"" ;
-IDENTIFIER = CHAR (CHAR | DIGIT)* ;
+IDENTIFIER = CHAR | "_" | "@" (CHAR | DIGIT | "_")* ;
 CHAR = ("a" ... "z") | ("A" ... "Z") ;
 DIGIT = "0" ... "9" ;
