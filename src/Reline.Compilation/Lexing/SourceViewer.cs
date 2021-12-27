@@ -1,6 +1,6 @@
 ﻿namespace Reline.Compilation.Lexing;
 
-public sealed class SourceViewer : IViewer<char> {
+internal sealed class SourceViewer : IViewer<char> {
 
 	private int position;
 
@@ -31,8 +31,10 @@ public sealed class SourceViewer : IViewer<char> {
 		return Source[start..end];
 	}
 
-	public void MoveNext() =>
+	public void Advance() =>
 		position++;
+	public char Ahead(int distance) =>
+		GetAt(position + distance);
 
 	public IEnumerator<char> GetEnumerator() =>
 		Source.GetEnumerator();

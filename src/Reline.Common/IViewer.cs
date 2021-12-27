@@ -13,9 +13,9 @@ public interface IViewer {
 	bool IsAtEnd { get; }
 
 	/// <summary>
-	/// Moves the viewer forward one element.
+	/// Advances the viewer forward by one element.
 	/// </summary>
-	void MoveNext();
+	void Advance();
 
 }
 
@@ -33,5 +33,12 @@ public interface IViewer<out T> : IViewer, IEnumerable<T> {
 	/// The next element.
 	/// </summary>
 	T Next { get; }
+
+	/// <summary>
+	/// Gets the element a specified distance away.
+	/// </summary>
+	/// <param name="distance">The distance away to get the element at.</param>
+	/// <returns>The element <paramref name="distance"/> elements away.</returns>
+	T Ahead(int distance);
 
 }

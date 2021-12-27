@@ -59,11 +59,11 @@ public sealed class Lexer {
 		if (SyntaxRules.CanBeginIdentifier(current)) return GetIdentifierOrKeywordToken();
 		if (SyntaxRules.IsComment(viewer.GetString(2))) return GetComment();
 		if (SyntaxRules.IsWhitespace(current)) {
-			viewer.MoveNext();
+			viewer.Advance();
 			return CreateToken(SyntaxType.Whitespace);
 		}
 
-		viewer.MoveNext();
+		viewer.Advance();
 
 		var diagnostic = new Diagnostic(DiagnosticLevel.Error, $"Unexpected character '{current}' at position {lexemeStartPosition} in source", CurrentSpan);
 		diagnostics.Add(diagnostic);
@@ -93,7 +93,7 @@ public sealed class Lexer {
 			_ => null
 		};
 		if (single is not null) {
-			viewer.MoveNext();
+			viewer.Advance();
 			return CreateToken(single.Value);
 		}
 
@@ -121,14 +121,14 @@ public sealed class Lexer {
 	}
 
 	private SyntaxToken GetStringLiteral() {
-		viewer.MoveNext();
+		viewer.Advance();
 
 		int startPosition = viewer.Position;
 		viewer.MoveWhile(c => !SyntaxRules.IsQuote(c));
 		int endPosition = viewer.Position;
 		string literal = source[startPosition..endPosition];
 
-		viewer.MoveNext();
+		viewer.Advance();
 
 		return CreateToken(SyntaxType.StringLiteral, literal);
 	}
