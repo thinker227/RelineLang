@@ -9,7 +9,7 @@
 /// <param name="Literal">The literal value of the token.</param>
 public readonly record struct SyntaxToken(
 	SyntaxType Type,
-	int Position,
+	TextSpan Span,
 	string Text,
 	object? Literal
 );

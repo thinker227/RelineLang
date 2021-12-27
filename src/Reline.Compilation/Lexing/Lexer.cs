@@ -5,9 +5,12 @@ namespace Reline.Compilation.Lexing;
 public sealed class Lexer {
 
 	private readonly SourceViewer viewer;
+	private int lexemeStartPosition;
 
 
 
+	private TextSpan CurrentSpan =>
+		new(lexemeStartPosition, viewer.Position);
 	public string Source { get; }
 
 
@@ -29,6 +32,7 @@ public sealed class Lexer {
 	}
 
 	public SyntaxToken LexNext() {
+		lexemeStartPosition = viewer.Position;
 		char current = viewer.Current;
 
 		var single = GetSingleCharacterType(current);
@@ -123,6 +127,6 @@ public sealed class Lexer {
 	private SyntaxToken CreateToken(SyntaxType type) =>
 		CreateToken(type, null);
 	private SyntaxToken CreateToken(SyntaxType type, object? literal) =>
-		new(type, viewer.Position, Source, literal);
+		new(type, CurrentSpan, Source.Substring(CurrentSpan), literal);
 
 }

@@ -16,6 +16,12 @@ public static class Extensions {
 		return current;
 	}
 
+	/// <summary>
+	/// Calls <see cref="IViewer{T}.MoveNext"/> while a specified predicate is true.
+	/// </summary>
+	/// <typeparam name="T">The type of the <see cref="IViewer{T}"/>.</typeparam>
+	/// <param name="viewer">The source viewer.</param>
+	/// <param name="predicate">The predicate to call on each element.</param>
 	public static void MoveWhile<T>(this IViewer<T> viewer, Predicate<T> predicate) {
 		while (!viewer.IsAtEnd && predicate(viewer.Current)) viewer.MoveNext();
 	}
