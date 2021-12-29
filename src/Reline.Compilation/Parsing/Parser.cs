@@ -7,6 +7,7 @@ namespace Reline.Compilation.Parsing;
 public sealed class Parser {
 
 	private readonly TokenViewer viewer;
+	private readonly List<Diagnostic> diagnostics;
 
 
 
@@ -17,6 +18,7 @@ public sealed class Parser {
 	public Parser(ImmutableArray<SyntaxToken> tokens) {
 		Tokens = tokens;
 		viewer = new(tokens);
+		diagnostics = new();
 	}
 
 
@@ -37,31 +39,58 @@ public sealed class Parser {
 	private ProgramSyntax Program() {
 		List<LineSyntax> lines = new();
 		while (viewer.Current.Type != SyntaxType.EndOfFile) {
-			var line = Line();
-			lines.Add(line);
+			try {
+				var line = Line();
+				lines.Add(line);
+			} catch (SynchronizationException) {
+				viewer.ExpectType(SyntaxType.NewlineToken);
+				viewer.Advance();
+			}
 		}
 		return new(lines.ToImmutableArray());
 	}
 	private LineSyntax Line() {
-		viewer.ExpectNotWhitespace();
-
 		LabelSyntax? label = null;
-		if (viewer.MatchTypePatternNotWhitespace(SyntaxType.Identifier, SyntaxType.ColonToken)) {
-			var identifier = viewer.Current;
-			viewer.AdvanceNotWhitespace();
-			var colonToken = viewer.Current;
-			viewer.AdvanceNotWhitespace();
+		if (viewer.MatchTypePattern(SyntaxType.Identifier, SyntaxType.ColonToken)) {
+			var identifier = viewer.AdvanceCurrent();
+			var colonToken = viewer.AdvanceCurrent();
 			label = new(new(identifier), colonToken);
 		}
 
 		IStatementSyntax? statement = null;
-		if (!viewer.MatchTypePatternNotWhitespace(SyntaxType.NewlineToken)) {
+		if (!viewer.MatchTypePattern(SyntaxType.NewlineToken))
+			statement = Statement();
 
-		}
-
-		var newlineToken = viewer.AdvanceCurrent();
+		var newlineToken = CheckType(SyntaxType.NewlineToken, SyntaxType.EndOfFile);
+		viewer.Advance();
 
 		return new(label, statement, newlineToken);
 	}
+	private IStatementSyntax Statement() {
+		return null!;
+	}
+
+	private SyntaxToken CheckType(SyntaxType expected) {
+		if (!viewer.CheckType(expected))
+			CreateDiagnosticAndSynchrnoize(new[] { expected });
+		return viewer.Current;
+	}
+	private SyntaxToken CheckType(params SyntaxType[] expected) {
+		if (!viewer.CheckType(expected))
+			CreateDiagnosticAndSynchrnoize(expected);
+		return viewer.Current;
+	}
+	private void CreateDiagnosticAndSynchrnoize(SyntaxType[] expected) {
+		var current = viewer.Current;
+		string diagnosticText = $"Unexpected token '{current.Text}' at position {current.Span}";
+		Diagnostic diagnostic = new(DiagnosticLevel.Error, diagnosticText, current.Span);
+		diagnostics.Add(diagnostic);
+
+		throw new SynchronizationException();
+	}
+
+
+
+	public class SynchronizationException : Exception { }
 
 }
