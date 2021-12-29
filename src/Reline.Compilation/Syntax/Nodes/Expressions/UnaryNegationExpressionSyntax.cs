@@ -3,4 +3,9 @@
 public sealed record class UnaryNegationExpressionSyntax(
 	SyntaxToken MinusToken,
 	IExpressionSyntax Expression
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, IExpressionSyntax {
+
+	public TextSpan Span =>
+		new(MinusToken.Span.Start, Expression.Span.End);
+
+}

@@ -2,4 +2,9 @@
 
 public sealed record class ProgramSyntax(
 	ImmutableArray<LineSyntax> Lines
-) : SyntaxNode;
+) : SyntaxNode, ISyntaxNode {
+
+	public TextSpan Span =>
+		new(Lines[0].Span.Start, Lines[^1].Span.End);
+
+}

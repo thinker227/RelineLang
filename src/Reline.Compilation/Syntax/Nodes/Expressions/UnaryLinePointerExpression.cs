@@ -3,4 +3,9 @@
 public sealed record class UnaryLinePointerExpressionSyntax(
 	SyntaxToken StarToken,
 	IExpressionSyntax Expression
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, IExpressionSyntax {
+
+	public TextSpan Span =>
+		new(StarToken.Span.Start, Expression.Span.End);
+
+}

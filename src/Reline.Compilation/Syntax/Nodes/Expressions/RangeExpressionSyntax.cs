@@ -4,4 +4,4 @@ public sealed record class RangeExpressionSyntax(
 	IExpressionSyntax Left,
 	SyntaxToken DotDotToken,
 	IExpressionSyntax Right
-) : SyntaxNode, IExpressionSyntax;
+) : BinaryExpressionSyntax;

@@ -2,4 +2,9 @@
 
 public sealed record class IdentifierSyntax(
 	SyntaxToken Name
-) : SyntaxNode;
+) : SyntaxNode, ISyntaxNode {
+
+	public TextSpan Span =>
+		Name.Span;
+
+}

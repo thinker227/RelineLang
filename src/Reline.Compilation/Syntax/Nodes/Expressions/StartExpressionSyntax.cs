@@ -2,4 +2,9 @@
 
 public sealed record class StartExpressionSyntax(
 	SyntaxToken StartKeyword
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, IExpressionSyntax {
+
+	public TextSpan Span =>
+		StartKeyword.Span;
+
+}

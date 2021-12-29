@@ -2,4 +2,9 @@
 
 public sealed record class EndExpressionSyntax(
 	SyntaxToken EndKeyword
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, IExpressionSyntax {
+
+	public TextSpan Span =>
+		EndKeyword.Span;
+
+}

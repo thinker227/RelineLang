@@ -4,4 +4,9 @@ public sealed record class GroupingExpressionSyntax(
 	SyntaxToken OpenBracketToken,
 	IExpressionSyntax Expression,
 	SyntaxToken CloseBracketToken
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, IExpressionSyntax {
+
+	public TextSpan Span =>
+		new(OpenBracketToken.Span.Start, CloseBracketToken.Span.End);
+
+}

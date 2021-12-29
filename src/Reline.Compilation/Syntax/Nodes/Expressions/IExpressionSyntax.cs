@@ -1,5 +1,5 @@
 ﻿namespace Reline.Compilation.Syntax.Nodes;
 
-public interface IExpressionSyntax {
+public interface IExpressionSyntax : ISyntaxNode {
 
 }

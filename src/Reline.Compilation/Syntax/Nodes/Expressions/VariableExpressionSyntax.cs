@@ -2,4 +2,9 @@
 
 public sealed record class VariableExpressionSyntax(
 	IdentifierSyntax Identifier
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, IExpressionSyntax {
+
+	public TextSpan Span =>
+		Identifier.Span;
+
+}
