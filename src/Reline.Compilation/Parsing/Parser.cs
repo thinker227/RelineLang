@@ -108,7 +108,7 @@ public sealed class Parser {
 	private ExpressionStatementSyntax ExpressionStatement() {
 		var expression = Expression();
 		if (expression is not FunctionInvocationExpressionSyntax) {
-			Diagnostic diagnostic = new(DiagnosticLevel.Error, "Only function invocation expressions can be used as expression statements.", TextSpan.Empty);
+			Diagnostic diagnostic = new(DiagnosticLevel.Error, "Only function invocation expressions may be used as expression statements", expression.Span);
 			diagnostics.Add(diagnostic);
 		}
 		return new(expression);
