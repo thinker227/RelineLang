@@ -2,10 +2,12 @@ program = line* ;
 line = label? statement? "\n" ;
 
 label = IDENTIFIER ":" ;
-statement = assignmentStatement
+statement = expressionStatement
+	| assignmentStatement
 	| moveStatement
 	| swapStatement
 	| copyStatement ;
+expressionStatement = functionInvocationExpression ;
 
 assignmentStatement = IDENTIFIER "=" expression ;
 moveStatement = "move" expression "to" expression ;
