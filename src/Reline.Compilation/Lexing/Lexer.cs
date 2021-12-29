@@ -100,7 +100,7 @@ public sealed class Lexer {
 		switch (c) {
 			case '.':
 				if (viewer.Next == '.') {
-					viewer.MoveDistance(2);
+					viewer.AdvanceDistance(2);
 					return CreateToken(SyntaxType.DotDotToken);
 				}
 				return CreateToken(SyntaxType.DotToken);
@@ -115,7 +115,7 @@ public sealed class Lexer {
 	private SyntaxToken GetNumericLiteral() {
 		int literal = 0;
 		while (!viewer.IsAtEnd && SyntaxRules.IsNumeric(viewer.Current))
-			literal = literal * 10 + viewer.MoveNextCurrent() - '0';
+			literal = literal * 10 + viewer.AdvanceCurrent() - '0';
 
 		return CreateToken(SyntaxType.NumberLiteral, literal);
 	}
@@ -124,7 +124,7 @@ public sealed class Lexer {
 		viewer.Advance();
 
 		int startPosition = viewer.Position;
-		viewer.MoveWhile(c => !SyntaxRules.IsQuote(c));
+		viewer.AdvanceWhile(c => !SyntaxRules.IsQuote(c));
 		int endPosition = viewer.Position;
 		string literal = source[startPosition..endPosition];
 
@@ -141,7 +141,7 @@ public sealed class Lexer {
 	}
 	private string GetIdentifierOrKeywordString() {
 		int startPosition = viewer.Position;
-		viewer.MoveWhile(SyntaxRules.IsKeywordValid);
+		viewer.AdvanceWhile(SyntaxRules.IsKeywordValid);
 		int endPosition = viewer.Position;
 		return source[startPosition..endPosition];
 	}
@@ -160,7 +160,7 @@ public sealed class Lexer {
 		};
 
 	private SyntaxToken GetComment() {
-		viewer.MoveWhile(c => c != '\n');
+		viewer.AdvanceWhile(c => c != '\n');
 		return CreateToken(SyntaxType.Comment);
 	}
 
