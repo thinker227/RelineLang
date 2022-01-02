@@ -33,7 +33,7 @@ public sealed class Parser {
 	private SyntaxTree ParseAll() {
 		var program = Program();
 
-		return new(null!);
+		return new(program);
 	}
 
 	private ProgramSyntax Program() {
@@ -114,8 +114,132 @@ public sealed class Parser {
 		return new(expression);
 	}
 
-	private IExpressionSyntax Expression() {
-		return null!;
+	private IExpressionSyntax Expression() =>
+		Range();
+	private IExpressionSyntax Range() {
+		var expression = Additive();
+
+		if (viewer.CheckType(SyntaxType.DotDotToken)) {
+			var dotDotToken = viewer.AdvanceCurrent();
+			var right = Additive();
+			return new RangeExpressionSyntax(expression, dotDotToken, right);
+		}
+
+		return expression;
+	}
+	private IExpressionSyntax Additive() {
+		var expression = Multiplicative();
+
+		if (viewer.CheckType(SyntaxType.PlusToken)) {
+			var plusToken = viewer.AdvanceCurrent();
+			var right = Multiplicative();
+			return new BinaryAdditionExpressionSyntax(expression, plusToken, right);
+		}
+		if (viewer.CheckType(SyntaxType.MinusToken)) {
+			var minusToken = viewer.AdvanceCurrent();
+			var right = Multiplicative();
+			return new BinarySubtractionExpressionSyntax(expression, minusToken, right);
+		}
+
+		return expression;
+	}
+	private IExpressionSyntax Multiplicative() {
+		var expression = Unary();
+
+		if (viewer.CheckType(SyntaxType.StarToken)) {
+			var starToken = viewer.AdvanceCurrent();
+			var right = Unary();
+			return new BinaryMultiplicationExpressionSyntax(expression, starToken, right);
+		}
+		if (viewer.CheckType(SyntaxType.SlashToken)) {
+			var slashToken = viewer.AdvanceCurrent();
+			var right = Unary();
+			return new BinaryDivisionExpressionSyntax(expression, slashToken, right);
+		}
+		if (viewer.CheckType(SyntaxType.PercentToken)) {
+			var percentToken = viewer.AdvanceCurrent();
+			var right = Unary();
+			return new BinaryModuloExpressionSyntax(expression, percentToken, right);
+		}
+		if (viewer.CheckType(SyntaxType.LesserThanToken)) {
+			var lessThanToken = viewer.AdvanceCurrent();
+			var right = Unary();
+			return new BinaryConcatenationExpressionSyntax(expression, lessThanToken, right);
+		}
+
+		return expression;
+	}
+	private IExpressionSyntax Unary() {
+		if (viewer.CheckType(SyntaxType.PlusToken, SyntaxType.MinusToken, SyntaxType.StarToken)) {
+			var op = viewer.AdvanceCurrent();
+
+			if (op.Type == SyntaxType.PlusToken)
+				return new UnaryPlusExpressionSyntax(op, Primary());
+			if (op.Type == SyntaxType.MinusToken)
+				return new UnaryNegationExpressionSyntax(op, Primary());
+			if (op.Type == SyntaxType.StarToken) {
+				if (viewer.CheckType(SyntaxType.OpenSquareToken)) {
+					var openSquareToken = viewer.AdvanceCurrent();
+					var expression = Primary();
+					var closeSquareToken = viewer.AdvanceCurrent();
+					return new UnaryLinePointerExpressionSyntax(op, openSquareToken, expression, closeSquareToken);
+				}
+
+				var identifier = ((VariableExpressionSyntax)Primary()).Identifier;
+				return new UnaryFunctionPointerExpressionSyntax(op, identifier);
+			}
+		}
+
+		return Primary();
+	}
+	private IExpressionSyntax Primary() {
+		if (viewer.CheckType(SyntaxType.HereKeyword))
+			return new HereExpressionSyntax(viewer.AdvanceCurrent());
+		if (viewer.CheckType(SyntaxType.StartKeyword))
+			return new StartExpressionSyntax(viewer.AdvanceCurrent());
+		if (viewer.CheckType(SyntaxType.EndKeyword))
+			return new EndExpressionSyntax(viewer.AdvanceCurrent());
+
+		if (viewer.CheckType(SyntaxType.NumberLiteral, SyntaxType.StringLiteral))
+			return new LiteralExpressionSyntax(viewer.AdvanceCurrent());
+
+		if (viewer.CheckType(SyntaxType.OpenBracketToken)) {
+			var openBracketToken = viewer.AdvanceCurrent();
+			var expression = Expression();
+			var closeBracketToken = ExpectTypeAdvance(SyntaxType.CloseBracketToken);
+			return new GroupingExpressionSyntax(openBracketToken, expression, closeBracketToken);
+		}
+
+		// Either a variable expression or a function invocation expression
+		if (viewer.CheckType(SyntaxType.Identifier)) {
+			var identifier = viewer.AdvanceCurrent();
+
+			// Function invocation expression
+			if (viewer.CheckType(SyntaxType.OpenBracketToken))
+				return FunctionInvocationExpression();
+
+			// Variable expression
+			return new VariableExpressionSyntax(new(identifier));
+		}
+
+		CreateDiagnosticAndSynchrnoize();
+		return null!; // Will never be executed since CreateDiagnosticAndSynchrnoize throws an exception.
+	}
+
+	private FunctionInvocationExpressionSyntax FunctionInvocationExpression() {
+		var identifier = viewer.Previous;
+		var openBracketToken = viewer.AdvanceCurrent();
+
+		List<IExpressionSyntax> arguments = new();
+		while (true) {
+			if (viewer.CheckType(SyntaxType.CloseBracketToken)) break;
+			var expression = Expression();
+			arguments.Add(expression);
+		}
+
+		var closeBracketToken = ExpectTypeAdvance(SyntaxType.CloseBracketToken);
+
+		return new(new(identifier), openBracketToken, arguments.ToImmutableArray(), closeBracketToken);
 	}
 
 	private SyntaxToken ExpectTypeAdvance(SyntaxType expected) {

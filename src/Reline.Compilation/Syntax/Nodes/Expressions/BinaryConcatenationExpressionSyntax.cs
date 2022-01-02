@@ -2,6 +2,6 @@
 
 public sealed record class BinaryConcatenationExpressionSyntax(
 	IExpressionSyntax Left,
-	SyntaxToken GreaterThanToken,
+	SyntaxToken LessThanToken,
 	IExpressionSyntax Right
 ) : BinaryExpressionSyntax;

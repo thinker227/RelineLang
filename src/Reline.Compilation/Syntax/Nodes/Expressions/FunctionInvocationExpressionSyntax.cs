@@ -2,7 +2,9 @@
 
 public sealed record class FunctionInvocationExpressionSyntax(
 	IdentifierSyntax Identifier,
-	ImmutableArray<IExpressionSyntax> Arguments
+	SyntaxToken OpenBracketToken,
+	ImmutableArray<IExpressionSyntax> Arguments,
+	SyntaxToken CloseBracketToken
 ) : SyntaxNode, IExpressionSyntax {
 
 	public TextSpan Span =>

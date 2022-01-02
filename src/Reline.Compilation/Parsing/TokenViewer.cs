@@ -44,7 +44,7 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 
 	public void Advance() {
 		do position++;
-		while (Current.Type == SyntaxType.Whitespace);
+		while (SyntaxRules.IsWhitespaceLike(Current.Type));
 	}
 	public SyntaxToken Ahead(int distance) {
 		int remaining = distance;
@@ -53,7 +53,7 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 		while (remaining > 0) {
 			i++;
 			current = GetAt(position + i);
-			if (current.Type != SyntaxType.Whitespace) remaining--;
+			if (!SyntaxRules.IsWhitespaceLike(current.Type)) remaining--;
 		}
 		return current;
 	}

@@ -2,7 +2,9 @@
 
 public sealed record class UnaryLinePointerExpressionSyntax(
 	SyntaxToken StarToken,
-	IExpressionSyntax Expression
+	SyntaxToken OpenSquareToken,
+	IExpressionSyntax Expression,
+	SyntaxToken CloseSquareToken
 ) : SyntaxNode, IExpressionSyntax {
 
 	public TextSpan Span =>
