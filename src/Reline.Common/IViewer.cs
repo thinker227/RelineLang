@@ -33,6 +33,10 @@ public interface IViewer<out T> : IViewer, IEnumerable<T> {
 	/// The next element.
 	/// </summary>
 	T Next { get; }
+	/// <summary>
+	/// The previous element.
+	/// </summary>
+	T Previous { get; }
 
 	/// <summary>
 	/// Gets the element a specified distance away.

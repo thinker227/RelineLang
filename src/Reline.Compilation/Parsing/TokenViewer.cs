@@ -13,7 +13,8 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 
 	public ImmutableArray<SyntaxToken> Tokens { get; }
 	public SyntaxToken Current => GetAt(position);
-	public SyntaxToken Next => NextNotWhitespace();
+	public SyntaxToken Next => NextNotWhitespace(1);
+	public SyntaxToken Previous => NextNotWhitespace(-1);
 	public bool IsAtEnd => position >= Tokens.Length;
 
 
@@ -31,10 +32,10 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 	private SyntaxToken GetAt(int position) =>
 		position < Tokens.Length ? Tokens[position] : default;
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private SyntaxToken NextNotWhitespace() {
+	private SyntaxToken NextNotWhitespace(int direction) {
 		int i = position;
 		while (true) {
-			i++;
+			i += direction;
 			var current = GetAt(i);
 			if (current.Type == SyntaxType.Whitespace) continue;
 			return current;
