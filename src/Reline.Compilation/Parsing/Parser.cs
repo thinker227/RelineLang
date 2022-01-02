@@ -58,7 +58,7 @@ public sealed class Parser {
 		}
 
 		IStatementSyntax? statement = null;
-		if (!viewer.MatchTypePattern(SyntaxType.NewlineToken))
+		if (!SyntaxRules.CanEndLine(viewer.Current.Type))
 			statement = Statement();
 
 		var newlineToken = ExpectTypeAdvance(SyntaxType.NewlineToken, SyntaxType.EndOfFile);
