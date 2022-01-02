@@ -33,17 +33,17 @@ unary = multiplicative
 multiplicative = additive
 	| binaryMultiplicationExpression
 	| binaryDivisionExpression
-	| binaryModuloExpression ;
+	| binaryModuloExpression
+	| binaryConcatenationExpression ;
 additive = range
 	| binaryAdditionExpression
-	| binarySubtractionExpression
-	| binaryConcatenationExpression ;
+	| binarySubtractionExpression ;
 range = rangeExpression ;
 
 literalExpression = NUMBER | STRING ;
 groupingExpression = "(" expression ")" ;
 variableExpression = IDENTIFIER ;
-functionInvocationExpression = IDENTIFIER expression* ;
+functionInvocationExpression = IDENTIFIER "(" expression* ")" ;
 hereExpression = "here" ;
 startExpression = "start" ;
 endExpression = "end" ;
@@ -51,15 +51,15 @@ endExpression = "end" ;
 unaryPlusExpression = "+" expression ;
 unaryNegationExpression = "-" expression ;
 unaryFunctionPointerExpression = "*" IDENTIFIER ;
-unaryLinePointerExpression = "*" expression ;
+unaryLinePointerExpression = "*" "[" expression "]" ;
 
 binaryMultiplicationExpression = expression "*" expression ;
 binaryDivisionExpression = expression "/" expression ;
 binaryModuloExpression = expression "%" expression ;
+binaryConcatenationExpression = expression "<" expression ;
 
 binaryAdditionExpression = expression "+" expression ;
 binarySubtractionExpression = expression "-" expression ;
-binaryConcatenationExpression = expression ">" expression ;
 
 rangeExpression = expression ".." expression ;
 
