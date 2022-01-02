@@ -37,7 +37,7 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 		while (true) {
 			i += direction;
 			var current = GetAt(i);
-			if (current.Type == SyntaxType.Whitespace) continue;
+			if (SyntaxRules.IsWhitespaceLike(current.Type)) continue;
 			return current;
 		}
 	}
@@ -78,10 +78,11 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 		return Current;
 	}
 	/// <summary>
-	/// Advances the viewer to the next non-whitespace token.
+	/// Advances the viewer to the next token not matching
+	/// <see cref="SyntaxRules.IsWhitespaceLike(SyntaxType)"/>.
 	/// </summary>
 	public SyntaxToken ExpectNotWhitespace() {
-		while (Current.Type == SyntaxType.Whitespace) Advance();
+		while (SyntaxRules.IsWhitespaceLike(Current.Type)) Advance();
 		return Current;
 	}
 
@@ -92,6 +93,8 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 			if (Current.Type == type) return true;
 		return false;
 	}
+	public bool CheckType(Predicate<SyntaxType> predicate) =>
+		predicate(Current.Type);
 	/// <summary>
 	/// Matches a type pattern again the types of the tokens
 	/// from and including the current token, not including whitespace.
@@ -99,7 +102,8 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 	/// <param name="types">The type pattern to match.</param>
 	/// <returns>Whether <paramref name="types"/> matches the types of the
 	/// immediately following tokens including the current token,
-	/// excluding tokens with a type of <see cref="SyntaxType.Whitespace"/>.</returns>
+	/// excluding tokens matching
+	/// <see cref="SyntaxRules.IsWhitespaceLike(SyntaxType)"/>.</returns>
 	public bool MatchTypePattern(params SyntaxType[] types) {
 		int currentPos = position - 1;
 		int currentMatch = 0;
@@ -107,7 +111,7 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 		while (currentMatch < types.Length) {
 			currentPos++;
 			var current = GetAt(currentPos);
-			if (current.Type == SyntaxType.Whitespace) continue;
+			if (SyntaxRules.IsWhitespaceLike(current.Type)) continue;
 			if (current.Type != types[currentMatch]) return false;
 			currentMatch++;
 		}
