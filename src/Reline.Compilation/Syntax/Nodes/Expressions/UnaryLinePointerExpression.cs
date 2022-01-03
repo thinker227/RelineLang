@@ -5,9 +5,5 @@ public sealed record class UnaryLinePointerExpressionSyntax(
 	SyntaxToken OpenSquareToken,
 	IExpressionSyntax Expression,
 	SyntaxToken CloseSquareToken
-) : SyntaxNode, IExpressionSyntax {
-
-	public TextSpan Span =>
-		new(StarToken.Span.Start, Expression.Span.End);
-
-}
+) : SyntaxNode, IExpressionSyntax;
+// This looks like a unary expression but isn't due to the addition tokens.

@@ -2,10 +2,10 @@
 
 public sealed record class UnaryFunctionPointerExpressionSyntax(
 	SyntaxToken StarToken,
-	IdentifierSyntax Identifier
-) : SyntaxNode, IExpressionSyntax {
+	IdentifierExpressionSyntax Identifier
+) : SyntaxNode, IUnaryExpressionSyntax {
 
-	public TextSpan Span =>
-		new(StarToken.Span.Start, Identifier.Span.End);
+	SyntaxToken IUnaryExpressionSyntax.UnaryToken => StarToken;
+	IExpressionSyntax IUnaryExpressionSyntax.Expression => Identifier;
 
 }

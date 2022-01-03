@@ -4,4 +4,4 @@ public sealed record class BinarySubtractionExpressionSyntax(
 	IExpressionSyntax Left,
 	SyntaxToken MinusToken,
 	IExpressionSyntax Right
-) : BinaryExpressionSyntax;
+) : IBinaryExpressionSyntax;

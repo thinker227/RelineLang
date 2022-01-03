@@ -2,9 +2,4 @@
 
 public sealed record class HereExpressionSyntax(
 	SyntaxToken HereKeyword
-) : SyntaxNode, IExpressionSyntax {
-
-	public TextSpan Span =>
-		HereKeyword.Span;
-
-}
+) : SyntaxNode, IExpressionSyntax;

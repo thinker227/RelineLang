@@ -4,4 +4,4 @@ public sealed record class BinaryMultiplicationExpressionSyntax(
 	IExpressionSyntax Left,
 	SyntaxToken StarToken,
 	IExpressionSyntax Right
-) : BinaryExpressionSyntax;
+) : IBinaryExpressionSyntax;

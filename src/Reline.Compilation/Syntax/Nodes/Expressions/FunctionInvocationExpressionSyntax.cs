@@ -5,10 +5,4 @@ public sealed record class FunctionInvocationExpressionSyntax(
 	SyntaxToken OpenBracketToken,
 	ImmutableArray<IExpressionSyntax> Arguments,
 	SyntaxToken CloseBracketToken
-) : SyntaxNode, IExpressionSyntax {
-
-	public TextSpan Span =>
-		new(Identifier.Span.Start,
-			Arguments.Length > 0 ? Arguments[^1].Span.End : Identifier.Span.End);
-
-}
+) : SyntaxNode, IExpressionSyntax;

@@ -5,9 +5,4 @@ public sealed record class CopyStatementSyntax(
 	IExpressionSyntax Source,
 	SyntaxToken ToKeyword,
 	IExpressionSyntax Target
-) : SyntaxNode, IStatementSyntax {
-
-	public TextSpan Span =>
-		new(CopyKeyword.Span.Start, Target.Span.End);
-
-}
+) : SyntaxNode, IStatementSyntax;

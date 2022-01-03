@@ -3,9 +3,8 @@
 public sealed record class UnaryPlusExpressionSyntax(
 	SyntaxToken PlusToken,
 	IExpressionSyntax Expression
-) : SyntaxNode, IExpressionSyntax {
+) : SyntaxNode, IUnaryExpressionSyntax {
 
-	public TextSpan Span =>
-		new(PlusToken.Span.Start, Expression.Span.End);
+	SyntaxToken IUnaryExpressionSyntax.UnaryToken => PlusToken;
 
 }

@@ -206,7 +206,7 @@ public sealed class Parser {
 				}
 
 				// Unary line pointer expression
-				var identifier = ((VariableExpressionSyntax)Primary()).Identifier;
+				var identifier = ((IdentifierExpressionSyntax)Primary()).Identifier;
 				return new UnaryFunctionPointerExpressionSyntax(op, identifier);
 			}
 		}
@@ -245,7 +245,7 @@ public sealed class Parser {
 				return FunctionInvocationExpression();
 
 			// Variable expression
-			return new VariableExpressionSyntax(new(identifier));
+			return new IdentifierExpressionSyntax(new(identifier));
 		}
 
 		CreateDiagnosticAndSynchrnoize();

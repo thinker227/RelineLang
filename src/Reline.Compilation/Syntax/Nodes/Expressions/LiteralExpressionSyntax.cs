@@ -2,9 +2,4 @@
 
 public sealed record class LiteralExpressionSyntax(
 	SyntaxToken Literal
-) : SyntaxNode, IExpressionSyntax {
-
-	public TextSpan Span =>
-		Literal.Span;
-
-}
+) : SyntaxNode, IExpressionSyntax;

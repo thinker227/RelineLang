@@ -2,9 +2,4 @@
 
 public record class ExpressionStatementSyntax(
 	IExpressionSyntax Expression
-) : SyntaxNode, IStatementSyntax {
-
-	public TextSpan Span =>
-		Expression.Span;
-
-}
+) : SyntaxNode, IStatementSyntax;

@@ -5,9 +5,4 @@ public sealed record class SwapStatementSyntax(
 	IExpressionSyntax Source,
 	SyntaxToken WithKeyword,
 	IExpressionSyntax Target
-) : SyntaxNode, IStatementSyntax {
-
-	public TextSpan Span =>
-		new(SwapKeyword.Span.Start, Target.Span.End);
-
-}
+) : SyntaxNode, IStatementSyntax;

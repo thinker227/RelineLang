@@ -5,9 +5,4 @@ public sealed record class MoveStatementSyntax(
 	IExpressionSyntax Source,
 	SyntaxToken ToKeyword,
 	IExpressionSyntax Target
-) : SyntaxNode, IStatementSyntax {
-
-	public TextSpan Span =>
-		new(MoveKeyword.Span.Start, Target.Span.End);
-
-}
+) : SyntaxNode, IStatementSyntax;
