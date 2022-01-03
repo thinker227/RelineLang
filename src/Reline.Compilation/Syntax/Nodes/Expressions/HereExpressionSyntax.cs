@@ -2,4 +2,8 @@
 
 public sealed record class HereExpressionSyntax(
 	SyntaxToken HereKeyword
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, ITokenExpressionSyntax {
+
+	SyntaxToken ITokenExpressionSyntax.Token => HereKeyword;
+
+}

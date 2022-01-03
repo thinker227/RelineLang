@@ -2,4 +2,8 @@
 
 public sealed record class EndExpressionSyntax(
 	SyntaxToken EndKeyword
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, ITokenExpressionSyntax {
+
+	SyntaxToken ITokenExpressionSyntax.Token => EndKeyword;
+
+}

@@ -2,4 +2,8 @@
 
 public sealed record class LiteralExpressionSyntax(
 	SyntaxToken Literal
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, ITokenExpressionSyntax {
+
+	SyntaxToken ITokenExpressionSyntax.Token => Literal;
+
+}
