@@ -15,7 +15,7 @@ public sealed class Parser {
 
 
 
-	public Parser(ImmutableArray<SyntaxToken> tokens) {
+	private Parser(ImmutableArray<SyntaxToken> tokens) {
 		Tokens = tokens;
 		viewer = new(tokens);
 		diagnostics = new();
