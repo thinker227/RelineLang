@@ -41,8 +41,9 @@ public static class SyntaxNodeExtensions {
 	/// <exception cref="NotSupportedException">The syntax node type is not supported.</exception>
 	public static TextSpan GetTextSpan(this ISyntaxNode node) =>
 		node switch {
-			ProgramSyntax program =>
-				new(GetTextSpan(program.Lines[0]).Start, GetTextSpan(program.Lines[^1]).End),
+			ProgramSyntax program => new(
+				GetTextSpan(program.Lines[0]).Start,
+				GetTextSpan(program.Lines[^1]).End),
 			LineSyntax line => new(
 				line.Label?.GetTextSpan().Start ??
 				line.Statement?.GetTextSpan().Start ??
@@ -56,23 +57,17 @@ public static class SyntaxNodeExtensions {
 			AssignmentStatementSyntax assignment => new(
 				assignment.Identifier.Name.Span.Start,
 				assignment.Initializer.GetTextSpan().End),
-			MoveStatementSyntax move => new(
-				move.MoveKeyword.Span.Start,
-				move.Target.GetTextSpan().End),
-			SwapStatementSyntax swap => new(
-				swap.SwapKeyword.Span.Start,
-				swap.Target.GetTextSpan().End),
-			CopyStatementSyntax copy => new(
-				copy.CopyKeyword.Span.Start,
-				copy.Target.GetTextSpan().End),
+			IManipulationStatementSyntax manipulation => new(
+				manipulation.SourceKeyword.Span.Start,
+				manipulation.Target.GetTextSpan().End),
 			ExpressionStatementSyntax expression => expression.GetTextSpan(),
 
-			IBinaryExpressionSyntax binary => new(
-				binary.Left.GetTextSpan().Start,
-				binary.Right.GetTextSpan().End),
 			IUnaryExpressionSyntax unary => new(
 				unary.UnaryToken.Span.Start,
 				unary.Expression.GetTextSpan().End),
+			IBinaryExpressionSyntax binary => new(
+				binary.Left.GetTextSpan().Start,
+				binary.Right.GetTextSpan().End),
 			ITokenExpressionSyntax token => token.Token.Span,
 			GroupingExpressionSyntax grouping => new(
 				grouping.OpenBracketToken.Span.Start,
@@ -87,5 +82,59 @@ public static class SyntaxNodeExtensions {
 
 			_ => throw new NotSupportedException($"Cannot retrieve text span of node type {node.GetType().Name}")
 		};
+
+	/// <summary>
+	/// Gets the child nodes of a syntax node.
+	/// </summary>
+	/// <param name="node">The node to get the children of.</param>
+	/// <returns>The child nodes of <paramref name="node"/>.</returns>
+	/// <exception cref="NotSupportedException">The syntax node type is not supported.</exception>
+	public static ImmutableArray<ISyntaxNode> GetChildren(this ISyntaxNode node) =>
+		node switch {
+			ProgramSyntax program =>
+				program.Lines.As<ISyntaxNode>(),
+			LineSyntax line =>
+				ImmutableArray<ISyntaxNode>.Empty
+				.AddNotNull(line.Label)
+				.AddNotNull(line.Statement),
+
+			AssignmentStatementSyntax assignment =>
+				ImmutableArray.Create<ISyntaxNode>(assignment.Initializer),
+			IManipulationStatementSyntax manipulation =>
+				ImmutableArray.Create<ISyntaxNode>(manipulation.Source, manipulation.Target),
+			ExpressionStatementSyntax expression =>
+				ImmutableArray.Create<ISyntaxNode>(expression.Expression),
+
+			IUnaryExpressionSyntax unary =>
+				ImmutableArray.Create<ISyntaxNode>(unary.Expression),
+			IBinaryExpressionSyntax binary =>
+				ImmutableArray.Create<ISyntaxNode>(binary.Left, binary.Right),
+			GroupingExpressionSyntax grouping =>
+				ImmutableArray.Create<ISyntaxNode>(grouping.Expression),
+			FunctionInvocationExpressionSyntax invocation =>
+				invocation.Arguments.As<ISyntaxNode>(),
+			IdentifierExpressionSyntax identifier =>
+				ImmutableArray.Create<ISyntaxNode>(identifier.Identifier),
+			UnaryLinePointerExpressionSyntax pointer =>
+				ImmutableArray.Create<ISyntaxNode>(pointer.Expression),
+
+			LabelSyntax or
+			IdentifierSyntax or
+			ITokenExpressionSyntax =>
+				ImmutableArray<ISyntaxNode>.Empty,
+
+			_ => throw new NotSupportedException($"Cannot retrieve children of node type {node.GetType().Name}")
+		};
+	/// <summary>
+	/// Recursively gets all the child nodes of a syntax node.
+	/// </summary>
+	/// <param name="node">The node to get the children of.</param>
+	/// <returns>The recursive child nodes of <paramref name="node"/>.</returns>
+	/// <exception cref="NotSupportedException">The syntax node type is not supported.</exception>
+	public static ImmutableArray<ISyntaxNode> GetAllChildren(this ISyntaxNode node) {
+		var children = node.GetChildren();
+		var subchildren = children.SelectMany(n => n.GetAllChildren());
+		return children.AddRange(subchildren);
+	}
 
 }
