@@ -32,6 +32,11 @@ public readonly record struct SyntaxToken(
 	/// </summary>
 	public ImmutableArray<Diagnostic> Diagnostics { get; init; } =
 		ImmutableArray<Diagnostic>.Empty;
+	/// <summary>
+	/// Whether the token is missing in the source text.
+	/// </summary>
+	public bool IsMissing =>
+		Type == SyntaxType.Unknown || Span.IsEmpty;
 
 
 

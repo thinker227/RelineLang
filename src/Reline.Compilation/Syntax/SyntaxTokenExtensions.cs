@@ -69,13 +69,4 @@ public static class SyntaxTokenExtensions {
 		return token with { Diagnostics = newDiagnostics };
 	}
 
-	/// <summary>
-	/// Returns whether a <see cref="SyntaxToken"/> is missing from the source text.
-	/// </summary>
-	/// <param name="token">The syntax token to check.</param>
-	/// <returns>Whether the type of <paramref name="token"/> is <see cref="SyntaxType.Unknown"/> or
-	/// <see cref="SyntaxToken.Span"/> is empty.</returns>
-	public static bool IsMissing(this SyntaxToken token) =>
-		token.Type == SyntaxType.Unknown || token.Span.IsEmpty;
-
 }
