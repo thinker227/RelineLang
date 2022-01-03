@@ -51,9 +51,18 @@ public readonly struct TextSpan : IEquatable<TextSpan> {
 	/// </summary>
 	/// <param name="start">The inclusive start index of the span.</param>
 	/// <param name="length">The length of the span.</param>
-	/// <returns></returns>
+	/// <returns>A new <see cref="TextSpan"/> with a start position of <paramref name="start"/> and
+	/// an end position of <paramref name="start"/> offset by <paramref name="length"/>.</returns>
 	public static TextSpan FromLength(int start, int length) =>
 		new(start, start + length);
+	/// <summary>
+	/// Creates an empty <see cref="TextSpan"/> with a position.
+	/// </summary>
+	/// <param name="position">The position of the span.</param>
+	/// <returns>A new <see cref="TextSpan"/> with a
+	/// start and end position of <paramref name="position"/>.</returns>
+	public static TextSpan FromEmpty(int position) =>
+		new(position, position);
 
 	public bool Equals(TextSpan other) =>
 		Start == other.Start && End == other.End;
