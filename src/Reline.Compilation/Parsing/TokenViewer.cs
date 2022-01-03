@@ -12,6 +12,7 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 
 
 	public ImmutableArray<SyntaxToken> Tokens { get; }
+	public int Position => position;
 	public SyntaxToken Current => GetAt(position);
 	public SyntaxToken Next => NextNotWhitespace(1);
 	public SyntaxToken Previous => NextNotWhitespace(-1);
@@ -119,7 +120,7 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 		return true;
 	}
 
-	public SyntaxToken[] GetLeadingWhitespace() {
+	public SyntaxToken[] GetLeadingTrivia() {
 		List<SyntaxToken> tokens = new();
 		int i = 0;
 		while (true) {
@@ -129,7 +130,7 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 			tokens.Add(current);
 		}
 	}
-	public SyntaxToken[] GetTrailingWhitespace() {
+	public SyntaxToken[] GetTrailingTrivia() {
 		List<SyntaxToken> tokens = new();
 		int i = 0;
 		while (true) {
