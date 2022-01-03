@@ -5,4 +5,9 @@ public sealed record class CopyStatementSyntax(
 	IExpressionSyntax Source,
 	SyntaxToken ToKeyword,
 	IExpressionSyntax Target
-) : SyntaxNode, IStatementSyntax;
+) : SyntaxNode, IManipulationStatementSyntax {
+
+	SyntaxToken IManipulationStatementSyntax.SourceKeyword => CopyKeyword;
+	SyntaxToken IManipulationStatementSyntax.TargetKeyword => ToKeyword;
+
+}

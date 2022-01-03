@@ -5,4 +5,9 @@ public sealed record class SwapStatementSyntax(
 	IExpressionSyntax Source,
 	SyntaxToken WithKeyword,
 	IExpressionSyntax Target
-) : SyntaxNode, IStatementSyntax;
+) : SyntaxNode, IManipulationStatementSyntax {
+
+	SyntaxToken IManipulationStatementSyntax.SourceKeyword => SwapKeyword;
+	SyntaxToken IManipulationStatementSyntax.TargetKeyword => WithKeyword;
+
+}

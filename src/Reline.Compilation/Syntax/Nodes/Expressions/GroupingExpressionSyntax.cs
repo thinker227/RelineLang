@@ -5,4 +5,3 @@ public sealed record class GroupingExpressionSyntax(
 	IExpressionSyntax Expression,
 	SyntaxToken CloseBracketToken
 ) : SyntaxNode, IExpressionSyntax;
-}

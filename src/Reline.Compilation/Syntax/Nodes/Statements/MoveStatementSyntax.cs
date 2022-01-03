@@ -5,4 +5,9 @@ public sealed record class MoveStatementSyntax(
 	IExpressionSyntax Source,
 	SyntaxToken ToKeyword,
 	IExpressionSyntax Target
-) : SyntaxNode, IStatementSyntax;
+) : SyntaxNode, IManipulationStatementSyntax {
+
+	SyntaxToken IManipulationStatementSyntax.SourceKeyword => MoveKeyword;
+	SyntaxToken IManipulationStatementSyntax.TargetKeyword => ToKeyword;
+
+}
