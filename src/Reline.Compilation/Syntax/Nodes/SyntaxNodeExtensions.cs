@@ -130,11 +130,19 @@ public static class SyntaxNodeExtensions {
 	/// </summary>
 	/// <param name="node">The node to get the children of.</param>
 	/// <returns>The recursive child nodes of <paramref name="node"/>.</returns>
-	/// <exception cref="NotSupportedException">The syntax node type is not supported.</exception>
 	public static ImmutableArray<ISyntaxNode> GetAllChildren(this ISyntaxNode node) {
 		var children = node.GetChildren();
 		var subchildren = children.SelectMany(n => n.GetAllChildren());
 		return children.AddRange(subchildren);
 	}
+	/// <summary>
+	/// Recursively gets all the child nodes of a specified type of a syntax node.
+	/// </summary>
+	/// <typeparam name="TNode">The type to get the nodes of.</typeparam>
+	/// <param name="node">The node to get the children of.</param>
+	/// <returns>The recursive child nodes of <paramref name="node"/>
+	/// of type <typeparamref name="TNode"/>.</returns>
+	public static ImmutableArray<TNode> GetAllChildren<TNode>(this ISyntaxNode node) where TNode : ISyntaxNode =>
+		GetAllChildren(node).OfType<TNode>().ToImmutableArray();
 
 }
