@@ -117,7 +117,7 @@ public sealed class Parser {
 		// Only function invocations can be used as statements
 		// Made this prettier later
 		if (expression is not FunctionInvocationExpressionSyntax) {
-			Diagnostic diagnostic = new(DiagnosticLevel.Error, "Only function invocation expressions may be used as expression statements", expression.Span);
+			Diagnostic diagnostic = new(DiagnosticLevel.Error, "Only function invocation expressions may be used as expression statements", expression.GetTextSpan());
 			diagnostics.Add(diagnostic);
 		}
 		return new(expression);
@@ -207,7 +207,7 @@ public sealed class Parser {
 
 				// Unary line pointer expression
 				var identifier = ((IdentifierExpressionSyntax)Primary()).Identifier;
-				return new UnaryFunctionPointerExpressionSyntax(op, identifier);
+				return new UnaryFunctionPointerExpressionSyntax(op, new(identifier));
 			}
 		}
 
