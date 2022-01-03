@@ -16,18 +16,22 @@ public readonly record struct SyntaxToken(
 	object? Literal
 ) {
 
+	// LeadingTrivia and TrailingTrivia cannot be immutable arrays
 	/// <summary>
 	/// The leading trivia of the token.
 	/// </summary>
-	public ImmutableArray<SyntaxToken> LeadingTrivia { get; init; } = default;
+	public IReadOnlyCollection<SyntaxToken> LeadingTrivia { get; init; } =
+		ImmutableArray<SyntaxToken>.Empty;
 	/// <summary>
 	/// The trailing trivia of the token.
 	/// </summary>
-	public ImmutableArray<SyntaxToken> TrailingTrivia { get; init; } = default;
+	public IReadOnlyCollection<SyntaxToken> TrailingTrivia { get; init; } =
+		ImmutableArray<SyntaxToken>.Empty;
 	/// <summary>
 	/// The diagnostics of the token.
 	/// </summary>
-	public ImmutableArray<Diagnostic> Diagnostics { get; init; } = default;
+	public ImmutableArray<Diagnostic> Diagnostics { get; init; } =
+		ImmutableArray<Diagnostic>.Empty;
 
 
 
