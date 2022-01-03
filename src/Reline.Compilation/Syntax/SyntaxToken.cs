@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Syntax;
 
@@ -16,28 +16,25 @@ public readonly record struct SyntaxToken(
 	object? Literal
 ) {
 
+	/// <summary>
+	/// The leading trivia of the token.
+	/// </summary>
+	public ImmutableArray<SyntaxToken> LeadingTrivia { get; init; } = default;
+	/// <summary>
+	/// The trailing trivia of the token.
+	/// </summary>
+	public ImmutableArray<SyntaxToken> TrailingTrivia { get; init; } = default;
+	/// <summary>
+	/// The diagnostics of the token.
+	/// </summary>
+	public ImmutableArray<Diagnostic> Diagnostics { get; init; } = default;
+
+
+
 	public override string ToString() {
 		string literalString = Literal is null ? "" : $" ({Literal})";
 		string textString = Span.IsEmpty ? "" : $" {Span} \"{Text}\"";
 		return $"{Type}{literalString}{textString}";
-	}
-
-	/// <summary>
-	/// Tries to get <see cref="Literal"/> as a specified type.
-	/// </summary>
-	/// <typeparam name="T">The type to try get <see cref="Literal"/> as.</typeparam>
-	/// <param name="value">The value of <see cref="Literal"/>
-	/// as <typeparamref name="T"/>.</param>
-	/// <returns>Whether <see cref="Literal"/> could be converted to
-	/// <typeparamref name="T"/>.</returns>
-	public bool TryGetLiteralAs<T>([NotNullWhen(true)] out T? value) {
-		if (Literal is T asT) {
-			value = asT;
-			return true;
-		}
-
-		value = default;
-		return false;
 	}
 
 }

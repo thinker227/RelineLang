@@ -26,7 +26,7 @@ public static class SyntaxNodeExtensions {
 	/// <param name="diagnostics">The collection of diagnostics to add.</param>
 	/// <returns>A new syntax node of type <typeparamref name="TNode"/>
 	/// with <paramref name="diagnostics"/> added to its diagnostics.</returns>
-	public static TNode AddDiagnostic<TNode>(this TNode node, IEnumerable<Diagnostic> diagnostics) where TNode : SyntaxNode {
+	public static TNode AddDiagnostics<TNode>(this TNode node, IEnumerable<Diagnostic> diagnostics) where TNode : SyntaxNode {
 		var newDiagnostics = node.Diagnostics.IsDefault ?
 			ImmutableArray.CreateRange(diagnostics) :
 			node.Diagnostics.AddRange(diagnostics);
