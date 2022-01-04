@@ -25,5 +25,110 @@ public static class SyntaxRules {
 		type is SyntaxType.Whitespace or SyntaxType.Comment;
 	public static bool CanEndLine(SyntaxType type) =>
 		type is SyntaxType.NewlineToken or SyntaxType.EndOfFile;
+	public static bool CanBeginStatement(SyntaxType type) =>
+		type is
+		SyntaxType.Identifier or
+		SyntaxType.MoveKeyword or
+		SyntaxType.SwapKeyword or
+		SyntaxType.CopyKeyword;
+	public static bool CanBeginExpression(SyntaxType type) =>
+		type is
+		SyntaxType.Identifier or
+		SyntaxType.NumberLiteral or
+		SyntaxType.StringLiteral or
+		SyntaxType.HereKeyword or
+		SyntaxType.StartKeyword or
+		SyntaxType.EndKeyword or
+		SyntaxType.OpenBracketToken or
+		SyntaxType.PlusToken or
+		SyntaxType.MinusToken or
+		SyntaxType.StarToken;
+
+	public static string GetTypeName(SyntaxType type) =>
+		type switch {
+			SyntaxType.DotToken => ".",
+			SyntaxType.CommaToken => ",",
+			SyntaxType.ColonToken => ":",
+			SyntaxType.EqualsToken => "=",
+			SyntaxType.GreaterThanToken => ">",
+			SyntaxType.LesserThanToken => "<",
+			SyntaxType.PlusToken => "+",
+			SyntaxType.MinusToken => "-",
+			SyntaxType.StarToken => "*",
+			SyntaxType.SlashToken => "/",
+			SyntaxType.BackslashToken => "\\",
+			SyntaxType.PercentToken => "%",
+			SyntaxType.OpenBracketToken => "(",
+			SyntaxType.CloseBracketToken => ")",
+			SyntaxType.OpenSquareToken => "[",
+			SyntaxType.CloseSquareToken => "]",
+			SyntaxType.OpenBraceToken => "{",
+			SyntaxType.CloseBraceToken => "}",
+			SyntaxType.NewlineToken => "newline",
+
+			SyntaxType.DotDotToken => "..",
+
+			SyntaxType.HereKeyword => "here",
+			SyntaxType.StartKeyword => "start",
+			SyntaxType.EndKeyword => "end",
+			SyntaxType.MoveKeyword => "move",
+			SyntaxType.SwapKeyword => "swap",
+			SyntaxType.CopyKeyword => "copy",
+			SyntaxType.ToKeyword => "to",
+			SyntaxType.WithKeyword => "with",
+
+			SyntaxType.NumberLiteral => "number literal",
+			SyntaxType.StringLiteral => "string literal",
+			SyntaxType.Identifier => "identifier",
+
+			SyntaxType.Whitespace => "whitespace",
+			SyntaxType.Comment => "comment",
+			SyntaxType.EndOfFile => "end of file",
+			SyntaxType.Unknown => "unknown",
+
+			_ => string.Empty
+		};
 
 }
+
+/*
+SyntaxType.DotToken => "",
+SyntaxType.CommaToken => "",
+SyntaxType.ColonToken => "",
+SyntaxType.EqualsToken => "",
+SyntaxType.GreaterThanToken => "",
+SyntaxType.LesserThanToken => "",
+SyntaxType.PlusToken => "",
+SyntaxType.MinusToken => "",
+SyntaxType.StarToken => "",
+SyntaxType.SlashToken => "",
+SyntaxType.BackslashToken => "",
+SyntaxType.PercentToken => "",
+SyntaxType.OpenBracketToken => "",
+SyntaxType.CloseBracketToken => "",
+SyntaxType.OpenSquareToken => "",
+SyntaxType.CloseSquareToken => "",
+SyntaxType.OpenBraceToken => "",
+SyntaxType.CloseBraceToken => "",
+SyntaxType.NewlineToken => "",
+
+SyntaxType.DotDotToken => "",
+
+SyntaxType.HereKeyword => "",
+SyntaxType.StartKeyword => "",
+SyntaxType.EndKeyword => "",
+SyntaxType.MoveKeyword => "",
+SyntaxType.SwapKeyword => "",
+SyntaxType.CopyKeyword => "",
+SyntaxType.ToKeyword => "",
+SyntaxType.WithKeyword => "",
+
+SyntaxType.NumberLiteral => "",
+SyntaxType.StringLiteral => "",
+SyntaxType.Identifier => "",
+
+SyntaxType.Whitespace => "",
+SyntaxType.Comment => "",
+SyntaxType.EndOfFile => "",
+SyntaxType.Unknown => "",
+*/

@@ -8,7 +8,7 @@ public enum SyntaxType {
 	/// <summary>
 	/// '<c>.</c>'
 	/// </summary>
-	DotToken,
+	DotToken = 1,
 	/// <summary>
 	/// '<c>,</c>'
 	/// </summary>
@@ -146,11 +146,11 @@ public enum SyntaxType {
 	/// </summary>
 	Comment,
 	/// <summary>
-	/// An unknown type of syntax. Used for errors.
-	/// </summary>
-	Unknown,
-	/// <summary>
 	/// End of file.
 	/// </summary>
-	EndOfFile
+	EndOfFile,
+	/// <summary>
+	/// An unknown type of syntax. Used for errors.
+	/// </summary>
+	Unknown = 0
 }

@@ -31,7 +31,7 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private SyntaxToken GetAt(int position) =>
-		position < Tokens.Length ? Tokens[position] : default;
+		position < Tokens.Length && position >= 0 ? Tokens[position] : default;
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private SyntaxToken NextNotWhitespace(int direction) {
 		int i = position;
@@ -87,15 +87,25 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 		return Current;
 	}
 
+	/// <summary>
+	/// Checks the type of the current token against an expected syntax type.
+	/// </summary>
+	/// <param name="expected">The expected <see cref="SyntaxType"/>.</param>
+	/// <returns>Whether the type of the current token
+	/// is equal to <paramref name="expected"/>.</returns>
 	public bool CheckType(SyntaxType expected) =>
 		expected == Current.Type;
+	/// <summary>
+	/// Checks the type of the current token against an array of expected syntax types.
+	/// </summary>
+	/// <param name="expected">The expected syntax types.</param>
+	/// <returns>Whether the type of the current token
+	/// is equal to any syntax type in <paramref name="expected"/>.</returns>
 	public bool CheckType(params SyntaxType[] expected) {
 		foreach (var type in expected)
 			if (Current.Type == type) return true;
 		return false;
 	}
-	public bool CheckType(Predicate<SyntaxType> predicate) =>
-		predicate(Current.Type);
 	/// <summary>
 	/// Matches a type pattern again the types of the tokens
 	/// from and including the current token, not including whitespace.
@@ -120,26 +130,32 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 		return true;
 	}
 
-	public SyntaxToken[] GetLeadingTrivia() {
+	public ImmutableArray<SyntaxToken> Until(params SyntaxType[] expected) {
 		List<SyntaxToken> tokens = new();
-		int i = 0;
-		while (true) {
-			i--;
-			var current = GetAt(position - i);
-			if (current.Type != SyntaxType.Whitespace) return tokens.ToArray();
-			tokens.Add(current);
-		}
-	}
-	public SyntaxToken[] GetTrailingTrivia() {
-		List<SyntaxToken> tokens = new();
-		int i = 0;
+		int i = -1;
 		while (true) {
 			i++;
-			var current = GetAt(position - i);
-			if (current.Type != SyntaxType.Whitespace) return tokens.ToArray();
+			var current = GetAt(position + i);
+			if (expected.Contains(current.Type))
+				return tokens.ToImmutableArray();
 			tokens.Add(current);
 		}
 	}
+	private ImmutableArray<SyntaxToken> GetTrivia(int direction) {
+		List<SyntaxToken> tokens = new();
+		int i = 0;
+		while (true) {
+			i += direction;
+			var current = GetAt(position + i);
+			if (!SyntaxRules.IsWhitespaceLike(current.Type))
+				return tokens.ToImmutableArray();
+			tokens.Add(current);
+		}
+	}
+	public ImmutableArray<SyntaxToken> GetLeadingTrivia() =>
+		GetTrivia(-1);
+	public ImmutableArray<SyntaxToken> GetTrailingTrivia() =>
+		GetTrivia(1);
 
 	public IEnumerator<SyntaxToken> GetEnumerator() =>
 		Tokens.AsEnumerable().GetEnumerator();

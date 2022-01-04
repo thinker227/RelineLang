@@ -38,14 +38,9 @@ public sealed class Parser {
 
 	private ProgramSyntax Program() {
 		List<LineSyntax> lines = new();
-		while (viewer.Current.Type != SyntaxType.EndOfFile) {
-			try {
-				var line = Line();
-				lines.Add(line);
-			} catch (SynchronizationException) {
-				viewer.ExpectType(SyntaxType.NewlineToken);
-				viewer.Advance();
-			}
+		while (!viewer.IsAtEnd) {
+			var line = Line();
+			lines.Add(line);
 		}
 		return new(lines.ToImmutableArray());
 	}
@@ -53,8 +48,8 @@ public sealed class Parser {
 		// Try find a label, otherwise the label is null
 		LabelSyntax? label = null;
 		if (viewer.MatchTypePattern(SyntaxType.Identifier, SyntaxType.ColonToken)) {
-			var identifier = viewer.AdvanceCurrent();
-			var colonToken = viewer.AdvanceCurrent();
+			var identifier = GetCurrentAdvance();
+			var colonToken = GetCurrentAdvance();
 			label = new(new(identifier), colonToken);
 		}
 
@@ -63,11 +58,19 @@ public sealed class Parser {
 		if (!SyntaxRules.CanEndLine(viewer.Current.Type))
 			statement = Statement();
 
-		var newlineToken = ExpectTypeAdvance(SyntaxType.NewlineToken, SyntaxType.EndOfFile);
+		//SyntaxToken newlineToken;
+		//if (viewer.CheckType(SyntaxType.NewlineToken, SyntaxType.EndOfFile))
+		//	newlineToken = GetCurrentAdvance();
+		//else {
+		//	newlineToken = ;
+		//	viewer.Advance();
+		//}
+		SyntaxToken newlineToken = Expect(SyntaxType.NewlineToken, SyntaxType.EndOfFile);
 
 		return new(label, statement, newlineToken);
 	}
 
+	#region Statements
 	private IStatementSyntax Statement() {
 		// Move statement
 		if (viewer.CheckType(SyntaxType.MoveKeyword))
@@ -79,58 +82,61 @@ public sealed class Parser {
 		if (viewer.CheckType(SyntaxType.CopyKeyword))
 			return CopyStatement();
 		// Assignment statement
-		if (viewer.MatchTypePattern(SyntaxType.Identifier, SyntaxType.EqualsToken))
+		if (viewer.Next.Type == SyntaxType.EqualsToken)
 			return AssignmentStatement();
 
 		// Statement is an expression statement if not any of the above
 		return ExpressionStatement();
 	}
 	private AssignmentStatementSyntax AssignmentStatement() {
-		var identifier = viewer.AdvanceCurrent();
-		var equalsToken = viewer.AdvanceCurrent();
+		var identifier = Expect(SyntaxType.Identifier);
+		var equalsToken = GetCurrentAdvance();
 		var expression = Expression();
 		return new(new(identifier), equalsToken, expression);
 	}
 	private MoveStatementSyntax MoveStatement() {
-		var moveKeyword = viewer.AdvanceCurrent();
+		var moveKeyword = GetCurrentAdvance();
 		var source = Expression();
-		var toKeyword = ExpectTypeAdvance(SyntaxType.ToKeyword);
+		var toKeyword = Expect(SyntaxType.ToKeyword);
 		var target = Expression();
 		return new(moveKeyword, source, toKeyword, target);
 	}
 	private SwapStatementSyntax SwapStatement() {
-		var swapKeyword = viewer.AdvanceCurrent();
+		var swapKeyword = GetCurrentAdvance();
 		var source = Expression();
-		var withKeyword = ExpectTypeAdvance(SyntaxType.WithKeyword);
+		var withKeyword = Expect(SyntaxType.WithKeyword);
 		var target = Expression();
 		return new(swapKeyword, source, withKeyword, target);
 	}
 	private CopyStatementSyntax CopyStatement() {
-		var copyKeyword = viewer.AdvanceCurrent();
+		var copyKeyword = GetCurrentAdvance();
 		var source = Expression();
-		var toKeyword = ExpectTypeAdvance(SyntaxType.ToKeyword);
+		var toKeyword = Expect(SyntaxType.ToKeyword);
 		var target = Expression();
 		return new(copyKeyword, source, toKeyword, target);
 	}
 	private ExpressionStatementSyntax ExpressionStatement() {
 		var expression = Expression();
 		// Only function invocations can be used as statements
-		// Made this prettier later
+		// Make this prettier later
 		if (expression is not FunctionInvocationExpressionSyntax) {
 			Diagnostic diagnostic = new(DiagnosticLevel.Error, "Only function invocation expressions may be used as expression statements", expression.GetTextSpan());
 			diagnostics.Add(diagnostic);
 		}
 		return new(expression);
 	}
+	#endregion
 
+	#region Expressions
 	private IExpressionSyntax Expression() =>
-		Range();
+		SyntaxRules.CanBeginExpression(viewer.Current.Type) ?
+		Range() : CreateInvalidExpressionTerm();
 	private IExpressionSyntax Range() {
 		var expression = Additive();
 
 		// Range expression
 		if (viewer.CheckType(SyntaxType.DotDotToken)) {
-			var dotDotToken = viewer.AdvanceCurrent();
+			var dotDotToken = GetCurrentAdvance();
 			var right = Additive();
 			return new RangeExpressionSyntax(expression, dotDotToken, right);
 		}
@@ -142,13 +148,13 @@ public sealed class Parser {
 
 		// Binary addition expression
 		if (viewer.CheckType(SyntaxType.PlusToken)) {
-			var plusToken = viewer.AdvanceCurrent();
+			var plusToken = GetCurrentAdvance();
 			var right = Multiplicative();
 			return new BinaryAdditionExpressionSyntax(expression, plusToken, right);
 		}
 		// Binary subtraction expression
 		if (viewer.CheckType(SyntaxType.MinusToken)) {
-			var minusToken = viewer.AdvanceCurrent();
+			var minusToken = GetCurrentAdvance();
 			var right = Multiplicative();
 			return new BinarySubtractionExpressionSyntax(expression, minusToken, right);
 		}
@@ -160,25 +166,25 @@ public sealed class Parser {
 
 		// Binary multiplication expression
 		if (viewer.CheckType(SyntaxType.StarToken)) {
-			var starToken = viewer.AdvanceCurrent();
+			var starToken = GetCurrentAdvance();
 			var right = Unary();
 			return new BinaryMultiplicationExpressionSyntax(expression, starToken, right);
 		}
 		// Binary division expression
 		if (viewer.CheckType(SyntaxType.SlashToken)) {
-			var slashToken = viewer.AdvanceCurrent();
+			var slashToken = GetCurrentAdvance();
 			var right = Unary();
 			return new BinaryDivisionExpressionSyntax(expression, slashToken, right);
 		}
 		// Binary modulo expression
 		if (viewer.CheckType(SyntaxType.PercentToken)) {
-			var percentToken = viewer.AdvanceCurrent();
+			var percentToken = GetCurrentAdvance();
 			var right = Unary();
 			return new BinaryModuloExpressionSyntax(expression, percentToken, right);
 		}
 		// Binary concatenation expression
 		if (viewer.CheckType(SyntaxType.LesserThanToken)) {
-			var lessThanToken = viewer.AdvanceCurrent();
+			var lessThanToken = GetCurrentAdvance();
 			var right = Unary();
 			return new BinaryConcatenationExpressionSyntax(expression, lessThanToken, right);
 		}
@@ -187,7 +193,7 @@ public sealed class Parser {
 	}
 	private IExpressionSyntax Unary() {
 		if (viewer.CheckType(SyntaxType.PlusToken, SyntaxType.MinusToken, SyntaxType.StarToken)) {
-			var op = viewer.AdvanceCurrent();
+			var op = GetCurrentAdvance();
 
 			// Unary addition expression
 			if (op.Type == SyntaxType.PlusToken)
@@ -199,9 +205,9 @@ public sealed class Parser {
 			if (op.Type == SyntaxType.StarToken) {
 				// Unary line pointer expression
 				if (viewer.CheckType(SyntaxType.OpenSquareToken)) {
-					var openSquareToken = viewer.AdvanceCurrent();
+					var openSquareToken = GetCurrentAdvance();
 					var expression = Primary();
-					var closeSquareToken = viewer.AdvanceCurrent();
+					var closeSquareToken = GetCurrentAdvance();
 					return new UnaryLinePointerExpressionSyntax(op, openSquareToken, expression, closeSquareToken);
 				}
 
@@ -216,79 +222,78 @@ public sealed class Parser {
 	private IExpressionSyntax Primary() {
 		// Here expression
 		if (viewer.CheckType(SyntaxType.HereKeyword))
-			return new HereExpressionSyntax(viewer.AdvanceCurrent());
+			return new HereExpressionSyntax(GetCurrentAdvance());
 		// Start expression
 		if (viewer.CheckType(SyntaxType.StartKeyword))
-			return new StartExpressionSyntax(viewer.AdvanceCurrent());
+			return new StartExpressionSyntax(GetCurrentAdvance());
 		// End expression
 		if (viewer.CheckType(SyntaxType.EndKeyword))
-			return new EndExpressionSyntax(viewer.AdvanceCurrent());
+			return new EndExpressionSyntax(GetCurrentAdvance());
 
 		// Literal expression
 		if (viewer.CheckType(SyntaxType.NumberLiteral, SyntaxType.StringLiteral))
-			return new LiteralExpressionSyntax(viewer.AdvanceCurrent());
+			return new LiteralExpressionSyntax(GetCurrentAdvance());
 
 		// Grouping expression
 		if (viewer.CheckType(SyntaxType.OpenBracketToken)) {
-			var openBracketToken = viewer.AdvanceCurrent();
+			var openBracketToken = GetCurrentAdvance();
 			var expression = Expression();
-			var closeBracketToken = ExpectTypeAdvance(SyntaxType.CloseBracketToken);
+			var closeBracketToken = Expect(SyntaxType.CloseBracketToken);
 			return new GroupingExpressionSyntax(openBracketToken, expression, closeBracketToken);
 		}
 
 		// Either a variable expression or a function invocation expression
 		if (viewer.CheckType(SyntaxType.Identifier)) {
-			var identifier = viewer.AdvanceCurrent();
-
 			// Function invocation expression
-			if (viewer.CheckType(SyntaxType.OpenBracketToken))
+			if (viewer.Next.Type == SyntaxType.OpenBracketToken) {
 				return FunctionInvocationExpression();
+			}
 
 			// Variable expression
+			var identifier = GetCurrentAdvance();
 			return new IdentifierExpressionSyntax(new(identifier));
 		}
 
-		CreateDiagnosticAndSynchrnoize();
-		return null!; // Will never be executed since CreateDiagnosticAndSynchrnoize throws an exception.
+		return CreateInvalidExpressionTerm();
 	}
 
 	private FunctionInvocationExpressionSyntax FunctionInvocationExpression() {
-		var identifier = viewer.Previous;
-		var openBracketToken = viewer.AdvanceCurrent();
+		var identifier = GetCurrentAdvance();
+		var openBracketToken = GetCurrentAdvance();
 
 		List<IExpressionSyntax> arguments = new();
-		while (true) {
-			if (viewer.CheckType(SyntaxType.CloseBracketToken)) break;
+		while (!viewer.CheckType(SyntaxType.CloseBracketToken, SyntaxType.NewlineToken, SyntaxType.EndOfFile)) {
 			var expression = Expression();
 			arguments.Add(expression);
 		}
 
-		var closeBracketToken = ExpectTypeAdvance(SyntaxType.CloseBracketToken);
+		var closeBracketToken = Expect(SyntaxType.CloseBracketToken);
 
 		return new(new(identifier), openBracketToken, arguments.ToImmutableArray(), closeBracketToken);
 	}
-
-	private SyntaxToken ExpectTypeAdvance(SyntaxType expected) {
-		if (!viewer.CheckType(expected))
-			CreateDiagnosticAndSynchrnoize(new[] { expected });
-		return viewer.AdvanceCurrent();
+	private IExpressionSyntax CreateInvalidExpressionTerm() {
+		string diagnosticText = $"Invalid expression term '{viewer.Current.Text}'";
+		var span = viewer.Current.Span;
+		var token = CreateUnexpectedToken()
+			.AddDiagnostic(new(DiagnosticLevel.Error, diagnosticText, span));
+		return new IdentifierExpressionSyntax(new(token));
 	}
-	private SyntaxToken ExpectTypeAdvance(params SyntaxType[] expected) {
-		if (!viewer.CheckType(expected))
-			CreateDiagnosticAndSynchrnoize(expected);
-		return viewer.AdvanceCurrent();
+	#endregion
+
+	private SyntaxToken GetCurrentAdvance() {
+		var trivia = viewer.GetLeadingTrivia();
+		return viewer.AdvanceCurrent().WithLeadingTrivia(trivia);
 	}
-	private void CreateDiagnosticAndSynchrnoize(params SyntaxType[] expected) {
-		var current = viewer.Current;
-		string diagnosticText = $"Unexpected token {current.Type} at position {current.Span}";
-		Diagnostic diagnostic = new(DiagnosticLevel.Error, diagnosticText, current.Span);
-		diagnostics.Add(diagnostic);
+	private SyntaxToken Expect(params SyntaxType[] type) {
+		if (viewer.CheckType(type))
+			return GetCurrentAdvance();
 
-		throw new SynchronizationException();
+		var token = CreateUnexpectedToken();
+		return token;
 	}
-
-
-
-	public class SynchronizationException : Exception { }
+	private SyntaxToken CreateUnexpectedToken() =>
+		CreateUnexpectedToken(viewer.Current.Span);
+	private static SyntaxToken CreateUnexpectedToken(TextSpan span) =>
+		new(SyntaxType.Unknown, span, string.Empty, null);
 
 }
