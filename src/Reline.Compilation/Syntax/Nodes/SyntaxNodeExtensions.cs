@@ -50,12 +50,11 @@ public static class SyntaxNodeExtensions {
 				line.NewlineToken.Span.Start,
 				line.NewlineToken.Span.End),
 			LabelSyntax label => new(
-				label.Identifier.Name.Span.Start,
+				label.Identifier.Span.Start,
 				label.ColonToken.Span.End),
-			IdentifierSyntax identifier => identifier.Name.Span,
 
 			AssignmentStatementSyntax assignment => new(
-				assignment.Identifier.Name.Span.Start,
+				assignment.Identifier.Span.Start,
 				assignment.Initializer.GetTextSpan().End),
 			IManipulationStatementSyntax manipulation => new(
 				manipulation.SourceKeyword.Span.Start,
@@ -73,9 +72,9 @@ public static class SyntaxNodeExtensions {
 				grouping.OpenBracketToken.Span.Start,
 				grouping.CloseBracketToken.Span.End),
 			FunctionInvocationExpressionSyntax invocation => new(
-				invocation.Identifier.Name.Span.Start,
+				invocation.Identifier.Span.Start,
 				invocation.CloseBracketToken.Span.End),
-			IdentifierExpressionSyntax identifier => identifier.Identifier.Name.Span,
+			IdentifierExpressionSyntax identifier => identifier.Identifier.Span,
 			UnaryLinePointerExpressionSyntax pointer => new(
 				pointer.StarToken.Span.Start,
 				pointer.CloseSquareToken.Span.End),
@@ -114,12 +113,11 @@ public static class SyntaxNodeExtensions {
 			FunctionInvocationExpressionSyntax invocation =>
 				invocation.Arguments.As<ISyntaxNode>(),
 			IdentifierExpressionSyntax identifier =>
-				ImmutableArray.Create<ISyntaxNode>(identifier.Identifier),
+				ImmutableArray.Create<ISyntaxNode>(identifier),
 			UnaryLinePointerExpressionSyntax pointer =>
 				ImmutableArray.Create<ISyntaxNode>(pointer.Expression),
 
 			LabelSyntax or
-			IdentifierSyntax or
 			ITokenExpressionSyntax =>
 				ImmutableArray<ISyntaxNode>.Empty,
 

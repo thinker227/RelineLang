@@ -50,7 +50,7 @@ public sealed class Parser {
 		if (viewer.MatchTypePattern(SyntaxType.Identifier, SyntaxType.ColonToken)) {
 			var identifier = GetCurrentAdvance();
 			var colonToken = GetCurrentAdvance();
-			label = new(new(identifier), colonToken);
+			label = new(identifier, colonToken);
 		}
 
 		// Try find a statement, otherwise the statement is null
@@ -92,7 +92,7 @@ public sealed class Parser {
 		var identifier = Expect(SyntaxType.Identifier);
 		var equalsToken = GetCurrentAdvance();
 		var expression = Expression();
-		return new(new(identifier), equalsToken, expression);
+		return new(identifier, equalsToken, expression);
 	}
 	private MoveStatementSyntax MoveStatement() {
 		var moveKeyword = GetCurrentAdvance();
@@ -251,7 +251,7 @@ public sealed class Parser {
 
 			// Variable expression
 			var identifier = GetCurrentAdvance();
-			return new IdentifierExpressionSyntax(new(identifier));
+			return new IdentifierExpressionSyntax(identifier);
 		}
 
 		return CreateInvalidExpressionTerm();
@@ -269,14 +269,14 @@ public sealed class Parser {
 
 		var closeBracketToken = Expect(SyntaxType.CloseBracketToken);
 
-		return new(new(identifier), openBracketToken, arguments.ToImmutableArray(), closeBracketToken);
+		return new(identifier, openBracketToken, arguments.ToImmutableArray(), closeBracketToken);
 	}
 	private IExpressionSyntax CreateInvalidExpressionTerm() {
 		string diagnosticText = $"Invalid expression term '{viewer.Current.Text}'";
 		var span = viewer.Current.Span;
 		var token = CreateUnexpectedToken()
 			.AddDiagnostic(new(DiagnosticLevel.Error, diagnosticText, span));
-		return new IdentifierExpressionSyntax(new(token));
+		return new IdentifierExpressionSyntax(token);
 	}
 	#endregion
 
