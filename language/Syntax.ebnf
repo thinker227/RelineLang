@@ -2,17 +2,29 @@ program = line+ ;
 line = label? statement? "\n" ;
 
 label = IDENTIFIER ":" ;
+
+
+
 statement = expressionStatement
 	| assignmentStatement
 	| moveStatement
 	| swapStatement
-	| copyStatement ;
-expressionStatement = functionInvocationExpression ;
+	| copyStatement
+	| functionDeclarationStatement ;
 
+expressionStatement = functionInvocationExpression ;
 assignmentStatement = IDENTIFIER "=" expression ;
 moveStatement = "move" expression "to" expression ;
 swapStatement = "swap" expression "with" expression ;
 copyStatement = "copy" expression "to" expression ;
+functionDeclarationStatement = "function" IDENTIFIER expression type? parameterList? ;
+
+parameterList = "(" (type IDENTIFIER)* ")" ;
+
+
+
+type = "number"
+	| "string" ;
 
 
 
