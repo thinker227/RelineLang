@@ -30,7 +30,7 @@ public static class SyntaxTokenExtensions {
 	/// <param name="trivia">The trivia to add.</param>
 	/// <returns>A new <see cref="SyntaxToken"/> with <paramref name="trivia"/> as
 	/// the <see cref="SyntaxToken.LeadingTrivia"/>.</returns>
-	public static SyntaxToken WithLeadingTrivia(this SyntaxToken token, IEnumerable<SyntaxToken> trivia) =>
+	public static SyntaxToken WithLeadingTrivia(this SyntaxToken token, IEnumerable<SyntaxTrivia> trivia) =>
 		token with { LeadingTrivia = trivia.ToImmutableArray() };
 	/// <summary>
 	/// Returns a new <see cref="SyntaxToken"/> with specified trailing trivia.
@@ -39,7 +39,7 @@ public static class SyntaxTokenExtensions {
 	/// <param name="trivia">The trivia to add.</param>
 	/// <returns>A new <see cref="SyntaxToken"/> with <paramref name="trivia"/> as
 	/// the <see cref="SyntaxToken.TrailingTrivia"/>.</returns>
-	public static SyntaxToken WithTrailingTrivia(this SyntaxToken token, IEnumerable<SyntaxToken> trivia) =>
+	public static SyntaxToken WithTrailingTrivia(this SyntaxToken token, IEnumerable<SyntaxTrivia> trivia) =>
 		token with { TrailingTrivia = trivia.ToImmutableArray() };
 
 	/// <summary>
@@ -68,5 +68,14 @@ public static class SyntaxTokenExtensions {
 			token.Diagnostics.AddRange(diagnostics);
 		return token with { Diagnostics = newDiagnostics };
 	}
+
+	/// <summary>
+	/// Converts a <see cref="SyntaxToken"/> to a <see cref="SyntaxTrivia"/>.
+	/// </summary>
+	/// <param name="token">The token to convert.</param>
+	/// <returns>A new <see cref="SyntaxTrivia"/> instance
+	/// constructed from <paramref name="token"/>.</returns>
+	public static SyntaxTrivia ToSyntaxTrivia(this SyntaxToken token) =>
+		new(token.Span, token.Text);
 
 }

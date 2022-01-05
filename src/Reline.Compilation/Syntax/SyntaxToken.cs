@@ -6,7 +6,7 @@ namespace Reline.Compilation.Syntax;
 /// Represents a syntactic token.
 /// </summary>
 /// <param name="Type">The <see cref="SyntaxType"/> of the token.</param>
-/// <param name="Position">The position of the token in the source text.</param>
+/// <param name="Span">The span of the token in the source text.</param>
 /// <param name="Text">The text of the token.</param>
 /// <param name="Literal">The literal value of the token.</param>
 public readonly record struct SyntaxToken(
@@ -20,13 +20,13 @@ public readonly record struct SyntaxToken(
 	/// <summary>
 	/// The leading trivia of the token.
 	/// </summary>
-	public IReadOnlyCollection<SyntaxToken> LeadingTrivia { get; init; } =
-		ImmutableArray<SyntaxToken>.Empty;
+	public ImmutableArray<SyntaxTrivia> LeadingTrivia { get; init; } =
+		ImmutableArray<SyntaxTrivia>.Empty;
 	/// <summary>
 	/// The trailing trivia of the token.
 	/// </summary>
-	public IReadOnlyCollection<SyntaxToken> TrailingTrivia { get; init; } =
-		ImmutableArray<SyntaxToken>.Empty;
+	public ImmutableArray<SyntaxTrivia> TrailingTrivia { get; init; } =
+		ImmutableArray<SyntaxTrivia>.Empty;
 	/// <summary>
 	/// The diagnostics of the token.
 	/// </summary>

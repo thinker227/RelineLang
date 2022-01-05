@@ -130,31 +130,30 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 		return true;
 	}
 
-	public ImmutableArray<SyntaxToken> Until(params SyntaxType[] expected) {
-		List<SyntaxToken> tokens = new();
-		int i = -1;
-		while (true) {
-			i++;
-			var current = GetAt(position + i);
-			if (expected.Contains(current.Type))
-				return tokens.ToImmutableArray();
-			tokens.Add(current);
-		}
-	}
-	private ImmutableArray<SyntaxToken> GetTrivia(int direction) {
-		List<SyntaxToken> tokens = new();
+	private ImmutableArray<SyntaxTrivia> GetTrivia(int direction) {
+		List<SyntaxTrivia> tokens = new();
 		int i = 0;
 		while (true) {
 			i += direction;
 			var current = GetAt(position + i);
 			if (!SyntaxRules.IsWhitespaceLike(current.Type))
 				return tokens.ToImmutableArray();
-			tokens.Add(current);
+			tokens.Add(current.ToSyntaxTrivia());
 		}
 	}
-	public ImmutableArray<SyntaxToken> GetLeadingTrivia() =>
+	/// <summary>
+	/// Gets the leading trivia of the current token.
+	/// </summary>
+	/// <returns>An immutable array of <see cref="SyntaxTrivia"/> constructed from
+	/// the whitespace-like tokens directly before the current tokens.</returns>
+	public ImmutableArray<SyntaxTrivia> GetLeadingTrivia() =>
 		GetTrivia(-1);
-	public ImmutableArray<SyntaxToken> GetTrailingTrivia() =>
+	/// <summary>
+	/// Gets the trailing trivia of the current token.
+	/// </summary>
+	/// <returns>An immutable array of <see cref="SyntaxTrivia"/> constructed from
+	/// the whitespace-like tokens directly after the current tokens.</returns>
+	public ImmutableArray<SyntaxTrivia> GetTrailingTrivia() =>
 		GetTrivia(1);
 
 	public IEnumerator<SyntaxToken> GetEnumerator() =>
