@@ -5,14 +5,7 @@ namespace Reline.Compilation.Syntax.Nodes;
 /// <summary>
 /// Represents an abstract syntax node.
 /// </summary>
-public abstract record class SyntaxNode : IVisitable {
-
-	/// <summary>
-	/// The diagnostics of the node.
-	/// </summary>
-	public ImmutableArray<Diagnostic> Diagnostics { get; init; }
-
-
+public abstract record class SyntaxNode : ISyntaxNode {
 
 	public void Accept(IVisitor visitor) =>
 		visitor.Visit(this);

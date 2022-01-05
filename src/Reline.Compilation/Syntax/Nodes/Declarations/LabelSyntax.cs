@@ -3,4 +3,4 @@
 public sealed record class LabelSyntax(
 	SyntaxToken Identifier,
 	SyntaxToken ColonToken
-) : SyntaxNode, ISyntaxNode;
+) : SyntaxNode;

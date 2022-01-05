@@ -2,4 +2,4 @@
 
 public sealed record class ProgramSyntax(
 	ImmutableArray<LineSyntax> Lines
-) : SyntaxNode, ISyntaxNode;
+) : SyntaxNode;

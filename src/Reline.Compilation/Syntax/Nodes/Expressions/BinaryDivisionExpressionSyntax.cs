@@ -4,4 +4,4 @@ public sealed record class BinaryDivisionExpressionSyntax(
 	IExpressionSyntax Left,
 	SyntaxToken SlashToken,
 	IExpressionSyntax Right
-) : IBinaryExpressionSyntax;
+) : SyntaxNode, IBinaryExpressionSyntax;
