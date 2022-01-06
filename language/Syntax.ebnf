@@ -21,7 +21,8 @@ copyStatement = "copy" expression "to" expression ;
 returnStatement = "return" expression ;
 functionDeclarationStatement = "function" IDENTIFIER expression type? parameterList? ;
 
-parameterList = "(" (type IDENTIFIER)* ")" ;
+parameterList = "(" typedIdentifier* ")" ;
+typedIdentifier = type IDENTIFIER ;
 
 
 
