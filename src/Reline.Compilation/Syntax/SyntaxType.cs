@@ -121,6 +121,22 @@ public enum SyntaxType {
 	/// '<c>with</c>'
 	/// </summary>
 	WithKeyword,
+	/// <summary>
+	/// '<c>return</c>'
+	/// </summary>
+	ReturnKeyword,
+	/// <summary>
+	/// '<c>function</c>'
+	/// </summary>
+	FunctionKeyword,
+	/// <summary>
+	/// '<c>number</c>'
+	/// </summary>
+	NumberKeyword,
+	/// <summary>
+	/// '<c>string</c>'
+	/// </summary>
+	StringKeyword,
 
 	// Literals
 	/// <summary>
