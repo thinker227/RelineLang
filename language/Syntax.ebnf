@@ -10,6 +10,7 @@ statement = expressionStatement
 	| moveStatement
 	| swapStatement
 	| copyStatement
+	| returnStatement
 	| functionDeclarationStatement ;
 
 expressionStatement = functionInvocationExpression ;
@@ -17,6 +18,7 @@ assignmentStatement = IDENTIFIER "=" expression ;
 moveStatement = "move" expression "to" expression ;
 swapStatement = "swap" expression "with" expression ;
 copyStatement = "copy" expression "to" expression ;
+returnStatement = "return" expression ;
 functionDeclarationStatement = "function" IDENTIFIER expression type? parameterList? ;
 
 parameterList = "(" (type IDENTIFIER)* ")" ;
