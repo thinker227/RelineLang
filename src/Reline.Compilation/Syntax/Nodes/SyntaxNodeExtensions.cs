@@ -13,8 +13,8 @@ public static class SyntaxNodeExtensions {
 	public static TextSpan GetTextSpan(this ISyntaxNode node) =>
 		node switch {
 			ProgramSyntax program => new(
-				GetTextSpan(program.Lines[0]).Start,
-				GetTextSpan(program.Lines[^1]).End),
+				program.Lines[0].GetTextSpan().Start,
+				program.Lines[^1].GetTextSpan().End),
 			LineSyntax line => new(
 				line.Label?.GetTextSpan().Start ??
 				line.Statement?.GetTextSpan().Start ??
@@ -23,14 +23,28 @@ public static class SyntaxNodeExtensions {
 			LabelSyntax label => new(
 				label.Identifier.Span.Start,
 				label.ColonToken.Span.End),
+			ParameterListSyntax pList => new(
+				pList.OpenBracketToken.Span.Start,
+				pList.CloseBracketToken.Span.End),
+			TypedIdentifierSyntax typedI => new(
+				typedI.Type.GetTextSpan().Start,
+				typedI.Identifier.Span.End),
 
+			ExpressionStatementSyntax expression => expression.GetTextSpan(),
 			AssignmentStatementSyntax assignment => new(
 				assignment.Identifier.Span.Start,
 				assignment.Initializer.GetTextSpan().End),
 			IManipulationStatementSyntax manipulation => new(
 				manipulation.SourceKeyword.Span.Start,
 				manipulation.Target.GetTextSpan().End),
-			ExpressionStatementSyntax expression => expression.GetTextSpan(),
+			ReturnStatementSyntax @return => new(
+				@return.ReturnKeyword.Span.Start,
+				@return.Expression.GetTextSpan().End),
+			FunctionDeclarationStatementSyntax function => new(
+				function.FunctionKeyword.Span.Start,
+				function.ParameterList?.GetTextSpan().End ??
+				function.ReturnType?.GetTextSpan().End ??
+				function.Body.GetTextSpan().End),
 
 			IUnaryExpressionSyntax unary => new(
 				unary.UnaryToken.Span.Start,
@@ -50,6 +64,8 @@ public static class SyntaxNodeExtensions {
 				pointer.StarToken.Span.Start,
 				pointer.CloseSquareToken.Span.End),
 
+			ITokenTypeSyntax token => token.Token.Span,
+
 			_ => throw new NotSupportedException($"Cannot retrieve text span of node type {node.GetType().Name}")
 		};
 
@@ -67,13 +83,20 @@ public static class SyntaxNodeExtensions {
 				ImmutableArray<ISyntaxNode>.Empty
 				.AddNotNull(line.Label)
 				.AddNotNull(line.Statement),
+			ParameterListSyntax pList =>
+				pList.Parameters.As<ISyntaxNode>(),
 
+			ExpressionStatementSyntax expression =>
+				ImmutableArray.Create<ISyntaxNode>(expression.Expression),
 			AssignmentStatementSyntax assignment =>
 				ImmutableArray.Create<ISyntaxNode>(assignment.Initializer),
 			IManipulationStatementSyntax manipulation =>
 				ImmutableArray.Create<ISyntaxNode>(manipulation.Source, manipulation.Target),
-			ExpressionStatementSyntax expression =>
-				ImmutableArray.Create<ISyntaxNode>(expression.Expression),
+			ReturnStatementSyntax @return =>
+				ImmutableArray.Create<ISyntaxNode>(@return.Expression),
+			FunctionDeclarationStatementSyntax function =>
+				ImmutableArray.Create<ISyntaxNode>(function.Body)
+				.AddNotNull(function.ParameterList),
 
 			IUnaryExpressionSyntax unary =>
 				ImmutableArray.Create<ISyntaxNode>(unary.Expression),
@@ -89,7 +112,9 @@ public static class SyntaxNodeExtensions {
 				ImmutableArray.Create<ISyntaxNode>(pointer.Expression),
 
 			LabelSyntax or
-			ITokenExpressionSyntax =>
+			TypedIdentifierSyntax or
+			ITokenExpressionSyntax or
+			ITokenTypeSyntax =>
 				ImmutableArray<ISyntaxNode>.Empty,
 
 			_ => throw new NotSupportedException($"Cannot retrieve children of node type {node.GetType().Name}")
