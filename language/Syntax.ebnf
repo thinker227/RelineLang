@@ -1,5 +1,5 @@
 program = line+ ;
-line = label? statement? "\n" ;
+line = label? statement? "\n" | EOF ;
 
 label = IDENTIFIER ":" ;
 
