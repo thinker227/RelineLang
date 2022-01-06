@@ -1,4 +1,4 @@
-﻿namespace Reline.Compilation.Syntax.Nodes.Types;
+﻿namespace Reline.Compilation.Syntax.Nodes;
 
 public sealed record class NumberTypeSyntax(
 	SyntaxToken NumberKeyword

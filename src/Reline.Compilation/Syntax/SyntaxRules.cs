@@ -30,7 +30,9 @@ public static class SyntaxRules {
 		SyntaxType.Identifier or
 		SyntaxType.MoveKeyword or
 		SyntaxType.SwapKeyword or
-		SyntaxType.CopyKeyword;
+		SyntaxType.CopyKeyword or
+		SyntaxType.ReturnKeyword or
+		SyntaxType.FunctionKeyword;
 	public static bool CanBeginExpression(SyntaxType type) =>
 		type is
 		SyntaxType.Identifier or
@@ -43,6 +45,10 @@ public static class SyntaxRules {
 		SyntaxType.PlusToken or
 		SyntaxType.MinusToken or
 		SyntaxType.StarToken;
+	public static bool CanBeginType(SyntaxType type) =>
+		type is
+		SyntaxType.NumberKeyword or
+		SyntaxType.StringKeyword;
 
 	public static string GetTypeName(SyntaxType type) =>
 		type switch {

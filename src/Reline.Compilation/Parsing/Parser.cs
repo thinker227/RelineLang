@@ -57,14 +57,7 @@ public sealed class Parser {
 		IStatementSyntax? statement = null;
 		if (!SyntaxRules.CanEndLine(viewer.Current.Type))
 			statement = Statement();
-
-		//SyntaxToken newlineToken;
-		//if (viewer.CheckType(SyntaxType.NewlineToken, SyntaxType.EndOfFile))
-		//	newlineToken = GetCurrentAdvance();
-		//else {
-		//	newlineToken = ;
-		//	viewer.Advance();
-		//}
+		
 		SyntaxToken newlineToken = Expect(SyntaxType.NewlineToken, SyntaxType.EndOfFile);
 
 		return new(label, statement, newlineToken);
@@ -81,6 +74,12 @@ public sealed class Parser {
 		// Copy statement
 		if (viewer.CheckType(SyntaxType.CopyKeyword))
 			return CopyStatement();
+		// Return statement
+		if (viewer.CheckType(SyntaxType.ReturnKeyword))
+			return ReturnStatement();
+		// Function declaration statement
+		if (viewer.CheckType(SyntaxType.FunctionKeyword))
+			return FunctionDeclarationStatement();
 		// Assignment statement
 		if (viewer.Next.Type == SyntaxType.EqualsToken)
 			return AssignmentStatement();
@@ -115,6 +114,11 @@ public sealed class Parser {
 		var target = Expression();
 		return new(copyKeyword, source, toKeyword, target);
 	}
+	private ReturnStatementSyntax ReturnStatement() {
+		var returnKeyword = GetCurrentAdvance();
+		var expression = Expression();
+		return new(returnKeyword, expression);
+	}
 	private ExpressionStatementSyntax ExpressionStatement() {
 		var expression = Expression();
 		// Only function invocations can be used as statements
@@ -124,6 +128,41 @@ public sealed class Parser {
 			diagnostics.Add(diagnostic);
 		}
 		return new(expression);
+	}
+	
+	private FunctionDeclarationStatementSyntax FunctionDeclarationStatement() {
+		var functionKeyword = GetCurrentAdvance();
+		var identifier = Expect(SyntaxType.Identifier);
+		var body = Expression();
+		ITypeSyntax? returnType = null;
+		ParameterListSyntax? parameterList = null;
+
+		// Return type
+		if (SyntaxRules.CanBeginType(viewer.Current.Type))
+			returnType = Type();
+		// Parameter list
+		if (viewer.CheckType(SyntaxType.OpenBracketToken))
+			parameterList = ParameterList();
+
+		return new(functionKeyword, identifier, body, returnType, parameterList);
+	}
+	private ParameterListSyntax ParameterList() {
+		var openBracketToken = GetCurrentAdvance();
+		List<TypedIdentifierSyntax> parameters = new();
+
+		while (!viewer.CheckType(SyntaxType.CloseBracketToken, SyntaxType.NewlineToken, SyntaxType.EndOfFile)) {
+			var parameter = TypedIdentifier();
+			parameters.Add(parameter);
+		}
+
+		var closeBracketToken = Expect(SyntaxType.CloseBracketToken);
+
+		return new(openBracketToken, parameters.ToImmutableArray(), closeBracketToken);
+	}
+	private TypedIdentifierSyntax TypedIdentifier() {
+		var type = Type();
+		var identifier = Expect(SyntaxType.Identifier);
+		return new(type, identifier);
 	}
 	#endregion
 
@@ -277,6 +316,19 @@ public sealed class Parser {
 		var token = CreateUnexpectedToken()
 			.AddDiagnostic(new(DiagnosticLevel.Error, diagnosticText, span));
 		return new IdentifierExpressionSyntax(token);
+	}
+	#endregion
+
+	#region Types
+	private ITypeSyntax Type() {
+		switch (viewer.Current.Type) {
+			case SyntaxType.NumberKeyword: return new NumberTypeSyntax(GetCurrentAdvance());
+			case SyntaxType.StringKeyword: return new StringTypeSyntax(GetCurrentAdvance());
+		}
+
+		var token = CreateUnexpectedToken()
+			.AddDiagnostic(new(DiagnosticLevel.Error, $"Expected type", viewer.Current.Span));
+		return new NumberTypeSyntax(token);
 	}
 	#endregion
 
