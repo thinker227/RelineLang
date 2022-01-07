@@ -3,6 +3,6 @@
 /// <summary>
 /// Represents a syntax node.
 /// </summary>
-public interface ISyntaxNode : IVisitable {
+public interface ISyntaxNode : IVisitable<ISyntaxNode> {
 
 }

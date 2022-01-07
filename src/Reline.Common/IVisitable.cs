@@ -3,18 +3,18 @@
 /// <summary>
 /// Represents an entity visitable by a visitor.
 /// </summary>
-public interface IVisitable {
+public interface IVisitable<out T> where T : IVisitable<T> {
 
 	/// <summary>
 	/// Accepts an <see cref="IVisitor"/> returning nothing.
 	/// </summary>
 	/// <param name="visitor">The visitor to accept.</param>
-	void Accept(IVisitor visitor);
+	void Accept(IVisitor<T> visitor);
 	/// <summary>
 	/// Accepts an <see cref="IVisitor"/> returning a generic result.
 	/// </summary>
 	/// <typeparam name="T">The return type of the visitor.</typeparam>
 	/// <param name="visitor">The visitor to accept.</param>
-	T Accept<T>(IVisitor<T> visitor);
+	TResult Accept<TResult>(IVisitor<T, TResult> visitor);
 
 }
