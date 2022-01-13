@@ -4,7 +4,7 @@ public sealed class NumberType : SymbolNode, ITypeSymbol {
 
 	public static NumberType Instance { get; } = new();
 	public bool IsNative => true;
-	public string TypeName => "Number";
+	public string TypeName => "number";
 
 
 

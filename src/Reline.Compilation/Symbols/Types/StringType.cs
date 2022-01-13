@@ -4,7 +4,7 @@ public sealed class StringType : SymbolNode, ITypeSymbol {
 
 	public static StringType Instance { get; } = new();
 	public bool IsNative => true;
-	public string TypeName => "String";
+	public string TypeName => "string";
 
 
 
