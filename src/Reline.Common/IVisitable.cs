@@ -6,12 +6,12 @@
 public interface IVisitable<out T> where T : IVisitable<T> {
 
 	/// <summary>
-	/// Accepts an <see cref="IVisitor"/> returning nothing.
+	/// Accepts an <see cref="IVisitor{TObject}"/> returning nothing.
 	/// </summary>
 	/// <param name="visitor">The visitor to accept.</param>
 	void Accept(IVisitor<T> visitor);
 	/// <summary>
-	/// Accepts an <see cref="IVisitor"/> returning a generic result.
+	/// Accepts an <see cref="IVisitor{TObject, TResult}"/> returning a result.
 	/// </summary>
 	/// <typeparam name="T">The return type of the visitor.</typeparam>
 	/// <param name="visitor">The visitor to accept.</param>
