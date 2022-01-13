@@ -1,21 +1,21 @@
 ﻿namespace Reline.Compilation.Symbols;
 
-public sealed class LineRangeType : SymbolNode, ITypeSymbol {
+public sealed class RangeType : SymbolNode, ITypeSymbol {
 
-	public static LineRangeType Instance => new();
+	public static RangeType Instance => new();
 	public bool IsNative => true;
-	public string TypeName => "LineRange";
+	public string TypeName => "range";
 
 
 
-	private LineRangeType() { }
+	private RangeType() { }
 
 
 
 	public bool Equals(ITypeSymbol? other) =>
-		other is LineRangeType;
+		other is RangeType;
 	public override bool Equals(object? obj) =>
-		obj is LineRangeType;
+		obj is RangeType;
 	public override int GetHashCode() =>
 		HashCode.Combine(TypeName);
 
