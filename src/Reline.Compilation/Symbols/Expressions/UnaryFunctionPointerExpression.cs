@@ -4,7 +4,7 @@ public sealed class UnaryFunctionPointerExpression : SymbolNode, IExpressionSymb
 
 	// Implement better functions later
 	public string Identifier { get; set; } = null!;
-	public ITypeSymbol Type => LineRangeType.Instance;
+	public ITypeSymbol Type => RangeType.Instance;
 	public bool IsConstant => true;
 
 }
