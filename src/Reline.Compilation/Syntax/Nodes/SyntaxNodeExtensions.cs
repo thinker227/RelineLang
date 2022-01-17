@@ -124,9 +124,9 @@ public static class SyntaxNodeExtensions {
 	/// </summary>
 	/// <param name="node">The node to get the children of.</param>
 	/// <returns>The recursive child nodes of <paramref name="node"/>.</returns>
-	public static ImmutableArray<ISyntaxNode> GetAllChildren(this ISyntaxNode node) {
+	public static ImmutableArray<ISyntaxNode> GetAllDescendants(this ISyntaxNode node) {
 		var children = node.GetChildren();
-		var subchildren = children.SelectMany(n => n.GetAllChildren());
+		var subchildren = children.SelectMany(n => n.GetAllDescendants());
 		return children.AddRange(subchildren);
 	}
 	/// <summary>
@@ -136,7 +136,7 @@ public static class SyntaxNodeExtensions {
 	/// <param name="node">The node to get the children of.</param>
 	/// <returns>The recursive child nodes of <paramref name="node"/>
 	/// of type <typeparamref name="TNode"/>.</returns>
-	public static ImmutableArray<TNode> GetAllChildren<TNode>(this ISyntaxNode node) where TNode : ISyntaxNode =>
-		GetAllChildren(node).OfType<TNode>().ToImmutableArray();
+	public static ImmutableArray<TNode> GetAllDescendants<TNode>(this ISyntaxNode node) where TNode : ISyntaxNode =>
+		GetAllDescendants(node).OfType<TNode>().ToImmutableArray();
 
 }
