@@ -1,4 +1,4 @@
-﻿namespace Reline.Compilation.Symbols.Statements;
+﻿namespace Reline.Compilation.Symbols;
 
 public sealed class ReturnStatementSymbol : SymbolNode, IStatementSymbol {
 

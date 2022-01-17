@@ -1,6 +1,6 @@
-﻿namespace Reline.Compilation.Symbols.Declarations;
+﻿namespace Reline.Compilation.Symbols;
 
-public sealed class FunctionSymbol : SymbolNode {
+public sealed class FunctionSymbol : SymbolNode, IIdentifiableSymbol {
 
 	public string Identifier { get; set; } = null!;
 	public IExpressionSymbol BodyExpression { get; set; } = null!;
