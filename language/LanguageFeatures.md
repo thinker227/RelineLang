@@ -22,28 +22,28 @@ A *move* statement moves a specified source range of lines (`<source>`) to a spe
 
 In the following example, lines 2 and 3 are moved to line 6. Line numbers added for clarity.
 ```
-1.	move 2..4 to 6
-2.	write ("owo")	// source
-3.					// source
-4.	write ("uwu")
-5.	
-6.	write ("^w^")	// target
+1.  move 2..4 to 6
+2.  write ("owo")   // source
+3.                  // source
+4.  write ("uwu")
+5.  
+6.  write ("^w^")   // target
 ```
 In the process of moving, lines 2 and 3 have been copied to memory and removed. The line that was previous specified by `<target>` as line 6 is now line 4.
 ```
-1.	move 2..4 to 6
-2.	write ("uwu")
-3.	
-4.	write ("^w^")	// target
+1.  move 2..4 to 6
+2.  write ("uwu")
+3.  
+4.  write ("^w^")   // target
 ```
 Lines 2 and 3 are copied from memory and inserted at line 4.
 ```
-1.	move 2..4 to 6
-2.	write ("uwu")
-3.	
-4.	write ("owo")	// target
-5.	
-6.	write ("^w^")
+1.  move 2..4 to 6
+2.  write ("uwu")
+3.  
+4.  write ("owo")   // target
+5.  
+6.  write ("^w^")
 ```
 
 ### `swap`
