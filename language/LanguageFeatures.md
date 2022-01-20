@@ -68,7 +68,7 @@ copy <source> to <target>
 
 ## Function declarations (`function`)
 ```
-function <function> <range> <return type> [(<parameters>)]
+function <function> <range> [(<parameters>)]
 ```
 
 ### `return`
