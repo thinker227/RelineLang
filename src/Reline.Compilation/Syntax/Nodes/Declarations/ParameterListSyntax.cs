@@ -2,6 +2,6 @@
 
 public sealed record class ParameterListSyntax(
 	SyntaxToken OpenBracketToken,
-	ImmutableArray<TypedIdentifierSyntax> Parameters,
+	ImmutableArray<SyntaxToken> Parameters,
 	SyntaxToken CloseBracketToken
 ) : SyntaxNode;
