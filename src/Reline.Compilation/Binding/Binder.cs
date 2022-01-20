@@ -18,7 +18,6 @@ public sealed partial class Binder {
 	private Binder(SyntaxTree tree) {
 		this.tree = tree;
 		syntaxSymbolBinder = new();
-		variableBinder = new();
 	}
 
 
