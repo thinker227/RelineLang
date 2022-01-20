@@ -33,10 +33,8 @@ partial class Binder {
 	/// </summary>
 	private ExpressionStatementSymbol BindExpressionStatement(ExpressionStatementSyntax syntax) {
 		var expression = BindExpression(syntax.Expression);
-		ExpressionStatementSymbol symbol = new() {
-			Syntax = syntax,
-			Expression = expression
-		};
+		var symbol = CreateSymbol<ExpressionStatementSymbol>(syntax);
+		symbol.Expression = expression;
 		return symbol;
 	}
 	/// <summary>
@@ -49,11 +47,9 @@ partial class Binder {
 		string identifier = syntax.Identifier.Text;
 		var variable = variableBinder.GetVariable(identifier);
 
-		AssignmentStatementSymbol symbol = new() {
-			Syntax = syntax,
-			Variable = variable,
-			Initializer = initializer
-		};
+		var symbol = CreateSymbol<AssignmentStatementSymbol>(syntax);
+		symbol.Variable = variable;
+		symbol.Initializer = initializer;
 		return symbol;
 	}
 	/// <summary>
@@ -64,25 +60,25 @@ partial class Binder {
 		var source = BindExpression(syntax.Source);
 		var target = BindExpression(syntax.Target);
 
-		return syntax switch {
-			MoveStatementSyntax => new MoveStatementSymbol {
-				Syntax = syntax,
-				Source = source,
-				Target = target
-			},
-			SwapStatementSyntax => new SwapStatementSymbol {
-				Syntax = syntax,
-				Source = source,
-				Target = target
-			},
-			CopyStatementSyntax => new CopyStatementSymbol {
-				Syntax = syntax,
-				Source = source,
-				Target = target
-			},
+		switch (syntax) {
+			case MoveStatementSyntax:
+				var move = CreateSymbol<MoveStatementSymbol>(syntax);
+				move.Source = source;
+				move.Target = target;
+				return move;
+			case SwapStatementSyntax:
+				var swap = CreateSymbol<SwapStatementSymbol>(syntax);
+				swap.Source = source;
+				swap.Target = target;
+				return swap;
+			case CopyStatementSyntax:
+				var copy = CreateSymbol<CopyStatementSymbol>(syntax);
+				copy.Source = source;
+				copy.Target = target;
+				return copy;
+		}
 
-			_ => throw new NotSupportedException("Manipulation statement type {syntax.GetType().Name} is not supported.")
-		};
+		throw new NotSupportedException("Manipulation statement type {syntax.GetType().Name} is not supported.");
 	}
 	/// <summary>
 	/// Binds a <see cref="ReturnStatementSyntax"/>
@@ -91,10 +87,8 @@ partial class Binder {
 	private ReturnStatementSymbol BindReturnStatement(ReturnStatementSyntax syntax) {
 		var expression = BindExpression(syntax.Expression);
 
-		ReturnStatementSymbol symbol = new() {
-			Syntax = syntax,
-			Expression = expression
-		};
+		var symbol = CreateSymbol<ReturnStatementSymbol>(syntax);
+		symbol.Expression = expression;
 		return symbol;
 	}
 }
