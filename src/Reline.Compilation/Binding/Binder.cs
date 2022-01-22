@@ -12,12 +12,18 @@ public sealed partial class Binder {
 
 	private readonly SyntaxTree tree;
 	private readonly SyntaxSymbolBinder syntaxSymbolBinder;
+	private readonly LabelBinder labelBinder;
+	private readonly VariableBinder variableBinder;
+	private readonly FunctionBinder functionBinder;
 
 
 
 	private Binder(SyntaxTree tree) {
 		this.tree = tree;
 		syntaxSymbolBinder = new();
+		labelBinder = new();
+		variableBinder = new();
+		functionBinder = new();
 	}
 
 
@@ -37,8 +43,37 @@ public sealed partial class Binder {
 	/// Binds a <see cref="SyntaxTree"/> into a <see cref="SymbolTree"/>.
 	/// </summary>
 	private SymbolTree BindTree() {
+		BindLabelsFromTree();
+		BindVariablesFromAssignments();
+		BindFunctionsFromTree();
 		var program = BindProgram(tree.Root);
 		return new(program);
+	}
+
+	private void BindLabelsFromTree() {
+		var labels = tree.GetLabels();
+		foreach (var label in labels) {
+			var symbol = CreateSymbol<LabelSymbol>(label);
+			symbol.Identifier = label.Identifier.Text;
+			labelBinder.RegisterSymbol(symbol);
+		}
+	}
+	private void BindVariablesFromAssignments() {
+		var assignments = tree.GetStatementsOfType<AssignmentStatementSyntax>();
+		foreach (var assignment in assignments) {
+			VariableSymbol symbol = new() {
+				Identifier = assignment.Identifier.Text
+			};
+			variableBinder.RegisterSymbol(symbol);
+		}
+	}
+	private void BindFunctionsFromTree() {
+		var functions = tree.GetStatementsOfType<FunctionDeclarationStatementSyntax>();
+		foreach (var function in functions) {
+			var symbol = CreateSymbol<FunctionSymbol>(function);
+			symbol.Identifier = function.Identifier.Text;
+			functionBinder.RegisterSymbol(symbol);
+		}
 	}
 
 	/// <summary>
@@ -87,12 +122,12 @@ public sealed partial class Binder {
 	/// if <paramref name="syntax"/> is not <see langword="null"/>.
 	/// Otherwise, returns the <see cref="ISymbol"/> in <see cref="syntaxSymbolBinder"/>.
 	/// </summary>
-	private TSymbol CreateSymbol<TSymbol>(ISyntaxNode? syntax) where TSymbol : SymbolNode, new() {
-		if (syntax is not null && syntaxSymbolBinder.TryGetSymbol(syntax, out var bound))
+	private TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() {
+		if (syntaxSymbolBinder.TryGetSymbol(syntax, out var bound))
 			return (TSymbol)bound;
 
 		TSymbol symbol = new() { Syntax = syntax };
-		if (syntax is not null) syntaxSymbolBinder.Bind(syntax, symbol);
+		syntaxSymbolBinder.Bind(syntax, symbol);
 		return symbol;
 	}
 
