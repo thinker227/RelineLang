@@ -134,35 +134,26 @@ public sealed class Parser {
 		var functionKeyword = GetCurrentAdvance();
 		var identifier = Expect(SyntaxType.Identifier);
 		var body = Expression();
-		ITypeSyntax? returnType = null;
 		ParameterListSyntax? parameterList = null;
 
-		// Return type
-		if (SyntaxRules.CanBeginType(viewer.Current.Type))
-			returnType = Type();
 		// Parameter list
 		if (viewer.CheckType(SyntaxType.OpenBracketToken))
 			parameterList = ParameterList();
 
-		return new(functionKeyword, identifier, body, returnType, parameterList);
+		return new(functionKeyword, identifier, body, parameterList);
 	}
 	private ParameterListSyntax ParameterList() {
 		var openBracketToken = GetCurrentAdvance();
-		List<TypedIdentifierSyntax> parameters = new();
+		List<SyntaxToken> parameters = new();
 
-		while (!viewer.CheckType(SyntaxType.CloseBracketToken, SyntaxType.NewlineToken, SyntaxType.EndOfFile)) {
-			var parameter = TypedIdentifier();
+		while (viewer.CheckType(SyntaxType.Identifier)) {
+			var parameter = GetCurrentAdvance();
 			parameters.Add(parameter);
 		}
 
 		var closeBracketToken = Expect(SyntaxType.CloseBracketToken);
 
 		return new(openBracketToken, parameters.ToImmutableArray(), closeBracketToken);
-	}
-	private TypedIdentifierSyntax TypedIdentifier() {
-		var type = Type();
-		var identifier = Expect(SyntaxType.Identifier);
-		return new(type, identifier);
 	}
 	#endregion
 
@@ -316,19 +307,6 @@ public sealed class Parser {
 		var token = CreateUnexpectedToken()
 			.AddDiagnostic(new(DiagnosticLevel.Error, diagnosticText, span));
 		return new IdentifierExpressionSyntax(token);
-	}
-	#endregion
-
-	#region Types
-	private ITypeSyntax Type() {
-		switch (viewer.Current.Type) {
-			case SyntaxType.NumberKeyword: return new NumberTypeSyntax(GetCurrentAdvance());
-			case SyntaxType.StringKeyword: return new StringTypeSyntax(GetCurrentAdvance());
-		}
-
-		var token = CreateUnexpectedToken()
-			.AddDiagnostic(new(DiagnosticLevel.Error, $"Expected type", viewer.Current.Span));
-		return new NumberTypeSyntax(token);
 	}
 	#endregion
 

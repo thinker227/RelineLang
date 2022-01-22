@@ -45,7 +45,8 @@ partial class Binder {
 		var initializer = BindExpression(syntax.Initializer);
 
 		string identifier = syntax.Identifier.Text;
-		var variable = variableBinder.GetVariable(identifier);
+		// Variables have already been bound from assignments so variable will never be null.
+		var variable = variableBinder.GetSymbol(identifier)!;
 
 		var symbol = CreateSymbol<AssignmentStatementSymbol>(syntax);
 		symbol.Variable = variable;

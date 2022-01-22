@@ -1,9 +1,0 @@
-﻿namespace Reline.Compilation.Syntax.Nodes;
-
-public sealed record class StringTypeSyntax(
-	SyntaxToken StringKeyword
-) : SyntaxNode, ITokenTypeSyntax {
-
-	SyntaxToken ITokenTypeSyntax.Token => StringKeyword;
-
-}

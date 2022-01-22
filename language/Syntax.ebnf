@@ -19,15 +19,9 @@ moveStatement = "move" expression "to" expression ;
 swapStatement = "swap" expression "with" expression ;
 copyStatement = "copy" expression "to" expression ;
 returnStatement = "return" expression ;
-functionDeclarationStatement = "function" IDENTIFIER expression type? parameterList? ;
+functionDeclarationStatement = "function" IDENTIFIER expression parameterList? ;
 
-parameterList = "(" typedIdentifier* ")" ;
-typedIdentifier = type IDENTIFIER ;
-
-
-
-type = "number"
-	| "string" ;
+parameterList = "(" IDENTIFIER* ")" ;
 
 
 

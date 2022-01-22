@@ -157,8 +157,6 @@ public sealed class Lexer {
 			"with" => SyntaxType.WithKeyword,
 			"return" => SyntaxType.ReturnKeyword,
 			"function" => SyntaxType.FunctionKeyword,
-			"number" => SyntaxType.NumberKeyword,
-			"string" => SyntaxType.StringKeyword,
 
 			_ => null
 		};

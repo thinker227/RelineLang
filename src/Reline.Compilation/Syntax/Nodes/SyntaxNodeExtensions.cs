@@ -26,9 +26,6 @@ public static class SyntaxNodeExtensions {
 			ParameterListSyntax pList => new(
 				pList.OpenBracketToken.Span.Start,
 				pList.CloseBracketToken.Span.End),
-			TypedIdentifierSyntax typedI => new(
-				typedI.Type.GetTextSpan().Start,
-				typedI.Identifier.Span.End),
 
 			ExpressionStatementSyntax expression => expression.GetTextSpan(),
 			AssignmentStatementSyntax assignment => new(
@@ -43,7 +40,6 @@ public static class SyntaxNodeExtensions {
 			FunctionDeclarationStatementSyntax function => new(
 				function.FunctionKeyword.Span.Start,
 				function.ParameterList?.GetTextSpan().End ??
-				function.ReturnType?.GetTextSpan().End ??
 				function.Body.GetTextSpan().End),
 
 			IUnaryExpressionSyntax unary => new(
@@ -63,8 +59,6 @@ public static class SyntaxNodeExtensions {
 			UnaryLinePointerExpressionSyntax pointer => new(
 				pointer.StarToken.Span.Start,
 				pointer.CloseSquareToken.Span.End),
-
-			ITokenTypeSyntax token => token.Token.Span,
 
 			_ => throw new NotSupportedException($"Cannot retrieve text span of node type {node.GetType().Name}")
 		};
@@ -112,9 +106,7 @@ public static class SyntaxNodeExtensions {
 				ImmutableArray.Create<ISyntaxNode>(pointer.Expression),
 
 			LabelSyntax or
-			TypedIdentifierSyntax or
-			ITokenExpressionSyntax or
-			ITokenTypeSyntax =>
+			ITokenExpressionSyntax  =>
 				ImmutableArray<ISyntaxNode>.Empty,
 
 			_ => throw new NotSupportedException($"Cannot retrieve children of node type {node.GetType().Name}")

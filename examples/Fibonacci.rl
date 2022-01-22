@@ -1,4 +1,4 @@
-function Fib 3..9 number (number i)    // Function declaring Fib as a function between lines 3 and 9 taking a single parameter i as a number and returning a number
+function Fib 3..9 (i)    // Function declaring Fib as a function between lines 3 and 9 taking a single parameter i
 
 move l to l + Clamp (i 0 2)    // Moves the label l forward between 0 and 2 lines
 swap here with l    // Swap moves the instruction pointer with it, causing execution to jump to l

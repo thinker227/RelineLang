@@ -3,8 +3,6 @@
 public sealed class VariableSymbol : SymbolNode, IIdentifiableSymbol, IEquatable<VariableSymbol> {
 
 	public string Identifier { get; set; } = null!;
-	public ITypeSymbol? Type { get; set; }
-	public ICollection<ISymbol> References { get; } = new List<ISymbol>();
 
 
 

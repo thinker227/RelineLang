@@ -129,14 +129,6 @@ public enum SyntaxType {
 	/// '<c>function</c>'
 	/// </summary>
 	FunctionKeyword,
-	/// <summary>
-	/// '<c>number</c>'
-	/// </summary>
-	NumberKeyword,
-	/// <summary>
-	/// '<c>string</c>'
-	/// </summary>
-	StringKeyword,
 
 	// Literals
 	/// <summary>

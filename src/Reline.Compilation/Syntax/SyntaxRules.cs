@@ -45,10 +45,6 @@ public static class SyntaxRules {
 		SyntaxType.PlusToken or
 		SyntaxType.MinusToken or
 		SyntaxType.StarToken;
-	public static bool CanBeginType(SyntaxType type) =>
-		type is
-		SyntaxType.NumberKeyword or
-		SyntaxType.StringKeyword;
 
 	public static string GetTypeName(SyntaxType type) =>
 		type switch {
