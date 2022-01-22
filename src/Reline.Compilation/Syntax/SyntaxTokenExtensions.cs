@@ -48,26 +48,26 @@ public static class SyntaxTokenExtensions {
 	/// <param name="token">The source syntax token.</param>
 	/// <param name="diagnostic">The diagnostic to add.</param>
 	/// <returns>A new <see cref="SyntaxToken"/> with <paramref name="diagnostic"/>
-	/// added to its diagnostics.</returns>
-	public static SyntaxToken AddDiagnostic(this SyntaxToken token, Diagnostic diagnostic) {
-		var newDiagnostics = token.Diagnostics.IsDefault ?
-			ImmutableArray.Create(diagnostic) :
-			token.Diagnostics.Add(diagnostic);
-		return token with { Diagnostics = newDiagnostics };
-	}
-	/// <summary>
-	/// Adds a collection of diagnostics to a <see cref="SyntaxToken"/>.
-	/// </summary>
-	/// <param name="token">The source syntax token.</param>
-	/// <param name="diagnostic">The diagnostics to add.</param>
-	/// <returns>A new <see cref="SyntaxToken"/> with <paramref name="diagnostics"/>
-	/// added to its diagnostics.</returns>
-	public static SyntaxToken AddDiagnostics(this SyntaxToken token, IEnumerable<Diagnostic> diagnostics) {
-		var newDiagnostics = token.Diagnostics.IsDefault ?
-			ImmutableArray.CreateRange(diagnostics) :
-			token.Diagnostics.AddRange(diagnostics);
-		return token with { Diagnostics = newDiagnostics };
-	}
+	///// added to its diagnostics.</returns>
+	//public static SyntaxToken AddDiagnostic(this SyntaxToken token, Diagnostic diagnostic) {
+	//	var newDiagnostics = token.Diagnostics.IsDefault ?
+	//		ImmutableArray.Create(diagnostic) :
+	//		token.Diagnostics.Add(diagnostic);
+	//	return token with { Diagnostics = newDiagnostics };
+	//}
+	///// <summary>
+	///// Adds a collection of diagnostics to a <see cref="SyntaxToken"/>.
+	///// </summary>
+	///// <param name="token">The source syntax token.</param>
+	///// <param name="diagnostic">The diagnostics to add.</param>
+	///// <returns>A new <see cref="SyntaxToken"/> with <paramref name="diagnostics"/>
+	///// added to its diagnostics.</returns>
+	//public static SyntaxToken AddDiagnostics(this SyntaxToken token, IEnumerable<Diagnostic> diagnostics) {
+	//	var newDiagnostics = token.Diagnostics.IsDefault ?
+	//		ImmutableArray.CreateRange(diagnostics) :
+	//		token.Diagnostics.AddRange(diagnostics);
+	//	return token with { Diagnostics = newDiagnostics };
+	//}
 
 	/// <summary>
 	/// Converts a <see cref="SyntaxToken"/> to a <see cref="SyntaxTrivia"/>.

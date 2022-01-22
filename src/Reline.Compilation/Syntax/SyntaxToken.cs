@@ -16,7 +16,6 @@ public readonly record struct SyntaxToken(
 	object? Literal
 ) {
 
-	// LeadingTrivia and TrailingTrivia cannot be immutable arrays
 	/// <summary>
 	/// The leading trivia of the token.
 	/// </summary>
@@ -27,11 +26,6 @@ public readonly record struct SyntaxToken(
 	/// </summary>
 	public ImmutableArray<SyntaxTrivia> TrailingTrivia { get; init; } =
 		ImmutableArray<SyntaxTrivia>.Empty;
-	/// <summary>
-	/// The diagnostics of the token.
-	/// </summary>
-	public ImmutableArray<Diagnostic> Diagnostics { get; init; } =
-		ImmutableArray<Diagnostic>.Empty;
 	/// <summary>
 	/// Whether the token is missing in the source text.
 	/// </summary>

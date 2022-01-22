@@ -7,7 +7,7 @@ namespace Reline.Compilation.Parsing;
 public sealed class Parser {
 
 	private readonly TokenViewer viewer;
-	private readonly List<Diagnostic> diagnostics;
+	private readonly ParserDiagnosticMap diagnostics;
 
 
 
@@ -125,7 +125,7 @@ public sealed class Parser {
 		// Make this prettier later
 		if (expression is not FunctionInvocationExpressionSyntax) {
 			Diagnostic diagnostic = new(DiagnosticLevel.Error, "Only function invocation expressions may be used as expression statements", expression.GetTextSpan());
-			diagnostics.Add(diagnostic);
+			diagnostics.AddDiagnostic(expression, diagnostic);
 		}
 		return new(expression);
 	}
@@ -304,8 +304,9 @@ public sealed class Parser {
 	private IExpressionSyntax CreateInvalidExpressionTerm() {
 		string diagnosticText = $"Invalid expression term '{viewer.Current.Text}'";
 		var span = viewer.Current.Span;
-		var token = CreateUnexpectedToken()
-			.AddDiagnostic(new(DiagnosticLevel.Error, diagnosticText, span));
+		var token = CreateUnexpectedToken();
+		Diagnostic diagnostic = new(DiagnosticLevel.Error, diagnosticText, span);
+		diagnostics.AddDiagnostic(token, diagnostic);
 		return new IdentifierExpressionSyntax(token);
 	}
 	#endregion
