@@ -25,6 +25,11 @@ internal sealed class BinderDiagnosticMap {
 		diagnostics.Add(symbol, newList);
 	}
 
+	public IEnumerable<Diagnostic> GetDiagnostics(ISymbol symbol) {
+		if (diagnostics.TryGetValue(symbol, out var list))
+			return list;
+		return Enumerable.Empty<Diagnostic>();
+	}
 	public IEnumerable<Diagnostic> GetDiagnostics() {
 		foreach (var list in diagnostics.Values)
 			foreach (var d in list)
