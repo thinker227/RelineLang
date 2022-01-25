@@ -6,4 +6,7 @@ public sealed class UnaryFunctionPointerExpressionSymbol : SymbolNode, IExpressi
 	public string Identifier { get; set; } = null!;
 	public bool IsConstant => true;
 
+	public T Accept<T>(IExpressionVisitor<T> visitor) =>
+		visitor.VisitUnaryFunctionPointer(this);
+
 }

@@ -5,4 +5,7 @@ public sealed class UnaryNegationExpressionSymbol : SymbolNode, IExpressionSymbo
 	public IExpressionSymbol Expression { get; set; } = null!;
 	public bool IsConstant => Expression.IsConstant;
 
+	public T Accept<T>(IExpressionVisitor<T> visitor) =>
+		visitor.VisitUnaryNegation(this);
+
 }
