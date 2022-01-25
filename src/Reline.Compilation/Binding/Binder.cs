@@ -52,6 +52,12 @@ public sealed partial class Binder {
 		return new(program);
 	}
 
+	/// <summary>
+	/// Binds all labels from the tree.
+	/// </summary>
+	/// <remarks>
+	/// This does not resolve <see cref="LabelSymbol.Line"/>.
+	/// </remarks>
 	private void BindLabelsFromTree() {
 		var labels = tree.GetLabels();
 		foreach (var label in labels) {
@@ -60,6 +66,9 @@ public sealed partial class Binder {
 			labelBinder.RegisterSymbol(symbol);
 		}
 	}
+	/// <summary>
+	/// Binds all variables from assignments.
+	/// </summary>
 	private void BindVariablesFromAssignments() {
 		var assignments = tree.GetStatementsOfType<AssignmentStatementSyntax>();
 		foreach (var assignment in assignments) {
@@ -69,6 +78,15 @@ public sealed partial class Binder {
 			variableBinder.RegisterSymbol(symbol);
 		}
 	}
+	/// <summary>
+	/// Binds all functions from the tree.
+	/// </summary>
+	/// <remarks>
+	/// This does not resolve
+	/// <see cref="FunctionSymbol.Parameters"/>,
+	/// <see cref="FunctionSymbol.BodyExpression"/> or
+	/// <see cref="FunctionSymbol.Body"/>.
+	/// </remarks>
 	private void BindFunctionsFromTree() {
 		var functions = tree.GetStatementsOfType<FunctionDeclarationStatementSyntax>();
 		foreach (var function in functions) {
@@ -124,6 +142,8 @@ public sealed partial class Binder {
 	/// if <paramref name="syntax"/> is not <see langword="null"/>.
 	/// Otherwise, returns the <see cref="ISymbol"/> in <see cref="syntaxSymbolBinder"/>.
 	/// </summary>
+	/// <typeparam name="TSymbol">The type of the symbol to create.</typeparam>
+	/// <param name="syntax">The syntax of the symbol.</param>
 	private TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() {
 		if (syntaxSymbolBinder.TryGetSymbol(syntax, out var bound))
 			return (TSymbol)bound;
@@ -133,6 +153,12 @@ public sealed partial class Binder {
 		return symbol;
 	}
 
+	/// <summary>
+	/// Adds a diagnostic to a symbol.
+	/// </summary>
+	/// <param name="symbol">The to add the diagnostic to.</param>
+	/// <param name="level">The <see cref="DiagnosticLevel"/> of the diagnostic.</param>
+	/// <param name="description">The description of the diagnostic.</param>
 	private void AddDiagnostic(ISymbol symbol, DiagnosticLevel level, string description) {
 		var textSpan = symbol.Syntax?.GetTextSpan() ?? TextSpan.Empty;
 		Diagnostic diagnostic = new() {
