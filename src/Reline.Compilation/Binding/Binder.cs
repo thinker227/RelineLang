@@ -11,6 +11,7 @@ namespace Reline.Compilation.Binding;
 public sealed partial class Binder {
 
 	private readonly SyntaxTree tree;
+	private readonly BinderDiagnosticMap diagnostics;
 	private readonly SyntaxSymbolBinder syntaxSymbolBinder;
 	private readonly LabelBinder labelBinder;
 	private readonly VariableBinder variableBinder;
@@ -20,6 +21,7 @@ public sealed partial class Binder {
 
 	private Binder(SyntaxTree tree) {
 		this.tree = tree;
+		diagnostics = new();
 		syntaxSymbolBinder = new();
 		labelBinder = new();
 		variableBinder = new();
@@ -129,6 +131,16 @@ public sealed partial class Binder {
 		TSymbol symbol = new() { Syntax = syntax };
 		syntaxSymbolBinder.Bind(syntax, symbol);
 		return symbol;
+	}
+
+	private void AddDiagnostic(ISymbol symbol, DiagnosticLevel level, string description) {
+		var textSpan = symbol.Syntax?.GetTextSpan() ?? TextSpan.Empty;
+		Diagnostic diagnostic = new() {
+			Level = level,
+			Description = description,
+			Location = textSpan
+		};
+		diagnostics.AddDiagnostic(symbol, diagnostic);
 	}
 
 }
