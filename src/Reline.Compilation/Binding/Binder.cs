@@ -10,12 +10,12 @@ namespace Reline.Compilation.Binding;
 /// </summary>
 public sealed partial class Binder {
 
-	private readonly SyntaxTree tree;
-	private readonly BinderDiagnosticMap diagnostics;
-	private readonly SyntaxSymbolBinder syntaxSymbolBinder;
-	private readonly LabelBinder labelBinder;
-	private readonly VariableBinder variableBinder;
-	private readonly FunctionBinder functionBinder;
+	internal readonly SyntaxTree tree;
+	internal readonly BinderDiagnosticMap diagnostics;
+	internal readonly SyntaxSymbolBinder syntaxSymbolBinder;
+	internal readonly LabelBinder labelBinder;
+	internal readonly VariableBinder variableBinder;
+	internal readonly FunctionBinder functionBinder;
 
 
 
@@ -144,7 +144,7 @@ public sealed partial class Binder {
 	/// </summary>
 	/// <typeparam name="TSymbol">The type of the symbol to create.</typeparam>
 	/// <param name="syntax">The syntax of the symbol.</param>
-	private TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() {
+	internal TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() {
 		if (syntaxSymbolBinder.TryGetSymbol(syntax, out var bound))
 			return (TSymbol)bound;
 
@@ -152,14 +152,13 @@ public sealed partial class Binder {
 		syntaxSymbolBinder.Bind(syntax, symbol);
 		return symbol;
 	}
-
 	/// <summary>
 	/// Adds a diagnostic to a symbol.
 	/// </summary>
 	/// <param name="symbol">The to add the diagnostic to.</param>
 	/// <param name="level">The <see cref="DiagnosticLevel"/> of the diagnostic.</param>
 	/// <param name="description">The description of the diagnostic.</param>
-	private void AddDiagnostic(ISymbol symbol, DiagnosticLevel level, string description) {
+	internal void AddDiagnostic(ISymbol symbol, DiagnosticLevel level, string description) {
 		var textSpan = symbol.Syntax?.GetTextSpan() ?? TextSpan.Empty;
 		Diagnostic diagnostic = new() {
 			Level = level,
