@@ -2,7 +2,7 @@
 
 public sealed class LiteralExpressionSymbol : SymbolNode, IExpressionSymbol {
 
-	public ILiteralSymbol Literal { get; set; } = null!;
+	public LiteralValue Literal { get; set; }
 	public bool IsConstant => true;
 
 	public T Accept<T>(IExpressionVisitor<T> visitor) =>
