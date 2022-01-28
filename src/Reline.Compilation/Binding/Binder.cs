@@ -16,6 +16,7 @@ public sealed partial class Binder {
 	internal readonly LabelBinder labelBinder;
 	internal readonly VariableBinder variableBinder;
 	internal readonly FunctionBinder functionBinder;
+	internal bool hasError;
 
 
 
@@ -26,6 +27,7 @@ public sealed partial class Binder {
 		labelBinder = new();
 		variableBinder = new();
 		functionBinder = new();
+		hasError = false;
 	}
 
 
@@ -166,6 +168,8 @@ public sealed partial class Binder {
 			Location = textSpan
 		};
 		diagnostics.AddDiagnostic(symbol, diagnostic);
+
+		if (level == DiagnosticLevel.Error) hasError = true;
 	}
 
 }
