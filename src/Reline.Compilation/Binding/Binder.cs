@@ -16,6 +16,7 @@ public sealed partial class Binder {
 	internal readonly LabelBinder labelBinder;
 	internal readonly VariableBinder variableBinder;
 	internal readonly FunctionBinder functionBinder;
+	internal readonly ConstantExpressionEvaluator expressionEvaluator;
 	internal bool hasError;
 
 
@@ -27,6 +28,7 @@ public sealed partial class Binder {
 		labelBinder = new();
 		variableBinder = new();
 		functionBinder = new();
+		expressionEvaluator = new(this);
 		hasError = false;
 	}
 
