@@ -125,17 +125,20 @@ public sealed partial class Binder {
 		var symbol = CreateSymbol<LineSymbol>(syntax);
 
 		if (syntax.Label is not null && !syntax.Label.Identifier.IsMissing) {
-			var identifier = syntax.Label.Identifier.Text;
-			var label = CreateSymbol<LabelSymbol>(syntax.Label);
-			label.Identifier = identifier;
-			label.Line = symbol;
-			symbol.Label = label;
+			symbol.Label = BindLabel(syntax.Label, symbol);
 		}
 
 		if (syntax.Statement is not null) {
 			symbol.Statement = BindStatement(syntax.Statement);
 		}
 
+		return symbol;
+	}
+	private LabelSymbol BindLabel(LabelSyntax syntax, LineSymbol line) {
+		var symbol = CreateSymbol<LabelSymbol>(syntax);
+		var identifier = syntax.Identifier.Text;
+		symbol.Identifier = identifier;
+		symbol.Line = line;
 		return symbol;
 	}
 
