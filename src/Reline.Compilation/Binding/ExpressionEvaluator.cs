@@ -32,13 +32,15 @@ internal sealed class ConstantExpressionEvaluator : IExpressionVisitor<LiteralVa
 
 	public LiteralValue VisitUnaryPlus(UnaryPlusExpressionSymbol symbol) => symbol.Expression.Accept(this).Switch(
 		i => new LiteralValue(+i),
-		s => throw new CompilationException("Cannot apply unary plus to string.")
+		s => throw new CompilationException("Cannot apply unary plus to string."),
+		r => throw new CompilationException("Cannot apply unary plus to range.")
 	);
 	public LiteralValue VisitUnaryNegation(UnaryNegationExpressionSymbol symbol) => symbol.Expression.Accept(this).Switch(
 		i => new LiteralValue(-i),
-		s => throw new CompilationException("Cannot apply unary negation to string.")
+		s => throw new CompilationException("Cannot apply unary negation to string."),
+		r => throw new CompilationException("Cannot apply unary negation to range.")
 	);
-	// Implement range type
+	// Maybe reconsider what "line pointers" actually are
 	public LiteralValue VisitUnaryLinePointer(UnaryLinePointerExpressionSymbol symbol) =>
 		throw new NotImplementedException("Implement range type.");
 	public LiteralValue VisitUnaryFunctionPointer(UnaryFunctionPointerExpressionSymbol symbol) {
@@ -118,13 +120,19 @@ internal sealed class ConstantExpressionEvaluator : IExpressionVisitor<LiteralVa
 		symbol.Literal : throw new CompilationException("Cannot evaluate invalid literal.");
 	public LiteralValue VisitGrouping(GroupingExpressionSymbol symbol) =>
 		symbol.Expression.Accept(this);
-	// Implement range type
-	public LiteralValue VisitRange(RangeExpressionSymbol symbol) =>
-		throw new NotImplementedException("Implement range type.");
+	public LiteralValue VisitRange(RangeExpressionSymbol symbol) {
+		var l = symbol.Left.Accept(this);
+		var r = symbol.Right.Accept(this);
+
+		if (l.TryGetAs(out int li) && r.TryGetAs(out int ri))
+			return new RangeLiteral(li, ri);
+
+		throw new CompilationException("Cannot create range between non-number types.");
+	}
 	// Could work with native functions with compile-time implementation
 	public LiteralValue VisitFunctionInvocation(FunctionInvocationExpressionSymbol symbol) =>
 		throw new CompilationException("Cannot evaluate function invocation.");
-	// Could work if constants are implemented
+	// Could work if constant variables are implemented
 	public LiteralValue VisitVariable(VariableExpressionSymbol symbol) =>
 		throw new CompilationException("Cannot evaluate variable.");
 
