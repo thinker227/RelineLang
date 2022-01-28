@@ -133,7 +133,7 @@ public sealed partial class Binder {
 		}
 
 		if (syntax.Statement is not null) {
-			BindLineStatement(symbol, syntax.Statement);
+			symbol.Statement = BindStatement(syntax.Statement);
 		}
 
 		return symbol;
