@@ -134,6 +134,9 @@ public sealed partial class Binder {
 
 		return symbol;
 	}
+	/// <summary>
+	/// Binds a <see cref="LabelSyntax"/> into a <see cref="LabelSymbol"/>.
+	/// </summary>
 	private LabelSymbol BindLabel(LabelSyntax syntax, LineSymbol line) {
 		var symbol = CreateSymbol<LabelSymbol>(syntax);
 		var identifier = syntax.Identifier.Text;
