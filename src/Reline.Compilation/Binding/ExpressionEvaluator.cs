@@ -42,7 +42,7 @@ internal sealed class ConstantExpressionEvaluator : IExpressionVisitor<LiteralVa
 	);
 	// Maybe reconsider what "line pointers" actually are
 	public LiteralValue VisitUnaryLinePointer(UnaryLinePointerExpressionSymbol symbol) =>
-		throw new NotImplementedException("Implement range type.");
+		throw new NotImplementedException("Reconsider what \"line pointers\" actually are.");
 	public LiteralValue VisitUnaryFunctionPointer(UnaryFunctionPointerExpressionSymbol symbol) {
 		var function = binder.functionBinder.GetSymbol(symbol.Identifier);
 		if (function is null)
