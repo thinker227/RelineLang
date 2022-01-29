@@ -5,8 +5,8 @@ using Reline.Compilation.Symbols;
 namespace Reline.Compilation.Binding;
 
 /// <summary>
-/// Binds <see cref="VariableSymbol"/>s.
+/// Binds <see cref="IVariableSymbol"/>s.
 /// </summary>
-internal sealed class VariableBinder : BaseIdentifierBinder<VariableSymbol> {
+internal sealed class VariableBinder : BaseIdentifierBinder<IVariableSymbol> {
 
 }
