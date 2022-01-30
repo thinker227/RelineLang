@@ -93,4 +93,5 @@ partial class Binder {
 		symbol.Expression = expression;
 		return symbol;
 	}
+
 }
