@@ -6,22 +6,13 @@ namespace Reline.Compilation.Binding;
 partial class Binder {
 
 	/// <summary>
-	/// Binds the statement of a <see cref="LineSymbol"/>.
-	/// </summary>
-	private void BindLineStatement(LineSymbol symbol, IStatementSyntax statement) {
-		if (statement is FunctionDeclarationStatementSyntax function) {
-			// Bind function
-		} else {
-			symbol.Statement = BindStatement(statement);
-		}
-	}
-	/// <summary>
 	/// Binds an <see cref="IStatementSyntax"/> into an <see cref="IStatementSymbol"/>.
 	/// </summary>
 	private IStatementSymbol BindStatement(IStatementSyntax syntax) => syntax switch {
 		ExpressionStatementSyntax s => BindExpressionStatement(s),
 		AssignmentStatementSyntax s => BindAssignmentStatement(s),
 		IManipulationStatementSyntax s => BindManipulationStatement(s),
+		FunctionDeclarationStatementSyntax s => BindFunctionDeclarationStatement(s),
 		ReturnStatementSyntax s => BindReturnStatement(s),
 
 		_ => throw new NotSupportedException($"Statement type {syntax.GetType().Name} is not supported.")
@@ -80,6 +71,16 @@ partial class Binder {
 		}
 
 		throw new NotSupportedException("Manipulation statement type {syntax.GetType().Name} is not supported.");
+	}
+	/// <summary>
+	/// Binds a <see cref="FunctionDeclarationStatementSyntax"/> into a <see cref="FunctionDeclarationStatementSymbol"/>.
+	/// </summary>
+	private FunctionDeclarationStatementSymbol BindFunctionDeclarationStatement(FunctionDeclarationStatementSyntax syntax) {
+		var symbol = CreateSymbol<FunctionDeclarationStatementSymbol>(syntax);
+		// Functions have already been bound from function declarations so function will never be null.
+		var function = functionBinder.GetSymbol(syntax.Identifier.Text)!;
+		symbol.Function = function;
+		return symbol;
 	}
 	/// <summary>
 	/// Binds a <see cref="ReturnStatementSyntax"/>

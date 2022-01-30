@@ -2,6 +2,7 @@
 using Reline.Compilation.Parsing;
 using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Symbols;
+using VType = Reline.Compilation.Symbols.ValueType;
 
 namespace Reline.Compilation.Binding;
 
@@ -83,20 +84,38 @@ public sealed partial class Binder {
 		}
 	}
 	/// <summary>
-	/// Binds all functions from the tree.
+	/// Binds all functions and parameters from the tree.
 	/// </summary>
 	/// <remarks>
 	/// This does not resolve
 	/// <see cref="FunctionSymbol.Parameters"/>,
-	/// <see cref="FunctionSymbol.BodyExpression"/> or
+	/// <see cref="FunctionSymbol.Range"/> or
 	/// <see cref="FunctionSymbol.Body"/>.
 	/// </remarks>
 	private void BindFunctionsFromTree() {
 		var functions = tree.GetStatementsOfType<FunctionDeclarationStatementSyntax>();
-		foreach (var function in functions) {
-			var symbol = CreateSymbol<FunctionSymbol>(function);
-			symbol.Identifier = function.Identifier.Text;
-			functionBinder.RegisterSymbol(symbol);
+		foreach (var function in functions) BindFunction(function);
+	}
+	/// <summary>
+	/// Binds a function and its parameters.
+	/// </summary>
+	private void BindFunction(FunctionDeclarationStatementSyntax function) {
+		var symbol = CreateSymbol<FunctionSymbol>(function);
+		symbol.Identifier = function.Identifier.Text;
+		// Bind body expression immediately in order to bind parameters to the proper range
+		symbol.Range = BindExpression(function.Body, ExpressionBindingFlags.ConstantsLabels, VType.Range);
+		functionBinder.RegisterSymbol(symbol);
+		
+		if (symbol.Range.GetValueType() != VType.Range || function.ParameterList is null) return;
+
+		foreach (var p in function.ParameterList.Parameters) {
+			var range = expressionEvaluator.EvaluateExpression(symbol.Range).GetAs<RangeLiteral>();
+			ParameterSymbol parameter = new() {
+				Identifier = p.Text,
+				Range = range,
+				Function = symbol
+			};
+			variableBinder.RegisterSymbol(parameter);
 		}
 	}
 
