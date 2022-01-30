@@ -26,6 +26,6 @@ public interface IExpressionVisitor<out T> {
 	T VisitGrouping(GroupingExpressionSymbol symbol);
 	T VisitRange(RangeExpressionSymbol symbol);
 	T VisitFunctionInvocation(FunctionInvocationExpressionSymbol symbol);
-	T VisitVariable(VariableExpressionSymbol symbol);
+	T VisitVariable(IdentifierExpressionSymbol symbol);
 
 }

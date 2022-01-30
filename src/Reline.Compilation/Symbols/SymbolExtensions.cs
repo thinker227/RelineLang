@@ -17,7 +17,7 @@ public static class SymbolExtensions {
 		RangeExpressionSymbol => ValueType.Range,
 		LiteralExpressionSymbol s => (ValueType)s.Literal.Type,
 		GroupingExpressionSymbol s => s.Expression.GetValueType(),
-		FunctionInvocationExpressionSymbol or VariableExpressionSymbol => ValueType.Mixed,
+		FunctionInvocationExpressionSymbol or IdentifierExpressionSymbol => ValueType.Mixed,
 
 		UnaryPlusExpressionSymbol s => s.Expression.GetValueType(),
 		UnaryNegationExpressionSymbol s => s.Expression.GetValueType(),

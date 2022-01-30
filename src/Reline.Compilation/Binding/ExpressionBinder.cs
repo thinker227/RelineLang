@@ -139,7 +139,7 @@ internal sealed class ExpressionBinder {
 	private RangeExpressionSymbol BindRange(RangeExpressionSyntax syntax) {
 		throw new NotImplementedException();
 	}
-	private IIdentifiableSymbol BindIdentifier(IdentifierExpressionSyntax syntax) {
+	private IdentifierExpressionSymbol BindIdentifier(IdentifierExpressionSyntax syntax) {
 		throw new NotImplementedException();
 	}
 	private FunctionInvocationExpressionSymbol BindFunctionInvocation(FunctionInvocationExpressionSyntax syntax) {

@@ -133,7 +133,7 @@ internal sealed class ConstantExpressionEvaluator : IExpressionVisitor<LiteralVa
 	public LiteralValue VisitFunctionInvocation(FunctionInvocationExpressionSymbol symbol) =>
 		throw new CompilationException("Cannot evaluate function invocation.");
 	// Could work if constant variables are implemented
-	public LiteralValue VisitVariable(VariableExpressionSymbol symbol) =>
+	public LiteralValue VisitVariable(IdentifierExpressionSymbol symbol) =>
 		throw new CompilationException("Cannot evaluate variable.");
 
 }
