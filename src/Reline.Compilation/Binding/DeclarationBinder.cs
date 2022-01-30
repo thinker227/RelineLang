@@ -13,12 +13,23 @@ partial class Binder {
 	/// This does not resolve <see cref="LabelSymbol.Line"/>.
 	/// </remarks>
 	private void BindLabelsFromTree() {
-		var labels = tree.GetLabels();
-		foreach (var label in labels) {
-			var symbol = CreateSymbol<LabelSymbol>(label);
-			symbol.Identifier = label.Identifier.Text;
-			labelBinder.RegisterSymbol(symbol);
-		}
+		foreach (var lineSyntax in tree.Root.Lines) BindLabelFromLine(lineSyntax);
+	}
+	/// <summary>
+	/// Binds the <see cref="LabelSyntax"/> of a <see cref="LineSyntax"/>
+	/// into a <see cref="LabelSymbol"/>.
+	/// </summary>
+	private void BindLabelFromLine(LineSyntax lineSyntax) {
+		var labelSyntax = lineSyntax.Label;
+		if (labelSyntax is null) return;
+
+		var line = CreateSymbol<LineSymbol>(lineSyntax);
+		var label = CreateSymbol<LabelSymbol>(labelSyntax);
+		label.Identifier = labelSyntax.Identifier.Text;
+		label.Line = line;
+		line.Label = label;
+
+		labelBinder.RegisterSymbol(label);
 	}
 	/// <summary>
 	/// Binds all variables from assignments.
@@ -35,12 +46,6 @@ partial class Binder {
 	/// <summary>
 	/// Binds all functions and parameters from the tree.
 	/// </summary>
-	/// <remarks>
-	/// This does not resolve
-	/// <see cref="FunctionSymbol.Parameters"/>,
-	/// <see cref="FunctionSymbol.Range"/> or
-	/// <see cref="FunctionSymbol.Body"/>.
-	/// </remarks>
 	private void BindFunctionsFromTree() {
 		var functions = tree.GetStatementsOfType<FunctionDeclarationStatementSyntax>();
 		foreach (var function in functions) BindFunction(function);
@@ -72,8 +77,6 @@ partial class Binder {
 	/// Binds a <see cref="ProgramSyntax"/>
 	/// into a <see cref="ProgramSymbol"/>.
 	/// </summary>
-	/// <param name="syntax"></param>
-	/// <returns></returns>
 	private ProgramSymbol BindProgram(ProgramSyntax syntax) {
 		var symbol = CreateSymbol<ProgramSymbol>(syntax);
 
@@ -87,29 +90,17 @@ partial class Binder {
 	/// Binds a <see cref="LineSyntax"/>
 	/// into a <see cref="LineSymbol"/>.
 	/// </summary>
-	/// <param name="syntax"></param>
-	/// <returns></returns>
 	private LineSymbol BindLine(LineSyntax syntax) {
 		var symbol = CreateSymbol<LineSymbol>(syntax);
 
 		if (syntax.Label is not null && !syntax.Label.Identifier.IsMissing) {
-			symbol.Label = BindLabel(syntax.Label, symbol);
+			
 		}
 
 		if (syntax.Statement is not null) {
 			symbol.Statement = BindStatement(syntax.Statement);
 		}
 
-		return symbol;
-	}
-	/// <summary>
-	/// Binds a <see cref="LabelSyntax"/> into a <see cref="LabelSymbol"/>.
-	/// </summary>
-	private LabelSymbol BindLabel(LabelSyntax syntax, LineSymbol line) {
-		var symbol = CreateSymbol<LabelSymbol>(syntax);
-		var identifier = syntax.Identifier.Text;
-		symbol.Identifier = identifier;
-		symbol.Line = line;
 		return symbol;
 	}
 
