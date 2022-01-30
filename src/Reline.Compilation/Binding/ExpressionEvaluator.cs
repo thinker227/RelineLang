@@ -47,7 +47,7 @@ internal sealed class ConstantExpressionEvaluator : IExpressionVisitor<LiteralVa
 		var function = binder.functionBinder.GetSymbol(symbol.Identifier);
 		if (function is null)
 			throw new CompilationException($"Could not find function '{symbol.Identifier}'.");
-		return function.BodyExpression.Accept(this);
+		return function.Range.Accept(this);
 	}
 
 	// Copy + paste galore
