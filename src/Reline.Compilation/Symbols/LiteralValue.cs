@@ -82,6 +82,8 @@ public readonly struct LiteralValue : IEquatable<LiteralValue> {
 		LiteralType.Range => range((RangeLiteral)Value),
 		_ => throw new InvalidOperationException()
 	};
+	public T GetAs<T>() =>
+		(T)Value;
 	/// <summary>
 	/// Tries to get <see cref="Value"/> as a specified type.
 	/// </summary>
