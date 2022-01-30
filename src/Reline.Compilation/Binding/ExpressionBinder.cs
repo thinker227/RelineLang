@@ -1,6 +1,5 @@
 ﻿using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Symbols;
-// ValueType conflicts with System.ValueType
 using VType = Reline.Compilation.Symbols.ValueType;
 
 namespace Reline.Compilation.Binding;
@@ -21,10 +20,14 @@ partial class Binder {
 		VType type = VType.Any
 	) {
 		ExpressionBinder binder = new(flags, this);
-		
-		var symbol = CreateSymbol<LiteralExpressionSymbol>(syntax);
-		symbol.Literal = 27;
-		return symbol;
+		var expression = binder.BindExpression(syntax);
+
+		if (type != VType.Any && !type.HasFlag(expression.GetValueType())) {
+			// Implement better diagnostic later
+			AddDiagnostic(expression, Diagnostics.DiagnosticLevel.Error, "Unexpected type");
+		}
+
+		return expression;
 	}
 
 }
