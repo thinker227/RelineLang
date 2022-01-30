@@ -90,5 +90,22 @@ public sealed partial class Binder {
 
 		if (level == DiagnosticLevel.Error) hasError = true;
 	}
+	/// <summary>
+	/// Gets a symbol corresponding to an identifier.
+	/// </summary>
+	/// <param name="identifier"></param>
+	/// <returns></returns>
+	internal IIdentifiableSymbol? GetIdentifier(string identifier) {
+		var label = labelBinder.GetSymbol(identifier);
+		if (label is not null) return label;
+
+		var variable = variableBinder.GetSymbol(identifier);
+		if (variable is not null) return variable;
+
+		var function = functionBinder.GetSymbol(identifier);
+		if (function is not null) return function;
+
+		return null;
+	}
 
 }
