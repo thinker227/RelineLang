@@ -65,7 +65,8 @@ public sealed class Lexer {
 
 		viewer.Advance();
 
-		var diagnostic = new Diagnostic(DiagnosticLevel.Error, $"Unexpected character '{current}' at position {lexemeStartPosition} in source", CurrentSpan);
+		var diagnostic = CompilerDiagnostics.unexpectedCharacter
+			.ToDiagnostic(CurrentSpan, current, lexemeStartPosition);
 		diagnostics.Add(diagnostic);
 		return CreateToken(SyntaxType.Unknown, diagnostic);
 	}

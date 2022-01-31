@@ -24,8 +24,7 @@ partial class Binder {
 		var expression = binder.BindExpression(syntax);
 
 		if (type != VType.Any && !type.HasFlag(expression.GetValueType())) {
-			// Implement better diagnostic later
-			AddDiagnostic(expression, Diagnostics.DiagnosticLevel.Error, "Unexpected type");
+			AddDiagnostic(expression, CompilerDiagnostics.unexpectedExpressionType);
 		}
 
 		return expression;
@@ -153,8 +152,8 @@ internal sealed class ExpressionBinder {
 
 	private TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() =>
 		binder.CreateSymbol<TSymbol>(syntax);
-	private void AddDiagnostic(ISymbol symbol, DiagnosticLevel level, string description) =>
-		binder.AddDiagnostic(symbol, level, description);
+	private void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) =>
+		binder.AddDiagnostic(symbol, description, formatArgs);
 
 }
 

@@ -13,6 +13,6 @@ public static class Extensions {
 	/// <returns>Whether <paramref name="operationResult"/> contains any diagnostics with
 	/// a severity level of <see cref="DiagnosticLevel.Error"/>.</returns>
 	public static bool HasErrors<T>(this IOperationResult<T> operationResult) =>
-		operationResult.Diagnostics.Any(d => d.Level == DiagnosticLevel.Error);
+		operationResult.Diagnostics.Any(d => d.Description.Level == DiagnosticLevel.Error);
 
 }

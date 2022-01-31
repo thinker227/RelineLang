@@ -124,7 +124,8 @@ public sealed class Parser {
 		// Only function invocations can be used as statements
 		// Make this prettier later
 		if (expression is not FunctionInvocationExpressionSyntax) {
-			Diagnostic diagnostic = new(DiagnosticLevel.Error, "Only function invocation expressions may be used as expression statements", expression.GetTextSpan());
+			Diagnostic diagnostic = CompilerDiagnostics.invalidExpressionStatement
+				.ToDiagnostic(expression.GetTextSpan());
 			diagnostics.AddDiagnostic(expression, diagnostic);
 		}
 		return new(expression);
@@ -302,10 +303,10 @@ public sealed class Parser {
 		return new(identifier, openBracketToken, arguments.ToImmutableArray(), closeBracketToken);
 	}
 	private IExpressionSyntax CreateInvalidExpressionTerm() {
-		string diagnosticText = $"Invalid expression term '{viewer.Current.Text}'";
 		var span = viewer.Current.Span;
 		var token = CreateUnexpectedToken();
-		Diagnostic diagnostic = new(DiagnosticLevel.Error, diagnosticText, span);
+		Diagnostic diagnostic = CompilerDiagnostics.invalidExpressionTerm
+			.ToDiagnostic(span, viewer.Current.Text);
 		diagnostics.AddDiagnostic(token, diagnostic);
 		return new IdentifierExpressionSyntax(token);
 	}
