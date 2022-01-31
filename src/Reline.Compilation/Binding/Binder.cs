@@ -93,8 +93,9 @@ public sealed partial class Binder {
 	/// <summary>
 	/// Gets a symbol corresponding to an identifier.
 	/// </summary>
-	/// <param name="identifier"></param>
-	/// <returns></returns>
+	/// <param name="identifier">The identifier to get the symbol of.</param>
+	/// <returns>A <see cref="IIdentifiableSymbol"/> corresponding to
+	/// <paramref name="identifier"/>, or <see langword="null"/> if none was found.</returns>
 	internal IIdentifiableSymbol? GetIdentifier(string identifier) {
 		var label = labelBinder.GetSymbol(identifier);
 		if (label is not null) return label;
