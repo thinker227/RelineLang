@@ -140,7 +140,31 @@ internal sealed class ExpressionBinder {
 		throw new NotImplementedException();
 	}
 	private IdentifierExpressionSymbol BindIdentifier(IdentifierExpressionSyntax syntax) {
-		throw new NotImplementedException();
+		string identifier = syntax.Identifier.Text;
+		var symbol = CreateSymbol<IdentifierExpressionSymbol>(syntax);
+
+		// Try bind labels immediately if labels are treated as constant
+		if (LabelsAsConstant) {
+			var labelSymbol = binder.labelBinder.GetSymbol(syntax.Identifier.Text);
+			if (labelSymbol is not null) {
+				symbol.Identifier = labelSymbol;
+				return symbol;
+			}
+		}
+
+		if (OnlyConstants) {
+			AddDiagnostic(symbol, DiagnosticLevel.Error, "Labels, variables, parameters and functions may not be used in this context.");
+			return symbol;
+		}
+
+		var identifierSymbol = binder.GetIdentifier(identifier);
+		if (identifierSymbol is null) {
+			AddDiagnostic(symbol, DiagnosticLevel.Error, $"Identifier '{identifier}' is not declared.");
+		} else {
+			symbol.Identifier = identifierSymbol;
+		}
+
+		return symbol;
 	}
 	private FunctionInvocationExpressionSymbol BindFunctionInvocation(FunctionInvocationExpressionSyntax syntax) {
 		throw new NotImplementedException();
