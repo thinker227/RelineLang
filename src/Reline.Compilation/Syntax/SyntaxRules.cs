@@ -91,4 +91,25 @@ public static class SyntaxRules {
 			_ => string.Empty
 		};
 
+	public static int GetUnaryOperatorPrecedence(SyntaxType type) => type switch {
+		SyntaxType.PlusToken or
+		SyntaxType.MinusToken or
+		SyntaxType.StarToken => 4,
+
+		_ => 0
+	};
+	public static int GetBinaryOperatorPrecedence(SyntaxType type) => type switch {
+		SyntaxType.StarToken or
+		SyntaxType.SlashToken or
+		SyntaxType.PercentToken or
+		SyntaxType.LesserThanToken => 3,
+		
+		SyntaxType.PlusToken or
+		SyntaxType.MinusToken => 2,
+
+		SyntaxType.DotDotToken => 1,
+
+		_ => 0
+	};
+
 }
