@@ -154,5 +154,12 @@ public static class SyntaxRules {
 
 		_ => throw new ArgumentException($"Syntax type '{type.GetTypeSymbolOrName()}' can not be converted to a binary operator type.", nameof(type))
 	};
+	public static KeywordExpressionType? GetKeywordExpressionType(this SyntaxType type) => type switch {
+		SyntaxType.HereKeyword => KeywordExpressionType.Here,
+		SyntaxType.StartKeyword => KeywordExpressionType.Start,
+		SyntaxType.EndKeyword => KeywordExpressionType.End,
+
+		_ => null
+	};
 
 }

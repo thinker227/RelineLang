@@ -185,19 +185,15 @@ public sealed class Parser {
 		return left;
 	}
 	private IExpressionSyntax PrimaryExpression() {
-		// Here expression
-		if (viewer.CheckType(SyntaxType.HereKeyword))
-			return new HereExpressionSyntax(GetCurrentAdvance());
-		// Start expression
-		if (viewer.CheckType(SyntaxType.StartKeyword))
-			return new StartExpressionSyntax(GetCurrentAdvance());
-		// End expression
-		if (viewer.CheckType(SyntaxType.EndKeyword))
-			return new EndExpressionSyntax(GetCurrentAdvance());
-
 		// Literal expression
 		if (viewer.CheckType(SyntaxType.NumberLiteral, SyntaxType.StringLiteral))
 			return new LiteralExpressionSyntax(GetCurrentAdvance());
+
+		// Keyword expressions (here, start, end)
+		var keywordType = viewer.Current.Type.GetKeywordExpressionType();
+		if (keywordType is not null) {
+			return new KeywordExpressionSyntax(GetCurrentAdvance(), keywordType.Value);
+		}
 
 		// Grouping expression
 		if (viewer.CheckType(SyntaxType.OpenBracketToken)) {

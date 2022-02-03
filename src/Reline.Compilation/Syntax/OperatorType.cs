@@ -51,3 +51,21 @@ public enum BinaryOperatorType {
 	/// </summary>
 	Range
 }
+
+/// <summary>
+/// The type of a keyword expression.
+/// </summary>
+public enum KeywordExpressionType {
+	/// <summary>
+	/// <c>here</c> keyword.
+	/// </summary>
+	Here,
+	/// <summary>
+	/// <c>start</c> keyword.
+	/// </summary>
+	Start,
+	/// <summary>
+	/// <c>end</c> keyword.
+	/// </summary>
+	End
+}
