@@ -64,24 +64,11 @@ internal sealed class ExpressionBinder {
 	/// </summary>
 	public IExpressionSymbol BindExpression(IExpressionSyntax syntax) {
 		IExpressionSymbol symbol = syntax switch {
-			UnaryPlusExpressionSyntax s => BindUnaryPlus(s),
-			UnaryNegationExpressionSyntax s => BindUnaryNegation(s),
-			UnaryFunctionPointerExpressionSyntax s => BindUnaryFunctionPointer(s),
-			UnaryLinePointerExpressionSyntax s => BindUnaryLinePointer(s),
-
-			BinaryAdditionExpressionSyntax s => BindBinaryAddition(s),
-			BinarySubtractionExpressionSyntax s => BindBinarySubtraction(s),
-			BinaryMultiplicationExpressionSyntax s => BindBinaryMultiplication(s),
-			BinaryDivisionExpressionSyntax s => BindBinaryDivision(s),
-			BinaryModuloExpressionSyntax s => BindBinaryModulo(s),
-			BinaryConcatenationExpressionSyntax s => BindBinaryConcatenation(s),
-
-			StartExpressionSyntax s => BindStart(s),
-			EndExpressionSyntax s => BindEnd(s),
-			HereExpressionSyntax s => BindHere(s),
+			UnaryExpressionSyntax s => BindUnary(s),
+			BinaryExpressionSyntax s => BindBinary(s),
+			KeywordExpressionSyntax s => BindKeyword(s),
 
 			LiteralExpressionSyntax s => BindLiteral(s),
-			RangeExpressionSyntax s => BindRange(s),
 			IdentifierExpressionSyntax s => BindIdentifier(s),
 			FunctionInvocationExpressionSyntax s => BindFunctionInvocation(s),
 			GroupingExpressionSyntax s => BindGrouping(s),
@@ -92,52 +79,16 @@ internal sealed class ExpressionBinder {
 		return symbol;
 	}
 
-	private UnaryPlusExpressionSymbol BindUnaryPlus(UnaryPlusExpressionSyntax syntax) {
+	private UnaryExpressionSymbol BindUnary(UnaryExpressionSyntax syntax) {
 		throw new NotImplementedException();
 	}
-	private UnaryNegationExpressionSymbol BindUnaryNegation(UnaryNegationExpressionSyntax syntax) {
+	private BinaryExpressionSymbol BindBinary(BinaryExpressionSyntax syntax) {
 		throw new NotImplementedException();
 	}
-	private UnaryFunctionPointerExpressionSymbol BindUnaryFunctionPointer(UnaryFunctionPointerExpressionSyntax syntax) {
+	private KeywordExpressionSymbol BindKeyword(KeywordExpressionSyntax syntax) {
 		throw new NotImplementedException();
 	}
-	private UnaryLinePointerExpressionSymbol BindUnaryLinePointer(UnaryLinePointerExpressionSyntax syntax) {
-		throw new NotImplementedException();
-	}
-
-	private BinaryAdditionExpressionSymbol BindBinaryAddition(BinaryAdditionExpressionSyntax syntax) {
-		throw new NotImplementedException();
-	}
-	private BinarySubtractionExpressionSymbol BindBinarySubtraction(BinarySubtractionExpressionSyntax syntax) {
-		throw new NotImplementedException();
-	}
-	private BinaryMultiplicationExpressionSymbol BindBinaryMultiplication(BinaryMultiplicationExpressionSyntax syntax) {
-		throw new NotImplementedException();
-	}
-	private BinaryDivisionExpressionSymbol BindBinaryDivision(BinaryDivisionExpressionSyntax syntax) {
-		throw new NotImplementedException();
-	}
-	private BinaryModuloExpressionSymbol BindBinaryModulo(BinaryModuloExpressionSyntax syntax) {
-		throw new NotImplementedException();
-	}
-	private BinaryConcatenationExpressionSymbol BindBinaryConcatenation(BinaryConcatenationExpressionSyntax syntax) {
-		throw new NotImplementedException();
-	}
-
-	private StartExpressionSymbol BindStart(StartExpressionSyntax syntax) {
-		throw new NotImplementedException();
-	}
-	private EndExpressionSymbol BindEnd(EndExpressionSyntax syntax) {
-		throw new NotImplementedException();
-	}
-	private HereExpressionSymbol BindHere(HereExpressionSyntax syntax) {
-		throw new NotImplementedException();
-	}
-
 	private LiteralExpressionSymbol BindLiteral(LiteralExpressionSyntax syntax) {
-		throw new NotImplementedException();
-	}
-	private RangeExpressionSymbol BindRange(RangeExpressionSyntax syntax) {
 		throw new NotImplementedException();
 	}
 	private IdentifierExpressionSymbol BindIdentifier(IdentifierExpressionSyntax syntax) {
