@@ -49,7 +49,7 @@ public static class SyntaxNodeExtensions {
 				binary.Left.GetTextSpan().Start,
 				binary.Right.GetTextSpan().End),
 			KeywordExpressionSyntax keyword => keyword.Keyword.Span,
-			ITokenExpressionSyntax token => token.Token.Span,
+			LiteralExpressionSyntax literal => literal.Literal.Span,
 			GroupingExpressionSyntax grouping => new(
 				grouping.OpenBracketToken.Span.Start,
 				grouping.CloseBracketToken.Span.End),
@@ -102,7 +102,7 @@ public static class SyntaxNodeExtensions {
 				ImmutableArray.Create<ISyntaxNode>(identifier),
 
 			LabelSyntax or
-			ITokenExpressionSyntax  =>
+			LiteralExpressionSyntax  =>
 				ImmutableArray<ISyntaxNode>.Empty,
 
 			_ => throw new NotSupportedException($"Cannot retrieve children of node type {node.GetType().Name}")
