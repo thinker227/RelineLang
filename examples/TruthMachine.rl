@@ -4,6 +4,6 @@ move here+2..here+4 to (here+2)*parsed    // Moves the following three lines (no
 
 copy here+2 to here-1    // Copies "swap 4 with 7" to the previous line
 Write ("1")
-swap 4 with 7    // Swap moves the instruction pointer with it, causing a loop
+swap 4 with 7    // Swap moves the line pointer with it, causing a loop
 
 Write ("0")    // Assuming the previous three lines were moved to position 0 (not counting whitespace), otherwise this would never execute

@@ -6,7 +6,7 @@ A Reline program is made up of one or more files ending with the `.rl` extension
 ```
 
 ## Execution
-When executing a Reline program, the line currently being executed is indicated by the *line pointer*. The line pointer always starts on the first line containing a statement and moves sequentially to the next line containing a statement after executing of the current statement is finished. Lines only containing whitespace or a label are skipped by the line pointer. If a program contains only empty lines or only labels then logically the program will immediately terminate as there is no first line to execute. If a [manipulation statement](#Manipulation-statements) changes the location of the line the line pointer is currently executing, the line pointer is moved along with the line.
+When executing a Reline program, the line currently being executed is indicated by the *line pointer*. The line pointer always starts on the first line containing a statement and moves sequentially to the next line containing a statement after execution of the current statement is finished. Lines only containing whitespace or a label are skipped by the line pointer. If a program contains only empty lines or only labels then logically the program will immediately terminate as there is no first line to execute. If a [manipulation statement](#Manipulation-statements) changes the location of the line the line pointer is currently executing, the line pointer is moved along with the line.
 
 # Statements
 Each line in a file may contain a single *statement*, each of which has a different effect on the state of the program.
