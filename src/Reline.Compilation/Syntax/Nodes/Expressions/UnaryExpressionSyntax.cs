@@ -2,6 +2,5 @@
 
 public sealed record class UnaryExpressionSyntax(
 	SyntaxToken OperatorToken,
-	IExpressionSyntax Expression,
-	UnaryOperatorType OperatorType
+	IExpressionSyntax Expression
 ) : SyntaxNode, IExpressionSyntax;

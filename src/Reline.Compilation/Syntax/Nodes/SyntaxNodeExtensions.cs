@@ -42,12 +42,13 @@ public static class SyntaxNodeExtensions {
 				function.ParameterList?.GetTextSpan().End ??
 				function.Body.GetTextSpan().End),
 
-			IUnaryExpressionSyntax unary => new(
-				unary.UnaryToken.Span.Start,
+			UnaryExpressionSyntax unary => new(
+				unary.OperatorToken.Span.Start,
 				unary.Expression.GetTextSpan().End),
-			IBinaryExpressionSyntax binary => new(
+			BinaryExpressionSyntax binary => new(
 				binary.Left.GetTextSpan().Start,
 				binary.Right.GetTextSpan().End),
+			KeywordExpressionSyntax keyword => keyword.Keyword.Span,
 			ITokenExpressionSyntax token => token.Token.Span,
 			GroupingExpressionSyntax grouping => new(
 				grouping.OpenBracketToken.Span.Start,
@@ -56,9 +57,6 @@ public static class SyntaxNodeExtensions {
 				invocation.Identifier.Span.Start,
 				invocation.CloseBracketToken.Span.End),
 			IdentifierExpressionSyntax identifier => identifier.Identifier.Span,
-			UnaryLinePointerExpressionSyntax pointer => new(
-				pointer.StarToken.Span.Start,
-				pointer.CloseSquareToken.Span.End),
 
 			_ => throw new NotSupportedException($"Cannot retrieve text span of node type {node.GetType().Name}")
 		};
@@ -92,9 +90,9 @@ public static class SyntaxNodeExtensions {
 				ImmutableArray.Create<ISyntaxNode>(function.Body)
 				.AddNotNull(function.ParameterList),
 
-			IUnaryExpressionSyntax unary =>
+			UnaryExpressionSyntax unary =>
 				ImmutableArray.Create<ISyntaxNode>(unary.Expression),
-			IBinaryExpressionSyntax binary =>
+			BinaryExpressionSyntax binary =>
 				ImmutableArray.Create<ISyntaxNode>(binary.Left, binary.Right),
 			GroupingExpressionSyntax grouping =>
 				ImmutableArray.Create<ISyntaxNode>(grouping.Expression),
@@ -102,8 +100,6 @@ public static class SyntaxNodeExtensions {
 				invocation.Arguments.As<ISyntaxNode>(),
 			IdentifierExpressionSyntax identifier =>
 				ImmutableArray.Create<ISyntaxNode>(identifier),
-			UnaryLinePointerExpressionSyntax pointer =>
-				ImmutableArray.Create<ISyntaxNode>(pointer.Expression),
 
 			LabelSyntax or
 			ITokenExpressionSyntax  =>

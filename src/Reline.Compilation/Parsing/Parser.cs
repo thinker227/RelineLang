@@ -167,8 +167,7 @@ public sealed class Parser {
 		if (unaryPrecedence != 0 && unaryPrecedence >= parentPrecedence) {
 			var operatorToken = GetCurrentAdvance();
 			var operand = Expression(unaryPrecedence);
-			var unaryType = operatorToken.Type.GetUnaryOperatorType();
-			left = new UnaryExpressionSyntax(operatorToken, operand, unaryType);
+			left = new UnaryExpressionSyntax(operatorToken, operand);
 		}
 		else left = PrimaryExpression();
 		
@@ -178,8 +177,7 @@ public sealed class Parser {
 
 			var operatorToken = GetCurrentAdvance();
 			var right = Expression(binaryPrecedence);
-			var binaryType = operatorToken.Type.GetBinaryOperatorType();
-			left = new BinaryExpressionSyntax(left, operatorToken, right, binaryType);
+			left = new BinaryExpressionSyntax(left, operatorToken, right);
 		}
 
 		return left;
@@ -190,10 +188,8 @@ public sealed class Parser {
 			return new LiteralExpressionSyntax(GetCurrentAdvance());
 
 		// Keyword expressions (here, start, end)
-		var keywordType = viewer.Current.Type.GetKeywordExpressionType();
-		if (keywordType is not null) {
-			return new KeywordExpressionSyntax(GetCurrentAdvance(), keywordType.Value);
-		}
+		if (viewer.CheckType(SyntaxType.HereKeyword, SyntaxType.StartKeyword, SyntaxType.EndKeyword))
+			return new KeywordExpressionSyntax(GetCurrentAdvance());
 
 		// Grouping expression
 		if (viewer.CheckType(SyntaxType.OpenBracketToken)) {

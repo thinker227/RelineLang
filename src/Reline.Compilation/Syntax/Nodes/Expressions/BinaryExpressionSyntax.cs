@@ -3,6 +3,5 @@
 public sealed record class BinaryExpressionSyntax(
 	IExpressionSyntax Left,
 	SyntaxToken OperatorToken,
-	IExpressionSyntax Right,
-	BinaryOperatorType OperatorType
+	IExpressionSyntax Right
 ) : SyntaxNode, IExpressionSyntax;
