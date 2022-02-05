@@ -2,6 +2,7 @@
 using Reline.Compilation.Symbols;
 using VType = Reline.Compilation.Symbols.ValueType;
 using Reline.Compilation.Diagnostics;
+using Reline.Compilation.Binding.Nodes;
 
 namespace Reline.Compilation.Binding;
 
@@ -139,7 +140,40 @@ internal sealed class ExpressionBinder {
 		throw new NotImplementedException();
 	}
 	private IdentifierExpressionSymbol BindIdentifier(IdentifierExpressionSyntax syntax) {
-		throw new NotImplementedException();
+		string identifier = syntax.Identifier.Text;
+		var symbol = CreateSymbol<IdentifierExpressionSymbol>(syntax);
+
+		// Try bind labels immediately if labels are treated as constant
+		if (LabelsAsConstant) {
+			var labelSymbol = binder.labelBinder.GetSymbol(syntax.Identifier.Text);
+			if (labelSymbol is not null) {
+				symbol.Identifier = labelSymbol;
+				return symbol;
+			}
+		}
+
+		if (OnlyConstants) {
+			AddDiagnostic(symbol, DiagnosticLevel.Error, "Labels, variables, parameters and functions may not be used in this context.");
+			// BAD. No idea how to handle this case. What do you return?
+			return symbol;
+		}
+
+		var identifierSymbol = binder.GetIdentifier(identifier);
+		switch (identifierSymbol) {
+			case null:
+				AddDiagnostic(symbol, DiagnosticLevel.Error, $"Label, variable, parameter or function '{identifier}' is not declared.");
+				symbol.Identifier = new MissingIdentifierSymbol { Identifier = identifier };
+				break;
+			case FunctionSymbol:
+				AddDiagnostic(symbol, DiagnosticLevel.Error, "Functions may only be used in function pointers or function invocations. Did you intend to invoke or point to it?");
+				// How to deal with functions being invalid as stand-alone identifiers?
+				goto default;
+			default:
+				symbol.Identifier = identifierSymbol;
+				break;
+		}
+
+		return symbol;
 	}
 	private FunctionInvocationExpressionSymbol BindFunctionInvocation(FunctionInvocationExpressionSyntax syntax) {
 		throw new NotImplementedException();

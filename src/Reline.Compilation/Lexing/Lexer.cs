@@ -106,8 +106,9 @@ public sealed class Lexer {
 				}
 				return CreateToken(SyntaxType.DotToken);
 			case '/':
-				return viewer.Next == '/' ?
-					GetComment() : CreateToken(SyntaxType.SlashToken);
+				if (viewer.Next == '/') return GetComment();
+				viewer.Advance();
+				return CreateToken(SyntaxType.SlashToken);
 		};
 
 		return null;
