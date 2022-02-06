@@ -158,111 +158,45 @@ public sealed class Parser {
 	#endregion
 
 	#region Expressions
-	private IExpressionSyntax Expression() =>
-		SyntaxRules.CanBeginExpression(viewer.Current.Type) ?
-		Range() : CreateInvalidExpressionTerm();
-	private IExpressionSyntax Range() {
-		var expression = Additive();
+	// Praise Immo Landwerth
+	// https://www.youtube.com/watch?v=3XM9vUGduhk&list=PLRAdsfhKI4OWNOSfS7EUu5GRAVmze1t2y&index=2
+	private IExpressionSyntax Expression(int parentPrecedence = 0) {
+		IExpressionSyntax left;
 
-		// Range expression
-		if (viewer.CheckType(SyntaxType.DotDotToken)) {
-			var dotDotToken = GetCurrentAdvance();
-			var right = Additive();
-			return new RangeExpressionSyntax(expression, dotDotToken, right);
+		int unaryPrecedence = viewer.Current.Type.GetUnaryOperatorPrecedence();
+		if (unaryPrecedence != 0 && unaryPrecedence >= parentPrecedence) {
+			var operatorToken = GetCurrentAdvance();
+			var operand = Expression(unaryPrecedence);
+			left = new UnaryExpressionSyntax(operatorToken, operand);
+		}
+		else left = PrimaryExpression();
+		
+		while (true) {
+			int binaryPrecedence = viewer.Current.Type.GetBinaryOperatorPrecedence();
+			if (binaryPrecedence == 0 || binaryPrecedence <= parentPrecedence) break;
+
+			var operatorToken = GetCurrentAdvance();
+			var right = Expression(binaryPrecedence);
+			left = new BinaryExpressionSyntax(left, operatorToken, right);
 		}
 
-		return expression;
+		return left;
 	}
-	private IExpressionSyntax Additive() {
-		var expression = Multiplicative();
-
-		// Binary addition expression
-		if (viewer.CheckType(SyntaxType.PlusToken)) {
-			var plusToken = GetCurrentAdvance();
-			var right = Multiplicative();
-			return new BinaryAdditionExpressionSyntax(expression, plusToken, right);
-		}
-		// Binary subtraction expression
-		if (viewer.CheckType(SyntaxType.MinusToken)) {
-			var minusToken = GetCurrentAdvance();
-			var right = Multiplicative();
-			return new BinarySubtractionExpressionSyntax(expression, minusToken, right);
-		}
-
-		return expression;
-	}
-	private IExpressionSyntax Multiplicative() {
-		var expression = Unary();
-
-		// Binary multiplication expression
-		if (viewer.CheckType(SyntaxType.StarToken)) {
-			var starToken = GetCurrentAdvance();
-			var right = Unary();
-			return new BinaryMultiplicationExpressionSyntax(expression, starToken, right);
-		}
-		// Binary division expression
-		if (viewer.CheckType(SyntaxType.SlashToken)) {
-			var slashToken = GetCurrentAdvance();
-			var right = Unary();
-			return new BinaryDivisionExpressionSyntax(expression, slashToken, right);
-		}
-		// Binary modulo expression
-		if (viewer.CheckType(SyntaxType.PercentToken)) {
-			var percentToken = GetCurrentAdvance();
-			var right = Unary();
-			return new BinaryModuloExpressionSyntax(expression, percentToken, right);
-		}
-		// Binary concatenation expression
-		if (viewer.CheckType(SyntaxType.LesserThanToken)) {
-			var lessThanToken = GetCurrentAdvance();
-			var right = Unary();
-			return new BinaryConcatenationExpressionSyntax(expression, lessThanToken, right);
-		}
-
-		return expression;
-	}
-	private IExpressionSyntax Unary() {
-		if (viewer.CheckType(SyntaxType.PlusToken, SyntaxType.MinusToken, SyntaxType.StarToken)) {
-			var op = GetCurrentAdvance();
-
-			// Unary addition expression
-			if (op.Type == SyntaxType.PlusToken)
-				return new UnaryPlusExpressionSyntax(op, Primary());
-			// Unary negation expression
-			if (op.Type == SyntaxType.MinusToken)
-				return new UnaryNegationExpressionSyntax(op, Primary());
-			// Some kind of function pointer expression
-			if (op.Type == SyntaxType.StarToken) {
-				// Unary line pointer expression
-				if (viewer.CheckType(SyntaxType.OpenSquareToken)) {
-					var openSquareToken = GetCurrentAdvance();
-					var expression = Primary();
-					var closeSquareToken = GetCurrentAdvance();
-					return new UnaryLinePointerExpressionSyntax(op, openSquareToken, expression, closeSquareToken);
-				}
-
-				// Unary line pointer expression
-				var identifier = ((IdentifierExpressionSyntax)Primary()).Identifier;
-				return new UnaryFunctionPointerExpressionSyntax(op, new(identifier));
-			}
-		}
-
-		return Primary();
-	}
-	private IExpressionSyntax Primary() {
-		// Here expression
-		if (viewer.CheckType(SyntaxType.HereKeyword))
-			return new HereExpressionSyntax(GetCurrentAdvance());
-		// Start expression
-		if (viewer.CheckType(SyntaxType.StartKeyword))
-			return new StartExpressionSyntax(GetCurrentAdvance());
-		// End expression
-		if (viewer.CheckType(SyntaxType.EndKeyword))
-			return new EndExpressionSyntax(GetCurrentAdvance());
-
+	private IExpressionSyntax PrimaryExpression() {
 		// Literal expression
 		if (viewer.CheckType(SyntaxType.NumberLiteral, SyntaxType.StringLiteral))
 			return new LiteralExpressionSyntax(GetCurrentAdvance());
+
+		// Keyword expressions (here, start, end)
+		if (viewer.CheckType(SyntaxType.HereKeyword, SyntaxType.StartKeyword, SyntaxType.EndKeyword))
+			return new KeywordExpressionSyntax(GetCurrentAdvance());
+
+		// Line pointer expression
+		if (viewer.CheckType(SyntaxType.StarToken)) {
+			var starToken = GetCurrentAdvance();
+			var identifier = Expect(SyntaxType.Identifier);
+			return new LinePointerExpressionSyntax(starToken, identifier);
+		}
 
 		// Grouping expression
 		if (viewer.CheckType(SyntaxType.OpenBracketToken)) {

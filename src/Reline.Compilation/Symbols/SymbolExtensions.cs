@@ -14,21 +14,12 @@ public static class SymbolExtensions {
 	/// <param name="expression">The expression to get the type of.</param>
 	/// <returns>The <see cref="ValueType"/> of <paramref name="expression"/>.</returns>
 	public static ValueType GetValueType(this IExpressionSymbol expression) => expression switch {
-		RangeExpressionSymbol => ValueType.Range,
-		LiteralExpressionSymbol s => (ValueType)s.Literal.Type,
-		GroupingExpressionSymbol s => s.Expression.GetValueType(),
-		FunctionInvocationExpressionSymbol or IdentifierExpressionSymbol => ValueType.Mixed,
-
-		UnaryPlusExpressionSymbol s => s.Expression.GetValueType(),
-		UnaryNegationExpressionSymbol s => s.Expression.GetValueType(),
-		UnaryFunctionPointerExpressionSymbol => ValueType.Range,
-		UnaryLinePointerExpressionSymbol => ValueType.Range,
-
+		UnaryExpressionSymbol s => s.Expression.GetValueType(),
 		BinaryExpressionSymbol s => Union(s),
+		KeywordExpressionSymbol => ValueType.Range,
 
-		StartExpressionSymbol or
-		EndExpressionSymbol or
-		HereExpressionSymbol => ValueType.Range,
+		LiteralExpressionSymbol s => (ValueType)s.Literal.Type,
+		FunctionInvocationExpressionSymbol or IdentifierExpressionSymbol => ValueType.Mixed,
 
 		_ => ValueType.None
 	};
