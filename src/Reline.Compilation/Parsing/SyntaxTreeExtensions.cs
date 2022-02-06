@@ -12,11 +12,5 @@ internal static class SyntaxTreeExtensions {
 				yield return s;
 		}
 	}
-	public static IEnumerable<LabelSyntax> GetLabels(this SyntaxTree tree) {
-		foreach (var line in tree.Root.Lines) {
-			if (line.Label is not null)
-				yield return line.Label;
-		}
-	}
 
 }
