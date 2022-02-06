@@ -11,7 +11,6 @@ public interface IExpressionVisitor<out T> {
 	T VisitKeyword(KeywordExpressionSymbol symbol);
 
 	T VisitLiteral(LiteralExpressionSymbol symbol);
-	T VisitGrouping(GroupingExpressionSymbol symbol);
 	T VisitFunctionInvocation(FunctionInvocationExpressionSymbol symbol);
 	T VisitVariable(IdentifierExpressionSymbol symbol);
 

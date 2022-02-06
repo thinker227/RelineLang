@@ -71,7 +71,6 @@ internal sealed class ExpressionBinder {
 			LiteralExpressionSyntax s => BindLiteral(s),
 			IdentifierExpressionSyntax s => BindIdentifier(s),
 			FunctionInvocationExpressionSyntax s => BindFunctionInvocation(s),
-			GroupingExpressionSyntax s => BindGrouping(s),
 
 			_ => throw new InvalidOperationException()
 		};
@@ -129,11 +128,6 @@ internal sealed class ExpressionBinder {
 	}
 	private FunctionInvocationExpressionSymbol BindFunctionInvocation(FunctionInvocationExpressionSyntax syntax) {
 		throw new NotImplementedException();
-	}
-	private GroupingExpressionSymbol BindGrouping(GroupingExpressionSyntax syntax) {
-		var symbol = CreateSymbol<GroupingExpressionSymbol>(syntax);
-		symbol.Expression = BindExpression(syntax.Expression);
-		return symbol;
 	}
 
 	private TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() =>

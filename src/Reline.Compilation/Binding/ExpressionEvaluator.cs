@@ -48,8 +48,6 @@ internal sealed class ConstantExpressionEvaluator : IExpressionVisitor<LiteralVa
 	public LiteralValue VisitLiteral(LiteralExpressionSymbol symbol) =>
 		symbol.Literal.Type != LiteralType.None ?
 		symbol.Literal : throw new CompilationException("Cannot evaluate invalid literal.");
-	public LiteralValue VisitGrouping(GroupingExpressionSymbol symbol) =>
-		symbol.Expression.Accept(this);
 	// Could work with native functions with compile-time implementation
 	public LiteralValue VisitFunctionInvocation(FunctionInvocationExpressionSymbol symbol) =>
 		throw new CompilationException("Cannot evaluate function invocation.");

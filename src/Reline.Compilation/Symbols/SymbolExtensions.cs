@@ -19,7 +19,6 @@ public static class SymbolExtensions {
 		KeywordExpressionSymbol => ValueType.Range,
 
 		LiteralExpressionSymbol s => (ValueType)s.Literal.Type,
-		GroupingExpressionSymbol s => s.Expression.GetValueType(),
 		FunctionInvocationExpressionSymbol or IdentifierExpressionSymbol => ValueType.Mixed,
 
 		_ => ValueType.None
