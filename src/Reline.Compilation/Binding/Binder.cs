@@ -40,10 +40,10 @@ public sealed partial class Binder {
 	/// <param name="tree">The syntax tree to bind.</param>
 	/// <returns>An <see cref="IOperationResult{T}"/>
 	/// containing the bound <see cref="SymbolTree"/>.</returns>
-	public static IOperationResult<SymbolTree> BindTree(SyntaxTree tree) {
+	public static SymbolTree BindTree(SyntaxTree tree) {
 		Binder symbolCompiler = new(tree);
 		var result = symbolCompiler.BindTree();
-		return new SymbolCompilationResult(ImmutableArray<Diagnostic>.Empty, result);
+		return result;
 	}
 	/// <summary>
 	/// Binds a <see cref="SyntaxTree"/> into a <see cref="SymbolTree"/>.
@@ -53,7 +53,7 @@ public sealed partial class Binder {
 		BindVariablesFromAssignments();
 		BindFunctionsFromTree();
 		var program = BindProgram(tree.Root);
-		return new(program);
+		return new(program, diagnostics.ToImmutableArray());
 	}
 
 	/// <summary>

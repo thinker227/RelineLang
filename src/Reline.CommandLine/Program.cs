@@ -10,11 +10,8 @@ var path = args[0];
 if (!File.Exists(path)) return;
 var text = File.ReadAllText(path);
 
-var lexResult = Lexer.LexSource(text);
-if (lexResult.HasErrors()) return;
+var parseResult = Parser.ParseString(text);
 
-var parseResult = Parser.ParseTokens(lexResult);
-
-var bindResult = Binder.BindTree(parseResult.Result);
+var bindResult = Binder.BindTree(parseResult);
 
 Console.ReadLine();

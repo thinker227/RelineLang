@@ -1,11 +1,11 @@
-﻿using Reline.Compilation.Syntax;
+﻿using System.Collections;
+using Reline.Compilation.Syntax;
 using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Parsing;
 
-
-internal sealed class ParserDiagnosticMap {
+internal sealed class ParserDiagnosticMap : IEnumerable<Diagnostic> {
 
 	private readonly Dictionary<SyntaxToken, List<Diagnostic>> tokenMap;
 	private readonly Dictionary<ISyntaxNode, List<Diagnostic>> nodeMap;
@@ -38,7 +38,7 @@ internal sealed class ParserDiagnosticMap {
 		nodeMap.Add(node, newList);
 	}
 
-	public IEnumerable<Diagnostic> GetDiagnostics() {
+	public IEnumerator<Diagnostic> GetEnumerator() {
 		foreach (var list in tokenMap.Values)
 			foreach (var d in list)
 				yield return d;
@@ -46,5 +46,6 @@ internal sealed class ParserDiagnosticMap {
 			foreach (var d in list)
 				yield return d;
 	}
+	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 }

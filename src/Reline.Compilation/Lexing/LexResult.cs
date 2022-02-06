@@ -11,9 +11,4 @@ namespace Reline.Compilation.Lexing;
 public readonly record struct LexResult(
 	ImmutableArray<SyntaxToken> Tokens,
 	ImmutableArray<Diagnostic> Diagnostics
-) : IOperationResult<ImmutableArray<SyntaxToken>> {
-
-	ImmutableArray<SyntaxToken> IOperationResult<ImmutableArray<SyntaxToken>>.Result =>
-		Tokens;
-
-}
+);

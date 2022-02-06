@@ -29,8 +29,9 @@ public sealed class Lexer {
 	/// Lexes a source string and returns a collection of syntax tokens.
 	/// </summary>
 	/// <param name="source">The source string.</param>
-	/// <returns>An <see cref="IOperationResult{T}"/> of syntax tokens.</returns>
-	public static IOperationResult<ImmutableArray<SyntaxToken>> LexSource(string source) {
+	/// <returns>A <see cref="LexResult"/> containing
+	/// the lexed tokens and resulting diagnostics..</returns>
+	public static LexResult LexSource(string source) {
 		Lexer lexer = new(source);
 		var tokens = lexer.LexAll();
 		var diagnostics = lexer.diagnostics.ToImmutableArray();

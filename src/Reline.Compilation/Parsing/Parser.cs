@@ -1,4 +1,5 @@
-﻿using Reline.Compilation.Syntax;
+﻿using Reline.Compilation.Lexing;
+using Reline.Compilation.Syntax;
 using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Diagnostics;
 
@@ -23,17 +24,13 @@ public sealed class Parser {
 
 
 
-	public static IOperationResult<SyntaxTree> ParseTokens(IOperationResult<ImmutableArray<SyntaxToken>> tokens) {
-		if (tokens.HasErrors()) throw new CompilationException("Cannot parse invalid tokens.");
+	public static SyntaxTree ParseString(string source) {
+		var tokens = Lexer.LexSource(source);
 
-		Parser parser = new(tokens.Result);
-		var result = parser.ParseAll();
-		return new ParseResult(ImmutableArray.Create<Diagnostic>(), result);
-	}
-	private SyntaxTree ParseAll() {
-		var program = Program();
+		Parser parser = new(tokens.Tokens);
+		var root = parser.Program();
 
-		return new(program);
+		return new(root, parser.diagnostics.ToImmutableArray());
 	}
 
 	private ProgramSyntax Program() {

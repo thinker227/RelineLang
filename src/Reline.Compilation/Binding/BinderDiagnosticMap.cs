@@ -1,4 +1,5 @@
-﻿using Reline.Compilation.Symbols;
+﻿using System.Collections;
+using Reline.Compilation.Symbols;
 using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Binding;
@@ -6,7 +7,7 @@ namespace Reline.Compilation.Binding;
 /// <summary>
 /// Maps diagnostics to symbols.
 /// </summary>
-internal sealed class BinderDiagnosticMap {
+internal sealed class BinderDiagnosticMap : IEnumerable<Diagnostic> {
 
 	private readonly Dictionary<ISymbol, List<Diagnostic>> diagnostics;
 
@@ -48,10 +49,11 @@ internal sealed class BinderDiagnosticMap {
 	/// Gets the diagnostics of every symbol in the map.
 	/// </summary>
 	/// <returns>The diagnostics of every symbol in the map..</returns>
-	public IEnumerable<Diagnostic> GetDiagnostics() {
+	public IEnumerator<Diagnostic> GetEnumerator() {
 		foreach (var list in diagnostics.Values)
 			foreach (var d in list)
 				yield return d;
 	}
+	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 }
