@@ -195,7 +195,7 @@ public sealed class Parser {
 		if (viewer.CheckType(SyntaxType.StarToken)) {
 			var starToken = GetCurrentAdvance();
 			var identifier = Expect(SyntaxType.Identifier);
-			return new LinePointerExpressionSyntax(starToken, identifier);
+			return new FunctionPointerExpressionSyntax(starToken, identifier);
 		}
 
 		// Grouping expression
