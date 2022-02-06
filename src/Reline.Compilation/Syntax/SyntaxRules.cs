@@ -135,29 +135,5 @@ public static class SyntaxRules {
 
 		_ => 0
 	};
-	public static UnaryOperatorType GetUnaryOperatorType(this SyntaxType type) => type switch {
-		SyntaxType.PlusToken => UnaryOperatorType.Identity,
-		SyntaxType.MinusToken => UnaryOperatorType.Negation,
-
-		_ => throw new ArgumentException($"Syntax type '{type.GetTypeSymbolOrName()}' can not be converted to a unary operator type.", nameof(type))
-	};
-	public static BinaryOperatorType GetBinaryOperatorType(this SyntaxType type) => type switch {
-		SyntaxType.PlusToken => BinaryOperatorType.Addition,
-		SyntaxType.MinusToken => BinaryOperatorType.Subtraction,
-		SyntaxType.StarToken => BinaryOperatorType.Multiplication,
-		SyntaxType.SlashToken => BinaryOperatorType.Division,
-		SyntaxType.PercentToken => BinaryOperatorType.Modulo,
-		SyntaxType.LesserThanToken => BinaryOperatorType.Concatenation,
-		SyntaxType.DotDotToken => BinaryOperatorType.Range,
-
-		_ => throw new ArgumentException($"Syntax type '{type.GetTypeSymbolOrName()}' can not be converted to a binary operator type.", nameof(type))
-	};
-	public static KeywordExpressionType? GetKeywordExpressionType(this SyntaxType type) => type switch {
-		SyntaxType.HereKeyword => KeywordExpressionType.Here,
-		SyntaxType.StartKeyword => KeywordExpressionType.Start,
-		SyntaxType.EndKeyword => KeywordExpressionType.End,
-
-		_ => null
-	};
 
 }

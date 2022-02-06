@@ -1,8 +1,8 @@
-﻿using Reline.Compilation.Syntax.Nodes;
+﻿using Reline.Compilation.Syntax;
+using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Symbols;
 using VType = Reline.Compilation.Symbols.ValueType;
 using Reline.Compilation.Diagnostics;
-using Reline.Compilation.Binding.Nodes;
 
 namespace Reline.Compilation.Binding;
 
@@ -26,7 +26,7 @@ partial class Binder {
 
 		if (type != VType.Any && !type.HasFlag(expression.GetValueType())) {
 			// Implement better diagnostic later
-			AddDiagnostic(expression, Diagnostics.DiagnosticLevel.Error, "Unexpected type");
+			AddDiagnostic(expression, DiagnosticLevel.Error, "Unexpected type");
 		}
 
 		return expression;
@@ -42,7 +42,6 @@ internal sealed class ExpressionBinder {
 	private readonly ExpressionBindingFlags flags;
 	private readonly Binder binder;
 
-	private bool None => flags.HasFlag(ExpressionBindingFlags.None);
 	private bool NoVariables => flags.HasFlag(ExpressionBindingFlags.NoVariables);
 	private bool NoFunctions => flags.HasFlag(ExpressionBindingFlags.NoFunctions);
 	private bool LabelsAsConstant => flags.HasFlag(ExpressionBindingFlags.LabelsAsConstant);
@@ -69,8 +68,10 @@ internal sealed class ExpressionBinder {
 			KeywordExpressionSyntax s => BindKeyword(s),
 
 			LiteralExpressionSyntax s => BindLiteral(s),
+			GroupingExpressionSyntax s => BindGrouping(s),
 			IdentifierExpressionSyntax s => BindIdentifier(s),
 			FunctionInvocationExpressionSyntax s => BindFunctionInvocation(s),
+			FunctionPointerExpressionSyntax s => BindFunctionPointer(s),
 
 			_ => throw new InvalidOperationException()
 		};
@@ -79,57 +80,166 @@ internal sealed class ExpressionBinder {
 	}
 
 	private UnaryExpressionSymbol BindUnary(UnaryExpressionSyntax syntax) {
-		throw new NotImplementedException();
+		var symbol = CreateSymbol<UnaryExpressionSymbol>(syntax);
+		symbol.OperatorType = BindUnaryOperator(syntax.OperatorToken.Type);
+		symbol.Expression = BindExpression(syntax.Expression);
+		return symbol;
 	}
 	private BinaryExpressionSymbol BindBinary(BinaryExpressionSyntax syntax) {
-		throw new NotImplementedException();
+		var symbol = CreateSymbol<BinaryExpressionSymbol>(syntax);
+		symbol.OperatorType = BindBinaryOperator(syntax.OperatorToken.Type);
+		symbol.Left = BindExpression(syntax.Left);
+		symbol.Right = BindExpression(syntax.Right);
+		return symbol;
 	}
 	private KeywordExpressionSymbol BindKeyword(KeywordExpressionSyntax syntax) {
-		throw new NotImplementedException();
+		var symbol = CreateSymbol<KeywordExpressionSymbol>(syntax);
+		symbol.KeywordType = BindKeywordType(syntax.Keyword.Type);
+		return symbol;
 	}
 	private LiteralExpressionSymbol BindLiteral(LiteralExpressionSyntax syntax) {
-		throw new NotImplementedException();
+		var symbol = CreateSymbol<LiteralExpressionSymbol>(syntax);
+		symbol.Literal = BindLiteralValue(syntax.Literal.Literal ?? 0);
+		return symbol;
 	}
-	private IdentifierExpressionSymbol BindIdentifier(IdentifierExpressionSyntax syntax) {
+	private IExpressionSymbol BindGrouping(GroupingExpressionSyntax syntax) {
+		return BindExpression(syntax.Expression);
+	}
+	private IExpressionSymbol BindIdentifier(IdentifierExpressionSyntax syntax) {
+		if (syntax.Identifier.IsMissing) {
+			return BadExpression(syntax);
+		}
+
 		string identifier = syntax.Identifier.Text;
-		var symbol = CreateSymbol<IdentifierExpressionSymbol>(syntax);
 
 		// Try bind labels immediately if labels are treated as constant
 		if (LabelsAsConstant) {
 			var labelSymbol = binder.labelBinder.GetSymbol(syntax.Identifier.Text);
 			if (labelSymbol is not null) {
-				symbol.Identifier = labelSymbol;
-				return symbol;
+				var labelIdentifierSymbol = CreateSymbol<IdentifierExpressionSymbol>(syntax);
+				labelIdentifierSymbol.Identifier = labelSymbol;
+				return labelIdentifierSymbol;
 			}
 		}
 
 		if (OnlyConstants) {
-			AddDiagnostic(symbol, DiagnosticLevel.Error, "Labels, variables, parameters and functions may not be used in this context.");
-			// BAD. No idea how to handle this case. What do you return?
-			return symbol;
+			// Return a bad expression if non-constants are not allowed
+			return BadExpression(syntax, "Labels, variables, parameters and functions may not be used in this context.");
 		}
 
 		var identifierSymbol = binder.GetIdentifier(identifier);
+
 		switch (identifierSymbol) {
 			case null:
-				AddDiagnostic(symbol, DiagnosticLevel.Error, $"Label, variable, parameter or function '{identifier}' is not declared.");
-				symbol.Identifier = new MissingIdentifierSymbol { Identifier = identifier };
-				break;
+				return BadExpression(syntax, $"Label, variable, parameter or function '{identifier}' is not declared.");
+
 			case FunctionSymbol:
-				AddDiagnostic(symbol, DiagnosticLevel.Error, "Functions may only be used in function pointers or function invocations. Did you intend to invoke or point to it?");
-				// How to deal with functions being invalid as stand-alone identifiers?
-				goto default;
-			default:
-				symbol.Identifier = identifierSymbol;
-				break;
+				return BadExpression(syntax, "Functions may only be used in function pointers or function invocations. Did you intend to invoke or point to it?");
 		}
 
+		var symbol = CreateSymbol<IdentifierExpressionSymbol>(syntax);
+		symbol.Identifier = identifierSymbol;
 		return symbol;
 	}
-	private FunctionInvocationExpressionSymbol BindFunctionInvocation(FunctionInvocationExpressionSyntax syntax) {
-		throw new NotImplementedException();
+	private IExpressionSymbol BindFunctionInvocation(FunctionInvocationExpressionSyntax syntax) {
+		if (NoFunctions) {
+			// Return a bad expression if non-constants are not allowed
+			return BadExpression(syntax, "Functions may not be used in this context.");
+		}
+
+		if (syntax.Identifier.IsMissing) {
+			return BadExpression(syntax);
+		}
+
+		string identifier = syntax.Identifier.Text;
+		var identifierSymbol = binder.GetIdentifier(identifier);
+
+		switch (identifierSymbol) {
+			case null:
+				return BadExpression(syntax, $"Function '{identifier}' is not declared.");
+
+			case not FunctionSymbol:
+				return BadExpression(syntax, $"Cannot invoke label, variable or parameter '{identifier}'.");
+		}
+
+		var symbol = CreateSymbol<FunctionInvocationExpressionSymbol>(syntax);
+		symbol.Function = (FunctionSymbol)identifierSymbol;
+		foreach (var argument in syntax.Arguments)
+			symbol.Arguments.Add(BindExpression(argument));
+		return symbol;
+	}
+	private IExpressionSymbol BindFunctionPointer(FunctionPointerExpressionSyntax syntax) {
+		// Function pointers are constant since function ranges are constant,
+		// but whether they're valid or not depends on the context of the
+		// expression itself and whether the context is the range of the
+		// function being pointed to, a circular reference.
+		// Resolving this would require additionally passing the context of
+		// the expression being bound to the expression binder,
+		// so as of now, function pointer expressions are not constant.
+
+		if (OnlyConstants) {
+			return BadExpression(syntax, "Function pointers may not be used in this context.");
+		}
+
+		if (syntax.Identifier.IsMissing) {
+			return BadExpression(syntax);
+		}
+
+		string identifier = syntax.Identifier.Text;
+		var identifierSymbol = binder.GetIdentifier(identifier);
+
+		switch (identifierSymbol) {
+			case null:
+				return BadExpression(syntax, $"Function '{identifier}' is not declared.");
+
+			case not FunctionSymbol:
+				return BadExpression(syntax, $"Cannot point to label, variable or parameter '{identifier}'.");
+		}
+
+		var symbol = CreateSymbol<FunctionPointerExpressionSymbol>(syntax);
+		symbol.Function = (FunctionSymbol)identifierSymbol;
+		return symbol;
 	}
 
+	private static UnaryOperatorType BindUnaryOperator(SyntaxType syntaxType) => syntaxType switch {
+		SyntaxType.PlusToken => UnaryOperatorType.Identity,
+		SyntaxType.MinusToken => UnaryOperatorType.Negation,
+
+		_ => throw new ArgumentException($"Syntax type '{syntaxType.GetTypeSymbolOrName()}' can not be converted to a unary operator type.", nameof(syntaxType))
+	};
+	private static BinaryOperatorType BindBinaryOperator(SyntaxType syntaxType) => syntaxType switch {
+		SyntaxType.PlusToken => BinaryOperatorType.Addition,
+		SyntaxType.MinusToken => BinaryOperatorType.Subtraction,
+		SyntaxType.StarToken => BinaryOperatorType.Multiplication,
+		SyntaxType.SlashToken => BinaryOperatorType.Division,
+		SyntaxType.PercentToken => BinaryOperatorType.Modulo,
+		SyntaxType.LesserThanToken => BinaryOperatorType.Concatenation,
+		SyntaxType.DotDotToken => BinaryOperatorType.Range,
+
+		_ => throw new ArgumentException($"Syntax type '{syntaxType.GetTypeSymbolOrName()}' can not be converted to a binary operator type.", nameof(syntaxType))
+	};
+	private static KeywordExpressionType BindKeywordType(SyntaxType syntaxType) => syntaxType switch {
+		SyntaxType.HereKeyword => KeywordExpressionType.Here,
+		SyntaxType.StartKeyword => KeywordExpressionType.Start,
+		SyntaxType.EndKeyword => KeywordExpressionType.End,
+
+		_ => throw new ArgumentException($"Syntax type '{syntaxType.GetTypeSymbolOrName()}' can not be converted to a keyword type.", nameof(syntaxType))
+	};
+	private static LiteralValue BindLiteralValue(object value) => value switch {
+		int i => new(i),
+		string s => new(s),
+		RangeLiteral range => new(range),
+
+		_ => throw new CompilationException("Unknown literal type."),
+	};
+
+	private BadExpressionSymbol BadExpression(ISyntaxNode syntax, string diagnosticDescription) {
+		var symbol = CreateSymbol<BadExpressionSymbol>(syntax);
+		AddDiagnostic(symbol, DiagnosticLevel.Error, diagnosticDescription);
+		return symbol;
+	}
+	private BadExpressionSymbol BadExpression(ISyntaxNode syntax) =>
+		CreateSymbol<BadExpressionSymbol>(syntax);
 	private TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() =>
 		binder.CreateSymbol<TSymbol>(syntax);
 	private void AddDiagnostic(ISymbol symbol, DiagnosticLevel level, string description) =>

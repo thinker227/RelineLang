@@ -1,4 +1,4 @@
-﻿using Reline.Compilation.Syntax;
+﻿using Reline.Compilation.Binding;
 
 namespace Reline.Compilation.Symbols;
 

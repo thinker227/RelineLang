@@ -1,4 +1,4 @@
-﻿namespace Reline.Compilation.Syntax;
+﻿namespace Reline.Compilation.Binding;
 
 /// <summary>
 /// The type of a unary operator.
