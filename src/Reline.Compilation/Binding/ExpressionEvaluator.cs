@@ -44,13 +44,15 @@ internal sealed class ConstantExpressionEvaluator : IExpressionVisitor<LiteralVa
 	public LiteralValue VisitKeyword(KeywordExpressionSymbol symbol) {
 		throw new NotImplementedException();
 	}
-
 	public LiteralValue VisitLiteral(LiteralExpressionSymbol symbol) =>
 		symbol.Literal.Type != LiteralType.None ?
 		symbol.Literal : throw new CompilationException("Cannot evaluate invalid literal.");
 	// Could work with native functions with compile-time implementation
 	public LiteralValue VisitFunctionInvocation(FunctionInvocationExpressionSymbol symbol) =>
 		throw new CompilationException("Cannot evaluate function invocation.");
+	public LiteralValue VisitFunctionPointer(FunctionPointerExpressionSymbol symbol) {
+		throw new NotImplementedException();
+	}
 	// Could work if constant variables are implemented
 	public LiteralValue VisitVariable(IdentifierExpressionSymbol symbol) =>
 		throw new CompilationException("Cannot evaluate variable.");

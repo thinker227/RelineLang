@@ -118,8 +118,7 @@ public static class SyntaxRules {
 
 	public static int GetUnaryOperatorPrecedence(this SyntaxType type) => type switch {
 		SyntaxType.PlusToken or
-		SyntaxType.MinusToken or
-		SyntaxType.StarToken => 4,
+		SyntaxType.MinusToken => 4,
 
 		_ => 0
 	};
@@ -139,7 +138,6 @@ public static class SyntaxRules {
 	public static UnaryOperatorType GetUnaryOperatorType(this SyntaxType type) => type switch {
 		SyntaxType.PlusToken => UnaryOperatorType.Identity,
 		SyntaxType.MinusToken => UnaryOperatorType.Negation,
-		SyntaxType.StarToken => UnaryOperatorType.FunctionPointer,
 
 		_ => throw new ArgumentException($"Syntax type '{type.GetTypeSymbolOrName()}' can not be converted to a unary operator type.", nameof(type))
 	};

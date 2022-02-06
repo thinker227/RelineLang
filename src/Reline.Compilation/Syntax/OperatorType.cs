@@ -12,10 +12,6 @@ public enum UnaryOperatorType {
 	/// Unary <c>-</c> operator.
 	/// </summary>
 	Negation,
-	/// <summary>
-	/// Unary <c>*</c> operator.
-	/// </summary>
-	FunctionPointer
 }
 
 /// <summary>

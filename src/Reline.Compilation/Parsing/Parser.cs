@@ -191,6 +191,13 @@ public sealed class Parser {
 		if (viewer.CheckType(SyntaxType.HereKeyword, SyntaxType.StartKeyword, SyntaxType.EndKeyword))
 			return new KeywordExpressionSyntax(GetCurrentAdvance());
 
+		// Line pointer expression
+		if (viewer.CheckType(SyntaxType.StarToken)) {
+			var starToken = GetCurrentAdvance();
+			var identifier = Expect(SyntaxType.Identifier);
+			return new LinePointerExpressionSyntax(starToken, identifier);
+		}
+
 		// Grouping expression
 		if (viewer.CheckType(SyntaxType.OpenBracketToken)) {
 			var openBracketToken = GetCurrentAdvance();
