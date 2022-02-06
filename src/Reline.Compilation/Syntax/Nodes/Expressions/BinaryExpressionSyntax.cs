@@ -4,4 +4,8 @@ public sealed record class BinaryExpressionSyntax(
 	IExpressionSyntax Left,
 	SyntaxToken OperatorToken,
 	IExpressionSyntax Right
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, IExpressionSyntax {
+
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitBinaryExpression(this);
+
+}

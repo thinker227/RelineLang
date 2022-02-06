@@ -4,4 +4,8 @@ public sealed record class GroupingExpressionSyntax(
 	SyntaxToken OpenBracketToken,
 	IExpressionSyntax Expression,
 	SyntaxToken CloseBracketToken
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, IExpressionSyntax {
+
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitGroupingExpression(this);
+
+}

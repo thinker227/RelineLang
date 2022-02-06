@@ -10,4 +10,6 @@ public sealed record class CopyStatementSyntax(
 	SyntaxToken IManipulationStatementSyntax.SourceKeyword => CopyKeyword;
 	SyntaxToken IManipulationStatementSyntax.TargetKeyword => ToKeyword;
 
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitCopyStatement(this);
+
 }

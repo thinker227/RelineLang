@@ -3,4 +3,8 @@
 public sealed record class UnaryExpressionSyntax(
 	SyntaxToken OperatorToken,
 	IExpressionSyntax Expression
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, IExpressionSyntax {
+
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitUnaryExpression(this);
+
+}

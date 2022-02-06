@@ -5,4 +5,6 @@
 /// </summary>
 public interface ISyntaxNode : IVisitable<ISyntaxNode> {
 
+	public T Accept<T>(ISyntaxVisitor<T> visitor);
+
 }

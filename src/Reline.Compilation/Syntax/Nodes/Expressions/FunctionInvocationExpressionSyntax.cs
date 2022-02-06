@@ -5,4 +5,8 @@ public sealed record class FunctionInvocationExpressionSyntax(
 	SyntaxToken OpenBracketToken,
 	ImmutableArray<IExpressionSyntax> Arguments,
 	SyntaxToken CloseBracketToken
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, IExpressionSyntax {
+
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitFunctionInvocationExpression(this);
+
+}

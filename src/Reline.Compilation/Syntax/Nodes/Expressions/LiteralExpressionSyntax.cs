@@ -2,4 +2,8 @@
 
 public sealed record class LiteralExpressionSyntax(
 	SyntaxToken Literal
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, IExpressionSyntax {
+
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitLiteralExpression(this);
+
+}

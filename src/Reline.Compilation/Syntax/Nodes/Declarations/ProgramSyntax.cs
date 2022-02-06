@@ -2,4 +2,8 @@
 
 public sealed record class ProgramSyntax(
 	ImmutableArray<LineSyntax> Lines
-) : SyntaxNode;
+) : SyntaxNode {
+
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitProgram(this);
+
+}

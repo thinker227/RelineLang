@@ -2,4 +2,8 @@
 
 public sealed record class IdentifierExpressionSyntax(
 	SyntaxToken Identifier
-) : SyntaxNode, IExpressionSyntax;
+) : SyntaxNode, IExpressionSyntax {
+
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitIdentifierExpression(this);
+
+}

@@ -10,4 +10,6 @@ public sealed record class MoveStatementSyntax(
 	SyntaxToken IManipulationStatementSyntax.SourceKeyword => MoveKeyword;
 	SyntaxToken IManipulationStatementSyntax.TargetKeyword => ToKeyword;
 
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitMoveStatement(this);
+
 }

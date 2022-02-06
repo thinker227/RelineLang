@@ -2,4 +2,8 @@
 
 public record class ExpressionStatementSyntax(
 	IExpressionSyntax Expression
-) : SyntaxNode, IStatementSyntax;
+) : SyntaxNode, IStatementSyntax {
+
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitExpressionStatement(this);
+
+}

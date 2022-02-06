@@ -5,4 +5,8 @@ public sealed record class FunctionDeclarationStatementSyntax(
 	SyntaxToken Identifier,
 	IExpressionSyntax Body,
 	ParameterListSyntax? ParameterList
-) : SyntaxNode, IStatementSyntax;
+) : SyntaxNode, IStatementSyntax {
+
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitFunctionDeclarationStatement(this);
+
+}

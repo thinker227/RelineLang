@@ -4,4 +4,8 @@ public sealed record class ParameterListSyntax(
 	SyntaxToken OpenBracketToken,
 	ImmutableArray<SyntaxToken> Parameters,
 	SyntaxToken CloseBracketToken
-) : SyntaxNode;
+) : SyntaxNode {
+
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitParameterList(this);
+
+}

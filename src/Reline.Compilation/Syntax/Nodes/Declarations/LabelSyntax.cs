@@ -3,4 +3,8 @@
 public sealed record class LabelSyntax(
 	SyntaxToken Identifier,
 	SyntaxToken ColonToken
-) : SyntaxNode;
+) : SyntaxNode {
+
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitLabel(this);
+
+}

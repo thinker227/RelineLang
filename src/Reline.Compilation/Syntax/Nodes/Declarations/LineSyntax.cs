@@ -4,4 +4,8 @@ public sealed record class LineSyntax(
 	LabelSyntax? Label,
 	IStatementSyntax? Statement,
 	SyntaxToken NewlineToken
-) : SyntaxNode;
+) : SyntaxNode {
+
+	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitLine(this);
+
+}
