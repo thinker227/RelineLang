@@ -23,13 +23,26 @@ partial class Binder {
 		var labelSyntax = lineSyntax.Label;
 		if (labelSyntax is null) return;
 
-		var line = CreateSymbol<LineSymbol>(lineSyntax);
 		var label = CreateSymbol<LabelSymbol>(labelSyntax);
+		var line = PartialBindLineFromLabel(lineSyntax, label);
 		label.Identifier = labelSyntax.Identifier.Text;
 		label.Line = line;
 		line.Label = label;
 
 		labelBinder.RegisterSymbol(label);
+	}
+	/// <summary>
+	/// Partially binds a <see cref="LabelSyntax"/> into a <see cref="LineSymbol"/>
+	/// from a <see cref="LabelSymbol"/>.
+	/// </summary>
+	/// <remarks>
+	/// Only binds <see cref="LineSymbol.Label"/> and <see cref="LineSymbol.LineNumber"/>.
+	/// </remarks>
+	private LineSymbol PartialBindLineFromLabel(LineSyntax syntax, LabelSymbol label) {
+		var line = CreateSymbol<LineSymbol>(syntax);
+		line.Label = label;
+		line.LineNumber = syntax.LineNumber;
+		return line;
 	}
 	/// <summary>
 	/// Binds all variables from assignments.

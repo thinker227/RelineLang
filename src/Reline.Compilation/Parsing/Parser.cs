@@ -34,14 +34,16 @@ public sealed class Parser {
 	}
 
 	private ProgramSyntax Program() {
+		int currentLine = 1;
 		List<LineSyntax> lines = new();
 		while (!viewer.IsAtEnd) {
-			var line = Line();
+			var line = Line(currentLine);
 			lines.Add(line);
+			currentLine++;
 		}
 		return new(lines.ToImmutableArray());
 	}
-	private LineSyntax Line() {
+	private LineSyntax Line(int lineNumber) {
 		// Try find a label, otherwise the label is null
 		LabelSyntax? label = null;
 		if (viewer.MatchTypePattern(SyntaxType.Identifier, SyntaxType.ColonToken)) {
@@ -57,7 +59,7 @@ public sealed class Parser {
 		
 		SyntaxToken newlineToken = Expect(SyntaxType.NewlineToken, SyntaxType.EndOfFile);
 
-		return new(label, statement, newlineToken);
+		return new(lineNumber, label, statement, newlineToken);
 	}
 
 	#region Statements
