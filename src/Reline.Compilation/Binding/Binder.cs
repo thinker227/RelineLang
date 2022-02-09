@@ -80,7 +80,7 @@ public sealed partial class Binder {
 	/// <param name="level">The <see cref="DiagnosticLevel"/> of the diagnostic.</param>
 	/// <param name="description">The description of the diagnostic.</param>
 	internal void AddDiagnostic(ISymbol symbol, DiagnosticLevel level, string description) {
-		var textSpan = symbol.Syntax?.GetTextSpan() ?? TextSpan.Empty;
+		var textSpan = symbol.Syntax?.GetTextSpan();
 		Diagnostic diagnostic = new() {
 			Level = level,
 			Description = description,
