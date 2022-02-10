@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reline.CommandLine", "Relin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reline.Compilation", "Reline.Compilation\Reline.Compilation.csproj", "{457DFD7A-7A10-45B1-8F3B-BE9F55A15539}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reline.Common", "Reline.Common\Reline.Common.csproj", "{49C8B901-5535-42CC-BE25-C64FD1A3FF63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reline.Common", "Reline.Common\Reline.Common.csproj", "{49C8B901-5535-42CC-BE25-C64FD1A3FF63}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{09EC0D5E-0A12-4B7B-A57C-311E4BE3819F}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
