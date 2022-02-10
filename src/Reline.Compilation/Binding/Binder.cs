@@ -46,14 +46,15 @@ public sealed partial class Binder {
 
 
 	private Binder(SyntaxTree tree) {
-		this.Tree = tree;
 		diagnostics = new();
 		syntaxSymbolBinder = new();
+		hasError = false;
+
+		Tree = tree;
 		LabelBinder = new();
 		VariableBinder = new();
 		FunctionBinder = new();
 		ExpressionEvaluator = new(this);
-		hasError = false;
 		CurrentLine = null;
 	}
 
