@@ -105,10 +105,7 @@ partial class Binder {
 	/// </summary>
 	private LineSymbol BindLine(LineSyntax syntax) {
 		var symbol = CreateSymbol<LineSymbol>(syntax);
-
-		if (syntax.Label is not null && !syntax.Label.Identifier.IsMissing) {
-			
-		}
+		symbol.LineNumber = syntax.LineNumber;
 
 		if (syntax.Statement is not null) {
 			symbol.Statement = BindStatement(syntax.Statement);
