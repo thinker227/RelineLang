@@ -11,5 +11,9 @@ public interface ISymbol : IVisitable<ISymbol> {
 	/// The <see cref="ISyntaxNode"/> this symbol was created from.
 	/// </summary>
 	ISyntaxNode? Syntax { get; }
+	/// <summary>
+	/// The parent of this symbol.
+	/// </summary>
+	ISymbol? Parent { get; }
 
 }
