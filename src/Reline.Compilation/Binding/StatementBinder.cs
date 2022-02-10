@@ -37,7 +37,7 @@ partial class Binder {
 
 		string identifier = syntax.Identifier.Text;
 		// Variables have already been bound from assignments so variable will never be null.
-		var variable = variableBinder.GetSymbol(identifier)!;
+		var variable = VariableBinder.GetSymbol(identifier)!;
 
 		var symbol = CreateSymbol<AssignmentStatementSymbol>(syntax);
 		symbol.Variable = variable;
@@ -78,7 +78,7 @@ partial class Binder {
 	private FunctionDeclarationStatementSymbol BindFunctionDeclarationStatement(FunctionDeclarationStatementSyntax syntax) {
 		var symbol = CreateSymbol<FunctionDeclarationStatementSymbol>(syntax);
 		// Functions have already been bound from function declarations so function will never be null.
-		var function = functionBinder.GetSymbol(syntax.Identifier.Text)!;
+		var function = FunctionBinder.GetSymbol(syntax.Identifier.Text)!;
 		symbol.Function = function;
 		return symbol;
 	}

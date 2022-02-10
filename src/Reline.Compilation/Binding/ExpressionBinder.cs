@@ -114,7 +114,7 @@ internal sealed class ExpressionBinder {
 
 		// Try bind labels immediately if labels are treated as constant
 		if (LabelsAsConstant) {
-			var labelSymbol = binder.labelBinder.GetSymbol(syntax.Identifier.Text);
+			var labelSymbol = binder.LabelBinder.GetSymbol(syntax.Identifier.Text);
 			if (labelSymbol is not null) {
 				var labelIdentifierSymbol = CreateSymbol<IdentifierExpressionSymbol>(syntax);
 				labelIdentifierSymbol.Identifier = labelSymbol;

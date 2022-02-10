@@ -10,30 +10,49 @@ namespace Reline.Compilation.Binding;
 /// </summary>
 public sealed partial class Binder {
 
-	internal readonly SyntaxTree tree;
-	internal readonly BinderDiagnosticMap diagnostics;
-	internal readonly SyntaxSymbolBinder syntaxSymbolBinder;
-	internal readonly LabelBinder labelBinder;
-	internal readonly VariableBinder variableBinder;
-	internal readonly FunctionBinder functionBinder;
-	internal readonly ConstantExpressionEvaluator expressionEvaluator;
-	internal bool hasError;
+	private readonly BinderDiagnosticMap diagnostics;
+	private readonly SyntaxSymbolBinder syntaxSymbolBinder;
+	private bool hasError;
 
+	/// <summary>
+	/// The <see cref="SyntaxTree"/> being bound.
+	/// </summary>
+	internal SyntaxTree Tree { get; }
+	/// <summary>
+	/// The <see cref="Binding.LabelBinder"/> for the binder.
+	/// </summary>
+	internal LabelBinder LabelBinder { get; }
+	/// <summary>
+	/// The <see cref="Binding.VariableBinder"/> for the binder.
+	/// </summary>
+	internal VariableBinder VariableBinder { get; }
+	/// <summary>
+	/// The <see cref="Binding.FunctionBinder"/> for the binder.
+	/// </summary>
+	internal FunctionBinder FunctionBinder { get; }
+	/// <summary>
+	/// The <see cref="ConstantExpressionEvaluator"/> for the binder.
+	/// </summary>
+	internal ConstantExpressionEvaluator ExpressionEvaluator { get; }
 	/// <summary>
 	/// The current <see cref="LineSymbol"/> being bound.
 	/// </summary>
 	internal LineSymbol? CurrentLine { get; set; }
+	/// <summary>
+	/// Whether any errors have been generated.
+	/// </summary>
+	internal bool HasError => hasError;
 
 
 
 	private Binder(SyntaxTree tree) {
-		this.tree = tree;
+		this.Tree = tree;
 		diagnostics = new();
 		syntaxSymbolBinder = new();
-		labelBinder = new();
-		variableBinder = new();
-		functionBinder = new();
-		expressionEvaluator = new(this);
+		LabelBinder = new();
+		VariableBinder = new();
+		FunctionBinder = new();
+		ExpressionEvaluator = new(this);
 		hasError = false;
 		CurrentLine = null;
 	}
@@ -58,7 +77,7 @@ public sealed partial class Binder {
 		BindLabelsFromTree();
 		BindVariablesFromAssignments();
 		BindFunctionsFromTree();
-		var program = BindProgram(tree.Root);
+		var program = BindProgram(Tree.Root);
 		var diagnostics = this.diagnostics.ToImmutableArray();
 		return new(program, diagnostics);
 	}
@@ -97,6 +116,7 @@ public sealed partial class Binder {
 
 		if (level == DiagnosticLevel.Error) hasError = true;
 	}
+
 	/// <summary>
 	/// Gets a symbol corresponding to an identifier.
 	/// </summary>
@@ -104,13 +124,13 @@ public sealed partial class Binder {
 	/// <returns>A <see cref="IIdentifiableSymbol"/> corresponding to
 	/// <paramref name="identifier"/>, or <see langword="null"/> if none was found.</returns>
 	internal IIdentifiableSymbol? GetIdentifier(string identifier) {
-		var label = labelBinder.GetSymbol(identifier);
+		var label = LabelBinder.GetSymbol(identifier);
 		if (label is not null) return label;
 
-		var variable = variableBinder.GetSymbol(identifier);
+		var variable = VariableBinder.GetSymbol(identifier);
 		if (variable is not null) return variable;
 
-		var function = functionBinder.GetSymbol(identifier);
+		var function = FunctionBinder.GetSymbol(identifier);
 		if (function is not null) return function;
 
 		return null;

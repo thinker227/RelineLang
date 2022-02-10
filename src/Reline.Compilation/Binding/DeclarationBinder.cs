@@ -13,7 +13,7 @@ partial class Binder {
 	/// This does not resolve <see cref="LabelSymbol.Line"/>.
 	/// </remarks>
 	private void BindLabelsFromTree() {
-		foreach (var lineSyntax in tree.Root.Lines) BindLabelFromLine(lineSyntax);
+		foreach (var lineSyntax in Tree.Root.Lines) BindLabelFromLine(lineSyntax);
 	}
 	/// <summary>
 	/// Binds the <see cref="LabelSyntax"/> of a <see cref="LineSyntax"/>
@@ -29,7 +29,7 @@ partial class Binder {
 		label.Line = line;
 		line.Label = label;
 
-		labelBinder.RegisterSymbol(label);
+		LabelBinder.RegisterSymbol(label);
 	}
 	/// <summary>
 	/// Partially binds a <see cref="LabelSyntax"/> into a <see cref="LineSymbol"/>
@@ -47,19 +47,19 @@ partial class Binder {
 	/// Binds all variables from assignments.
 	/// </summary>
 	private void BindVariablesFromAssignments() {
-		var assignments = tree.GetStatementsOfType<AssignmentStatementSyntax>();
+		var assignments = Tree.GetStatementsOfType<AssignmentStatementSyntax>();
 		foreach (var assignment in assignments) {
 			VariableSymbol symbol = new() {
 				Identifier = assignment.Identifier.Text
 			};
-			variableBinder.RegisterSymbol(symbol);
+			VariableBinder.RegisterSymbol(symbol);
 		}
 	}
 	/// <summary>
 	/// Binds all functions and parameters from the tree.
 	/// </summary>
 	private void BindFunctionsFromTree() {
-		var functions = tree.GetStatementsOfType<FunctionDeclarationStatementSyntax>();
+		var functions = Tree.GetStatementsOfType<FunctionDeclarationStatementSyntax>();
 		foreach (var function in functions) BindFunction(function);
 	}
 	/// <summary>
@@ -70,18 +70,18 @@ partial class Binder {
 		symbol.Identifier = function.Identifier.Text;
 		// Bind body expression immediately in order to bind parameters to the proper range
 		symbol.Range = BindExpression(function.Body, ExpressionBindingFlags.ConstantsLabels, VType.Range);
-		functionBinder.RegisterSymbol(symbol);
+		FunctionBinder.RegisterSymbol(symbol);
 
 		if (symbol.Range.GetValueType() != VType.Range || function.ParameterList is null) return;
 
 		foreach (var p in function.ParameterList.Parameters) {
-			var range = expressionEvaluator.EvaluateExpression(symbol.Range).GetAs<RangeLiteral>();
+			var range = ExpressionEvaluator.EvaluateExpression(symbol.Range).GetAs<RangeLiteral>();
 			ParameterSymbol parameter = new() {
 				Identifier = p.Text,
 				Range = range,
 				Function = symbol
 			};
-			variableBinder.RegisterSymbol(parameter);
+			VariableBinder.RegisterSymbol(parameter);
 		}
 	}
 
