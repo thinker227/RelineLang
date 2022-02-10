@@ -53,7 +53,8 @@ public sealed partial class Binder {
 		BindVariablesFromAssignments();
 		BindFunctionsFromTree();
 		var program = BindProgram(tree.Root);
-		return new(program, diagnostics.ToImmutableArray());
+		var diagnostics = this.diagnostics.ToImmutableArray();
+		return new(program, diagnostics);
 	}
 
 	/// <summary>
