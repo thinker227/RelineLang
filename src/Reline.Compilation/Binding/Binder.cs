@@ -19,6 +19,11 @@ public sealed partial class Binder {
 	internal readonly ConstantExpressionEvaluator expressionEvaluator;
 	internal bool hasError;
 
+	/// <summary>
+	/// The current <see cref="LineSymbol"/> being bound.
+	/// </summary>
+	internal LineSymbol? CurrentLine { get; set; }
+
 
 
 	private Binder(SyntaxTree tree) {
@@ -30,6 +35,7 @@ public sealed partial class Binder {
 		functionBinder = new();
 		expressionEvaluator = new(this);
 		hasError = false;
+		CurrentLine = null;
 	}
 
 
@@ -66,14 +72,11 @@ public sealed partial class Binder {
 	/// </summary>
 	/// <typeparam name="TSymbol">The type of the symbol to create.</typeparam>
 	/// <param name="syntax">The syntax of the symbol.</param>
-	internal TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax, ISymbol? parent) where TSymbol : SymbolNode, new() {
+	internal TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() {
 		if (syntaxSymbolBinder.TryGetSymbol(syntax, out var bound))
 			return (TSymbol)bound;
 
-		TSymbol symbol = new() {
-			Syntax = syntax,
-			Parent = parent
-		};
+		TSymbol symbol = new() { Syntax = syntax };
 		syntaxSymbolBinder.Bind(syntax, symbol);
 		return symbol;
 	}
@@ -111,30 +114,6 @@ public sealed partial class Binder {
 		if (function is not null) return function;
 
 		return null;
-	}
-	/// <summary>
-	/// Gets the <see cref="LineSymbol"/> of a specified <see cref="ISymbol"/>.
-	/// </summary>
-	/// <param name="symbol">The symbol to get the line of.</param>
-	/// <returns>The <see cref="LineSymbol"/> containing <paramref name="symbol"/>
-	/// or <see langword="null"/> if the symbol is not contained on a line.</returns>
-	internal LineSymbol? GetLine(ISymbol symbol) =>
-		GetParentSymbol<LineSymbol>(symbol);
-	/// <summary>
-	/// Recursively gets a parent symbol of a specified type of a specified symbol.
-	/// </summary>
-	/// <typeparam name="TSymbol">The type of the parent symbol to get.</typeparam>
-	/// <param name="symbol">The symbol to get the parent of.</param>
-	/// <returns>The parent symbol of <paramref name="symbol"/>
-	/// of type <typeparamref name="TSymbol"/>
-	/// or <see langword="null"/> if none was found.</returns>
-	internal TSymbol? GetParentSymbol<TSymbol>(ISymbol symbol) where TSymbol : ISymbol {
-		var parent = symbol.Parent;
-		return parent switch {
-			TSymbol t => t,
-			null => default,
-			_ => GetParentSymbol<TSymbol>(parent)
-		};
 	}
 
 }

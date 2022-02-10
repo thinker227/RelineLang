@@ -8,7 +8,6 @@ namespace Reline.Compilation.Symbols;
 public abstract class SymbolNode : ISymbol {
 
 	public ISyntaxNode? Syntax { get; init; }
-	public ISymbol? Parent { get; init; }
 
 
 

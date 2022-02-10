@@ -24,7 +24,7 @@ partial class Binder {
 		if (labelSyntax is null) return;
 
 		var label = CreateSymbol<LabelSymbol>(labelSyntax);
-		var line = PartialBindLineFromLabel(lineSyntax, label);
+		var line = BindLinePartialFromLabel(lineSyntax, label);
 		label.Identifier = labelSyntax.Identifier.Text;
 		label.Line = line;
 		line.Label = label;
@@ -36,13 +36,12 @@ partial class Binder {
 	/// from a <see cref="LabelSymbol"/>.
 	/// </summary>
 	/// <remarks>
-	/// Only binds <see cref="LineSymbol.Label"/> and <see cref="LineSymbol.LineNumber"/>.
+	/// Only binds <see cref="LineSymbol.LineNumber"/> and <see cref="LineSymbol.Label"/>.
 	/// </remarks>
-	private LineSymbol PartialBindLineFromLabel(LineSyntax syntax, LabelSymbol label) {
-		var line = CreateSymbol<LineSymbol>(syntax);
-		line.Label = label;
-		line.LineNumber = syntax.LineNumber;
-		return line;
+	private LineSymbol BindLinePartialFromLabel(LineSyntax syntax, LabelSymbol label) {
+		var symbol = BindLinePartial(syntax);
+		symbol.Label = label;
+		return symbol;
 	}
 	/// <summary>
 	/// Binds all variables from assignments.
@@ -92,11 +91,19 @@ partial class Binder {
 	/// </summary>
 	private ProgramSymbol BindProgram(ProgramSyntax syntax) {
 		var symbol = CreateSymbol<ProgramSymbol>(syntax);
-
-		foreach (var l in syntax.Lines) {
+		foreach (var l in syntax.Lines)
 			symbol.Lines.Add(BindLine(l));
-		}
-
+		return symbol;
+	}
+	/// <summary>
+	/// Partially binds a <see cref="LineSyntax"/> into a <see cref="LineSymbol"/>.
+	/// </summary>
+	/// <remarks>
+	/// Only binds <see cref="LineSymbol.LineNumber"/>.
+	/// </remarks>
+	private LineSymbol BindLinePartial(LineSyntax syntax) {
+		var symbol = CreateSymbol<LineSymbol>(syntax);
+		symbol.LineNumber = syntax.LineNumber;
 		return symbol;
 	}
 	/// <summary>
@@ -104,13 +111,10 @@ partial class Binder {
 	/// into a <see cref="LineSymbol"/>.
 	/// </summary>
 	private LineSymbol BindLine(LineSyntax syntax) {
-		var symbol = CreateSymbol<LineSymbol>(syntax);
-		symbol.LineNumber = syntax.LineNumber;
-
-		if (syntax.Statement is not null) {
+		var symbol = BindLinePartial(syntax);
+		CurrentLine = symbol;
+		if (syntax.Statement is not null)
 			symbol.Statement = BindStatement(syntax.Statement);
-		}
-
 		return symbol;
 	}
 
