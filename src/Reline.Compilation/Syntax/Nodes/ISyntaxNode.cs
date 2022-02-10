@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a syntax node.
 /// </summary>
-public interface ISyntaxNode : IVisitable<ISyntaxNode> {
+public interface ISyntaxNode {
 
 	public T Accept<T>(ISyntaxVisitor<T> visitor);
 

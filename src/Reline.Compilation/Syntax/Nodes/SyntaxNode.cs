@@ -8,9 +8,5 @@ namespace Reline.Compilation.Syntax.Nodes;
 public abstract record class SyntaxNode : ISyntaxNode {
 
 	public abstract T Accept<T>(ISyntaxVisitor<T> visitor);
-	public void Accept(IVisitor<ISyntaxNode> visitor) =>
-		visitor.Visit(this);
-	public TResult Accept<TResult>(IVisitor<ISyntaxNode, TResult> visitor) =>
-		visitor.Visit(this);
 
 }
