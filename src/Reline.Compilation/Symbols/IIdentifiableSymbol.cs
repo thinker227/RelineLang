@@ -5,6 +5,9 @@
 /// </summary>
 public interface IIdentifiableSymbol : ISymbol {
 
+	/// <summary>
+	/// The identifier of the symbol.
+	/// </summary>
 	string Identifier { get; }
 
 }

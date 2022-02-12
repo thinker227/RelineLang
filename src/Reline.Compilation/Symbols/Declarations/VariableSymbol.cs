@@ -1,12 +1,15 @@
 ﻿namespace Reline.Compilation.Symbols;
 
 /// <summary>
-/// Represents a general variable.
+/// Represents either a variable or parameter.
 /// </summary>
 public interface IVariableSymbol : IIdentifiableSymbol, IEquatable<IVariableSymbol> {
 
-	IReadOnlyCollection<ISymbol> References { get; }
+	/// <summary>
+	/// The references to the variable.
+	/// </summary>
 	IList<ISymbol> References { get; }
+
 }
 
 /// <summary>
@@ -44,7 +47,7 @@ public sealed class ParameterSymbol : SymbolNode, IVariableSymbol {
 	public string Identifier { get; set; } = null!;
 	public IList<ISymbol> References { get; } = new List<ISymbol>();
 	/// <summary>
-	/// The range of the parameter.
+	/// The range the parameter is valid within.
 	/// </summary>
 	public RangeLiteral Range { get; set; }
 	/// <summary>
