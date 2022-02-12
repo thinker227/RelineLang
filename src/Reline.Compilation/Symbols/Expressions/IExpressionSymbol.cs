@@ -6,13 +6,6 @@
 public interface IExpressionSymbol : ISymbol {
 
 	/// <summary>
-	/// Whether the expression is a constant and can be evaluated at compile-time.
-	/// </summary>
-	bool IsConstant { get; }
-
-
-
-	/// <summary>
 	/// Accepts an <see cref="IExpressionVisitor{T}"/>.
 	/// </summary>
 	/// <typeparam name="T">The type of the visitor.</typeparam>
