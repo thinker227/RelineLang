@@ -73,9 +73,12 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<LiteralValue> {
 		AddDiagnostic(symbol, DiagnosticLevel.Error, BinaryTypeError(symbol.OperatorType, left.Type, right.Type));
 		return new();
 	}
-	public LiteralValue VisitKeyword(KeywordExpressionSymbol symbol) {
-		throw new NotImplementedException("Requires more line information.");
-	}
+	public LiteralValue VisitKeyword(KeywordExpressionSymbol symbol) => symbol.KeywordType switch {
+		KeywordExpressionType.Here => binder.CurrentLine!.LineNumber,
+		KeywordExpressionType.Start => binder.ProgramRoot.StartLine,
+		KeywordExpressionType.End => binder.ProgramRoot.EndLine,
+		_ => new(),
+	};
 	public LiteralValue VisitLiteral(LiteralExpressionSymbol symbol) =>
 		symbol.Literal;
 	public LiteralValue VisitFunctionInvocation(FunctionInvocationExpressionSymbol symbol) {
@@ -97,8 +100,6 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<LiteralValue> {
 
 		return new();
 	}
-
-	
 
 	private void AddDiagnostic(ISymbol symbol, DiagnosticLevel level, string message) =>
 		binder.AddDiagnostic(symbol, level, message);
