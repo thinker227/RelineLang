@@ -31,9 +31,9 @@ public sealed partial class Binder {
 	/// </summary>
 	internal FunctionBinder FunctionBinder { get; }
 	/// <summary>
-	/// The <see cref="ConstantExpressionEvaluator"/> for the binder.
+	/// The <see cref="Binding.ExpressionEvaluator"/> for the binder.
 	/// </summary>
-	internal ConstantExpressionEvaluator ExpressionEvaluator { get; }
+	internal ExpressionEvaluator ExpressionEvaluator { get; }
 	/// <summary>
 	/// The current <see cref="LineSymbol"/> being bound.
 	/// </summary>
