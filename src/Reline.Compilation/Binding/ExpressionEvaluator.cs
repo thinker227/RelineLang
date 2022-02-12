@@ -83,7 +83,8 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<LiteralValue> {
 		return new();
 	}
 	public LiteralValue VisitFunctionPointer(FunctionPointerExpressionSymbol symbol) =>
-		symbol.Function.Range.Accept(this);
+		// FunctionSymbol.Range may not be set at this stage
+		symbol.Function.RangeExpression.Accept(this);
 	public LiteralValue VisitVariable(IdentifierExpressionSymbol symbol) {
 		switch (symbol.Identifier) {
 			case LabelSymbol label:

@@ -65,22 +65,34 @@ partial class Binder {
 	/// <summary>
 	/// Binds a function and its parameters.
 	/// </summary>
-	private void BindFunction(FunctionDeclarationStatementSyntax function) {
-		var symbol = CreateSymbol<FunctionSymbol>(function);
-		symbol.Identifier = function.Identifier.Text;
+	private void BindFunction(FunctionDeclarationStatementSyntax syntax) {
+		var declaration = CreateSymbol<FunctionDeclarationStatementSymbol>(syntax);
+		FunctionSymbol function = new();
+		function.Declaration = declaration;
+		declaration.Function = function;
+		function.Identifier = syntax.Identifier.Text;
+
 		// Bind body expression immediately in order to bind parameters to the proper range
-		symbol.Range = BindExpression(function.Body, ExpressionBindingFlags.ConstantsLabels, VType.Range);
-		FunctionBinder.RegisterSymbol(symbol);
+		function.RangeExpression = BindExpression(syntax.Body, ExpressionBindingFlags.ConstantsLabels);
+		FunctionBinder.RegisterSymbol(function);
+		var range = ExpressionEvaluator.EvaluateExpression(function.RangeExpression);
+		if (range.Type != LiteralType.Range) {
+			// Reporting a type error when the error is due to an error is a subexpression looks ugly
+			if (range.Type != LiteralType.None)
+				AddDiagnostic(function.RangeExpression, Diagnostics.DiagnosticLevel.Error, "Expected constant range.");
+			return;
+		}
+		var rangeValue = range.GetAs<RangeLiteral>();
+		function.Range = rangeValue;
 
-		if (symbol.Range.GetValueType() != VType.Range || function.ParameterList is null) return;
-
-		foreach (var p in function.ParameterList.Parameters) {
-			var range = ExpressionEvaluator.EvaluateExpression(symbol.Range).GetAs<RangeLiteral>();
+		if (syntax.ParameterList is null) return;
+		foreach (var p in syntax.ParameterList.Parameters) {
 			ParameterSymbol parameter = new() {
 				Identifier = p.Text,
-				Range = range,
-				Function = symbol
+				Range = rangeValue,
+				Function = function
 			};
+			function.Parameters.Add(parameter);
 			VariableBinder.RegisterSymbol(parameter);
 		}
 	}
