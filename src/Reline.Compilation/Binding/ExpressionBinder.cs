@@ -15,20 +15,12 @@ partial class Binder {
 	/// <param name="syntax">The syntax to bind.</param>
 	/// <param name="flags">The <see cref="ExpressionBindingFlags"/>
 	/// to use when binding the expression.</param>
-	/// <param name="type">The expected type of the expression.</param>
 	private IExpressionSymbol BindExpression(
 		IExpressionSyntax syntax,
-		ExpressionBindingFlags flags = ExpressionBindingFlags.None,
-		VType type = VType.Any
+		ExpressionBindingFlags flags = ExpressionBindingFlags.None
 	) {
 		ExpressionBinder binder = new(flags, this);
 		var expression = binder.BindExpression(syntax);
-
-		if (type != VType.Any && !type.HasFlag(expression.GetValueType())) {
-			// Implement better diagnostic later
-			AddDiagnostic(expression, DiagnosticLevel.Error, "Unexpected type");
-		}
-
 		return expression;
 	}
 
