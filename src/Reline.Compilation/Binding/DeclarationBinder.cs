@@ -1,6 +1,6 @@
-﻿using Reline.Compilation.Syntax.Nodes;
+﻿using Reline.Compilation.Syntax;
+using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Symbols;
-using VType = Reline.Compilation.Symbols.ValueType;
 
 namespace Reline.Compilation.Binding;
 
@@ -30,6 +30,7 @@ partial class Binder {
 		line.Label = label;
 
 		LabelBinder.RegisterSymbol(label);
+		ProgramRoot.Labels.Add(label);
 	}
 	/// <summary>
 	/// Partially binds a <see cref="LabelSyntax"/> into a <see cref="LineSymbol"/>
@@ -48,12 +49,17 @@ partial class Binder {
 	/// </summary>
 	private void BindVariablesFromAssignments() {
 		var assignments = SyntaxTree.GetStatementsOfType<AssignmentStatementSyntax>();
-		foreach (var assignment in assignments) {
-			VariableSymbol symbol = new() {
-				Identifier = assignment.Identifier.Text
-			};
-			VariableBinder.RegisterSymbol(symbol);
-		}
+		foreach (var assignment in assignments) BindVariableFromAssignment(assignment);
+	}
+	/// <summary>
+	/// Binds an <see cref="AssignmentStatementSyntax"/> into a <see cref="VariableSymbol"/>.
+	/// </summary>
+	private void BindVariableFromAssignment(AssignmentStatementSyntax syntax) {
+		VariableSymbol symbol = new() {
+			Identifier = syntax.Identifier.Text
+		};
+		VariableBinder.RegisterSymbol(symbol);
+		ProgramRoot.Variables.Add(symbol);
 	}
 	/// <summary>
 	/// Binds all functions and parameters from the tree.
@@ -72,9 +78,11 @@ partial class Binder {
 		declaration.Function = function;
 		function.Identifier = syntax.Identifier.Text;
 
+		FunctionBinder.RegisterSymbol(function);
+		ProgramRoot.Functions.Add(function);
+
 		// Bind body expression immediately in order to bind parameters to the proper range
 		function.RangeExpression = BindExpression(syntax.Body, ExpressionBindingFlags.ConstantsLabels);
-		FunctionBinder.RegisterSymbol(function);
 		var range = ExpressionEvaluator.EvaluateExpression(function.RangeExpression);
 		if (range.Type != LiteralType.Range) {
 			// Reporting a type error when the error is due to an error is a subexpression looks ugly
@@ -86,15 +94,22 @@ partial class Binder {
 		function.Range = rangeValue;
 
 		if (syntax.ParameterList is null) return;
-		foreach (var p in syntax.ParameterList.Parameters) {
-			ParameterSymbol parameter = new() {
-				Identifier = p.Text,
-				Range = rangeValue,
-				Function = function
-			};
-			function.Parameters.Add(parameter);
-			VariableBinder.RegisterSymbol(parameter);
-		}
+		foreach (var p in syntax.ParameterList.Parameters) BindParameter(p, function);
+	}
+	/// <summary>
+	/// Binds a <see cref="ParameterSymbol"/> from a
+	/// <see cref="SyntaxToken"/> and <see cref="FunctionSymbol"/>.
+	/// </summary>
+	private void BindParameter(SyntaxToken syntax, FunctionSymbol function) {
+		if (syntax.IsMissing) return;
+
+		ParameterSymbol symbol = new() {
+			Identifier = syntax.Text,
+			Range = function.Range,
+			Function = function
+		};
+		function.Parameters.Add(symbol);
+		VariableBinder.RegisterSymbol(symbol);
 	}
 
 }
