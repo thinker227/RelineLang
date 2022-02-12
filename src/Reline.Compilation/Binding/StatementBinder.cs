@@ -42,6 +42,7 @@ partial class Binder {
 		var symbol = CreateSymbol<AssignmentStatementSymbol>(syntax);
 		symbol.Variable = variable;
 		symbol.Initializer = initializer;
+		variable.References.Add(symbol);
 		return symbol;
 	}
 	/// <summary>

@@ -158,6 +158,10 @@ internal sealed class ExpressionBinder {
 		string identifier = syntax.Identifier.Text;
 		var identifierSymbol = binder.GetIdentifier(identifier);
 
+		List<IExpressionSymbol> arguments = new();
+		foreach (var argument in syntax.Arguments)
+			arguments.Add(BindExpression(argument));
+
 		switch (identifierSymbol) {
 			case null:
 				return BadExpression(syntax, $"Function '{identifier}' is not declared.");
@@ -169,9 +173,8 @@ internal sealed class ExpressionBinder {
 		var symbol = CreateSymbol<FunctionInvocationExpressionSymbol>(syntax);
 		var function = (FunctionSymbol)identifierSymbol;
 		symbol.Function = function;
-		function.References.Add(symbol);
-		foreach (var argument in syntax.Arguments)
-			symbol.Arguments.Add(BindExpression(argument));
+		// This is kind of bad
+		foreach (var arg in arguments) function.References.Add(arg);
 		return symbol;
 	}
 	private IExpressionSymbol BindFunctionPointer(FunctionPointerExpressionSyntax syntax) {
