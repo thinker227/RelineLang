@@ -81,14 +81,14 @@ public sealed partial class Binder {
 	/// Binds a <see cref="Parsing.SyntaxTree"/> into a <see cref="SymbolTree"/>.
 	/// </summary>
 	private SymbolTree BindTree() {
-		programRoot = BindProgramPartial();
+		programRoot = BindProgramPartialFromTree();
 		BindLabelsFromTree();
 		BindVariablesFromAssignments();
 		BindFunctionsFromTree();
-		BindProgram();
+		BindProgram(ProgramRoot);
 
 		var diagnostics = this.diagnostics.ToImmutableArray();
-		return new(programRoot, diagnostics);
+		return new(ProgramRoot, diagnostics);
 	}
 
 	/// <summary>

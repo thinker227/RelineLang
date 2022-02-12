@@ -6,28 +6,41 @@ namespace Reline.Compilation.Binding;
 partial class Binder {
 
 	/// <summary>
-	/// Partially binds <see cref="Parsing.SyntaxTree.Root"/>
+	/// Partially binds a <see cref="ProgramSyntax"/>
 	/// into a <see cref="ProgramSymbol"/>.
 	/// </summary>
 	/// <remarks>
 	/// Only binds <see cref="ProgramSymbol.StartLine"/>
 	/// and <see cref="ProgramSymbol.EndLine"/>.
 	/// </remarks>
-	private ProgramSymbol BindProgramPartial() {
+	private ProgramSymbol BindProgramPartialFromTree() {
 		var syntax = SyntaxTree.Root;
 		var symbol = CreateSymbol<ProgramSymbol>(syntax);
 		symbol.StartLine = 1;
 		symbol.EndLine = syntax.Lines.Length;
+		BindLinesPartial(symbol);
 		return symbol;
 	}
 	/// <summary>
-	/// Binds <see cref="Parsing.SyntaxTree.Root"/>
-	/// into <see cref="ProgramRoot"/>.
+	/// Fully binds the lines of a <see cref="ProgramSymbol"/>.
 	/// </summary>
-	private void BindProgram() {
-		var symbol = programRoot;
-		foreach (var l in SyntaxTree.Root.Lines)
-			symbol.Lines.Add(BindLine(l));
+	private void BindProgram(ProgramSymbol program) {
+		// The lines of the program have already been partially bound in BindLinesPartial
+		foreach (var l in program.Lines)
+			BindLine(l);
+	}
+	/// <summary>
+	/// Partially binds the lines of a <see cref="ProgramSymbol"/>.
+	/// </summary>
+	/// <remarks>
+	/// Only binds <see cref="LineSymbol.LineNumber"/> of each line.
+	/// </remarks>
+	private void BindLinesPartial(ProgramSymbol program) {
+		var lines = ((ProgramSyntax)program.Syntax!).Lines;
+		foreach (var lineSyntax in lines) {
+			var line = BindLinePartial(lineSyntax);
+			program.Lines[line.LineNumber] = line;
+		}
 	}
 	/// <summary>
 	/// Partially binds a <see cref="LineSyntax"/> into a <see cref="LineSymbol"/>.
@@ -41,15 +54,13 @@ partial class Binder {
 		return symbol;
 	}
 	/// <summary>
-	/// Binds a <see cref="LineSyntax"/>
-	/// into a <see cref="LineSymbol"/>.
+	/// Fully binds a <see cref="LineSymbol"/>.
 	/// </summary>
-	private LineSymbol BindLine(LineSyntax syntax) {
-		var symbol = BindLinePartial(syntax);
+	private void BindLine(LineSymbol symbol) {
 		CurrentLine = symbol;
-		if (syntax.Statement is not null)
-			symbol.Statement = BindStatement(syntax.Statement);
-		return symbol;
+		var statement = ((LineSyntax)symbol.Syntax!).Statement;
+		if (statement is not null)
+			symbol.Statement = BindStatement(statement);
 	}
 
 }

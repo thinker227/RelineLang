@@ -2,7 +2,7 @@
 
 public sealed class ProgramSymbol : SymbolNode {
 
-	public IList<LineSymbol> Lines { get; } = new List<LineSymbol>();
+	public LineList Lines { get; } = new();
 	public int StartLine { get; set; }
 	public int EndLine { get; set; }
 	public IList<LabelSymbol> Labels { get; } = new List<LabelSymbol>();
