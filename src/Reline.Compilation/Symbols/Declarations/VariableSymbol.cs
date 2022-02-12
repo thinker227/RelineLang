@@ -5,6 +5,7 @@
 /// </summary>
 public interface IVariableSymbol : IIdentifiableSymbol, IEquatable<IVariableSymbol> {
 
+	IReadOnlyCollection<ISymbol> References { get; }
 }
 
 /// <summary>
@@ -16,6 +17,8 @@ public sealed class VariableSymbol : SymbolNode, IVariableSymbol {
 	/// The variable identifier.
 	/// </summary>
 	public string Identifier { get; set; } = null!;
+	public List<ISymbol> References { get; } = new List<ISymbol>();
+	IReadOnlyCollection<ISymbol> IVariableSymbol.References => References;
 
 
 
@@ -39,6 +42,8 @@ public sealed class ParameterSymbol : SymbolNode, IVariableSymbol {
 	/// The parameter identifier.
 	/// </summary>
 	public string Identifier { get; set; } = null!;
+	public List<ISymbol> References { get; } = new List<ISymbol>();
+	IReadOnlyCollection<ISymbol> IVariableSymbol.References => References;
 	/// <summary>
 	/// The range of the parameter.
 	/// </summary>

@@ -54,7 +54,7 @@ internal sealed class ExpressionBinder {
 	/// into an <see cref="IExpressionSymbol"/>.
 	/// </summary>
 	public IExpressionSymbol BindExpression(IExpressionSyntax syntax) {
-		IExpressionSymbol symbol = syntax switch {
+		var symbol = syntax switch {
 			UnaryExpressionSyntax s => BindUnary(s),
 			BinaryExpressionSyntax s => BindBinary(s),
 			KeywordExpressionSyntax s => BindKeyword(s),
@@ -94,9 +94,8 @@ internal sealed class ExpressionBinder {
 		symbol.Literal = BindLiteralValue(syntax.Literal.Literal ?? 0);
 		return symbol;
 	}
-	private IExpressionSymbol BindGrouping(GroupingExpressionSyntax syntax) {
-		return BindExpression(syntax.Expression);
-	}
+	private IExpressionSymbol BindGrouping(GroupingExpressionSyntax syntax) =>
+		BindExpression(syntax.Expression);
 	private IExpressionSymbol BindIdentifier(IdentifierExpressionSyntax syntax) {
 		if (syntax.Identifier.IsMissing) {
 			return BadExpression(syntax);
@@ -131,6 +130,19 @@ internal sealed class ExpressionBinder {
 
 		var symbol = CreateSymbol<IdentifierExpressionSymbol>(syntax);
 		symbol.Identifier = identifierSymbol;
+
+		switch (identifierSymbol) {
+			case LabelSymbol label:
+				label.References.Add(symbol);
+				break;
+			case VariableSymbol variable:
+				variable.References.Add(symbol);
+				break;
+			case ParameterSymbol parameter:
+				parameter.References.Add(symbol);
+				break;
+		}
+
 		return symbol;
 	}
 	private IExpressionSymbol BindFunctionInvocation(FunctionInvocationExpressionSyntax syntax) {
@@ -155,7 +167,9 @@ internal sealed class ExpressionBinder {
 		}
 
 		var symbol = CreateSymbol<FunctionInvocationExpressionSymbol>(syntax);
-		symbol.Function = (FunctionSymbol)identifierSymbol;
+		var function = (FunctionSymbol)identifierSymbol;
+		symbol.Function = function;
+		function.References.Add(symbol);
 		foreach (var argument in syntax.Arguments)
 			symbol.Arguments.Add(BindExpression(argument));
 		return symbol;
@@ -189,7 +203,9 @@ internal sealed class ExpressionBinder {
 		}
 
 		var symbol = CreateSymbol<FunctionPointerExpressionSymbol>(syntax);
-		symbol.Function = (FunctionSymbol)identifierSymbol;
+		var function = (FunctionSymbol)identifierSymbol;
+		symbol.Function = function;
+		function.References.Add(function);
 		return symbol;
 	}
 

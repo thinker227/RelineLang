@@ -8,5 +8,6 @@ public sealed class FunctionSymbol : SymbolNode, IIdentifiableSymbol {
 	public RangeLiteral Range { get; set; }
 	public ICollection<LineSymbol> Body { get; } = new List<LineSymbol>();
 	public ICollection<ParameterSymbol> Parameters { get; } = new List<ParameterSymbol>();
+	public IList<ISymbol> References { get; } = new List<ISymbol>();
 
 }
