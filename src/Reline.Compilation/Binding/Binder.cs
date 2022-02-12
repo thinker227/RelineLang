@@ -12,12 +12,17 @@ public sealed partial class Binder {
 
 	private readonly BinderDiagnosticMap diagnostics;
 	private readonly SyntaxSymbolBinder syntaxSymbolBinder;
+	private ProgramSymbol programRoot;
 	private bool hasError;
 
 	/// <summary>
-	/// The <see cref="SyntaxTree"/> being bound.
+	/// The <see cref="Parsing.SyntaxTree"/> being bound.
 	/// </summary>
-	internal SyntaxTree Tree { get; }
+	internal SyntaxTree SyntaxTree { get; }
+	/// <summary>
+	/// The <see cref="ProgramSymbol"/> which is the root of the symbol tree.
+	/// </summary>
+	internal ProgramSymbol ProgramRoot => programRoot;
 	/// <summary>
 	/// The <see cref="Binding.LabelBinder"/> for the binder.
 	/// </summary>
@@ -49,8 +54,9 @@ public sealed partial class Binder {
 		diagnostics = new();
 		syntaxSymbolBinder = new();
 		hasError = false;
+		programRoot = null!;
 
-		Tree = tree;
+		SyntaxTree = tree;
 		LabelBinder = new();
 		VariableBinder = new();
 		FunctionBinder = new();
@@ -61,7 +67,7 @@ public sealed partial class Binder {
 
 
 	/// <summary>
-	/// Binds a <see cref="SyntaxTree"/> into a <see cref="SymbolTree"/>.
+	/// Binds a <see cref="Parsing.SyntaxTree"/> into a <see cref="SymbolTree"/>.
 	/// </summary>
 	/// <param name="tree">The syntax tree to bind.</param>
 	/// <returns>An <see cref="IOperationResult{T}"/>
@@ -72,15 +78,17 @@ public sealed partial class Binder {
 		return result;
 	}
 	/// <summary>
-	/// Binds a <see cref="SyntaxTree"/> into a <see cref="SymbolTree"/>.
+	/// Binds a <see cref="Parsing.SyntaxTree"/> into a <see cref="SymbolTree"/>.
 	/// </summary>
 	private SymbolTree BindTree() {
+		programRoot = BindProgramPartial();
 		BindLabelsFromTree();
 		BindVariablesFromAssignments();
 		BindFunctionsFromTree();
-		var program = BindProgram(Tree.Root);
+		BindProgram();
+
 		var diagnostics = this.diagnostics.ToImmutableArray();
-		return new(program, diagnostics);
+		return new(programRoot, diagnostics);
 	}
 
 	/// <summary>

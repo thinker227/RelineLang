@@ -13,7 +13,7 @@ partial class Binder {
 	/// This does not resolve <see cref="LabelSymbol.Line"/>.
 	/// </remarks>
 	private void BindLabelsFromTree() {
-		foreach (var lineSyntax in Tree.Root.Lines) BindLabelFromLine(lineSyntax);
+		foreach (var lineSyntax in SyntaxTree.Root.Lines) BindLabelFromLine(lineSyntax);
 	}
 	/// <summary>
 	/// Binds the <see cref="LabelSyntax"/> of a <see cref="LineSyntax"/>
@@ -47,7 +47,7 @@ partial class Binder {
 	/// Binds all variables from assignments.
 	/// </summary>
 	private void BindVariablesFromAssignments() {
-		var assignments = Tree.GetStatementsOfType<AssignmentStatementSyntax>();
+		var assignments = SyntaxTree.GetStatementsOfType<AssignmentStatementSyntax>();
 		foreach (var assignment in assignments) {
 			VariableSymbol symbol = new() {
 				Identifier = assignment.Identifier.Text
@@ -59,7 +59,7 @@ partial class Binder {
 	/// Binds all functions and parameters from the tree.
 	/// </summary>
 	private void BindFunctionsFromTree() {
-		var functions = Tree.GetStatementsOfType<FunctionDeclarationStatementSyntax>();
+		var functions = SyntaxTree.GetStatementsOfType<FunctionDeclarationStatementSyntax>();
 		foreach (var function in functions) BindFunction(function);
 	}
 	/// <summary>
