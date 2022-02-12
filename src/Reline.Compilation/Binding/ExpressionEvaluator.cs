@@ -74,6 +74,12 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<LiteralValue> {
 		return new();
 	}
 	public LiteralValue VisitKeyword(KeywordExpressionSymbol symbol) => symbol.KeywordType switch {
+		// This is not a good way to evaluate 'here' expressions
+		// because the expression being evaluated may not always
+		// be on the current line, ex. when evaluating expression
+		// during analysis or refactoring when the binder is not
+		// doing anything. For this, a proper method to get an
+		// ancestor symbol of a specified type would be required.
 		KeywordExpressionType.Here => binder.CurrentLine!.LineNumber,
 		KeywordExpressionType.Start => binder.ProgramRoot.StartLine,
 		KeywordExpressionType.End => binder.ProgramRoot.EndLine,
