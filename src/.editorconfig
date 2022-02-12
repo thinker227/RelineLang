@@ -57,7 +57,7 @@ csharp_prefer_braces = false:suggestion
 #prefer block bodies for constructors
 csharp_style_expression_bodied_constructors = false:suggestion
 #prefer expression-bodied members for methods when they will be a single line
-csharp_style_expression_bodied_methods = when_on_single_line:suggestion
+csharp_style_expression_bodied_methods =true:suggestion
 #prefer expression-bodied members for operators
 csharp_style_expression_bodied_operators = true:suggestion
 #prefer expression-bodied members for properties
