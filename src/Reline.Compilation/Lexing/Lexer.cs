@@ -6,7 +6,7 @@ namespace Reline.Compilation.Lexing;
 /// <summary>
 /// Lexes a string of character into a series of syntax tokens.
 /// </summary>
-public sealed class Lexer {
+internal sealed class Lexer {
 
 	private readonly string source;
 	private readonly SourceViewer viewer;
