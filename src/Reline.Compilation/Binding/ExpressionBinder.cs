@@ -1,7 +1,6 @@
 ﻿using Reline.Compilation.Syntax;
 using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Symbols;
-using VType = Reline.Compilation.Symbols.ValueType;
 using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Binding;
