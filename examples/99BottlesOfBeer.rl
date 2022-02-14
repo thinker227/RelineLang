@@ -11,6 +11,7 @@ Write (" bottles of beer\n"Take one down and pass it around, ")
 Write (bottlesString)
 Write (" bottles of beer on the wall")
 
+bottles = bottles - 1    // Decreases the value of bottles by 1
 move loopEnd+1 to loopEnd+1 * Clamp (bottles-1 0 1)    // Moves the line after the label loopEnd to line 0 (line 1) if bottles is equal to or less than 1, otherwise the line is moved nowhere
 
 loopEnd:
