@@ -111,10 +111,7 @@ In the following example, the variable `foo` is assigned the value of `2`, is wr
 ```
 function <function> <range> [<parameters>]
 ```
-A *function declaration* declares a function which can be referenced throughout the rest of the program. The declaration includes a name (`<function>`), the line range of the function (`<range>`) and optionally a list of parameters (`[<parameters>]`) made up of zero or more parameters (see [Parameters](#Parameters)).
-```
-(<identifier>*)
-```
+A *function declaration* declares a function which can be referenced throughout the rest of the program. The declaration includes a name (`<function>`), the line range of the function (`<range>`) and optionally a list of parameters (`[<parameters>]`) made up of zero or more identifiers (see [Parameters](#Parameters)). `<range>` has to evaluate to a constant range.
 
 In the following example, the function `WritePerson` is declared between the lines 2 and 4 taking the parameters `name`, `age` and `gender`. The function is then called with the values `"Jay"`, `99` and `"male"`. Line numbers added for clarity.
 ```
@@ -141,9 +138,41 @@ In the following example, the function `Add` is declared on line 2 taking the pa
 ```
 
 # Labels
+```
+<label>:
+```
+A *label* acts as an alias for a line number. A label can be referenced using the label's identifier and will at runtime be evaluated to the current line number of the line of the label. If the line of a label is moved using a `move` or `copy` statement then the label is moved along with the line. If the line of a label is copied using a `copy` statement then the line is copied but not the label as duplicate labels would be unresolvable.
 
 # Variables
+Variables are weakly and dynamically typed as well as implicitly declared. A variable is declared if it is assigned at any point in the program, no specific keyword or syntax is required for variable declaration.
+
+Here, `foo` is implicitly declared, first given the value of `2` then the value of `"owo"`.
+```
+foo = 2
+foo = "owo"
+```
+A variable can be referenced by simply referencing its identifier.
+```
+foo = 69
+Write (foo)   // Outputs "69"
+```
+As a consequence of the existence of manipulation statements, variables may be referenced before they are ever assigned. In this situation, the variable will hold the default value of `?` which is treated as a regular value, though which will cause a runtime error if any operator is applied to it.
+```
+Write (foo)   // Outputs "?"
+foo = 420
+```
+Subsequently, variables may be assigned to themselves without any other assignment. In this situation, the variable will be declared and assigned to its own unassigned value.
+```
+foo = foo
+Write (foo)   // Outputs "?"
+```
 
 # Functions
+A *function* (more accurately, *user-defined function*, see [native functions](#Native-functions)) is a range of lines contained under an identifier which may take in parameters and/or return a value.
+
+During compilation, functions are lowered into manipulation statements and variable assignments. As such, functions do not exist at runtime.
 
 ## Parameters
+
+## Native functions
+*Native functions* are functions which are defined by the runtime as opposed to compiled source code and are treated separately from user-defined functions by the compiler. These functions include the standard library, such as `Write`, `ReadLine` and `Clamp`. Native functions may not be referenced using a function pointer expression (`*Function`) as they are not defined within source code.
