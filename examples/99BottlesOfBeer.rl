@@ -4,11 +4,10 @@ loopBegin:
 copy loopEnd+1 to loopBegin+1    // Copies the line after the label loopEnd to the line after the label loopBegin, setting up a loop
 
 // Writes the lyrics
-bottlesString = String (bottles)    // Turns the value of bottles into a string
 Write (" bottles of beer on the wall, ")
-Write (bottlesString)
+Write (bottles)
 Write (" bottles of beer\n"Take one down and pass it around, ")
-Write (bottlesString)
+Write (bottles)
 Write (" bottles of beer on the wall")
 
 bottles = bottles - 1    // Decreases the value of bottles by 1
