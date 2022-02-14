@@ -153,18 +153,18 @@ foo = "owo"
 ```
 A variable can be referenced by simply referencing its identifier.
 ```
-foo = 69
-Write (foo)   // Outputs "69"
+bar = 69
+Write (bar)   // Outputs "69"
 ```
 As a consequence of the existence of manipulation statements, variables may be referenced before they are ever assigned. In this situation, the variable will hold the default value of `?` which is treated as a regular value, though which will cause a runtime error if any operator is applied to it.
 ```
-Write (foo)   // Outputs "?"
-foo = 420
+Write (baz)   // Outputs "?"
+baz = 420
 ```
 Subsequently, variables may be assigned to themselves without any other assignment. In this situation, the variable will be declared and assigned to its own unassigned value.
 ```
-foo = foo
-Write (foo)   // Outputs "?"
+boo = boo
+Write (boo)   // Outputs "?"
 ```
 
 # Functions
