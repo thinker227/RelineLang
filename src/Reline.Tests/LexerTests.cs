@@ -1,8 +1,8 @@
 using Reline.Compilation.Syntax;
 using Reline.Compilation.Lexing;
-using Reline.Common.Text;
 
 namespace Reline.Tests;
+
 public class LexerTests {
 
 	[Fact]
@@ -149,16 +149,5 @@ public class LexerTests {
 
 		Assert.Equal(expectedTokens, tokens);
 	}
-
-	private static SyntaxToken Token(SyntaxType type, int from, int to, string text) =>
-		new(type, new(from, to + 1), text, null);
-	private static SyntaxToken Token(SyntaxType type, int position, string text) =>
-		new(type, new(position, position + 1), text, null);
-	private static SyntaxToken Token(SyntaxType type, TextSpan span, string text) =>
-		new(type, span, text, null);
-	private static SyntaxToken Token(SyntaxType type, int from, int to, string text, object? literal) =>
-		new(type, new(from, to + 1), text, literal);
-	private static SyntaxToken Token(SyntaxType type, int position, string text, object? literal) =>
-		new(type, new(position, position + 1), text, literal);
 
 }
