@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Reline.Compilation.Diagnostics;
+﻿namespace Reline.Compilation.Diagnostics;
 
 /// <summary>
 /// Describes a formattable diagnostic.
