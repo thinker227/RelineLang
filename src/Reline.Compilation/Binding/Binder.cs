@@ -24,17 +24,17 @@ public sealed partial class Binder {
 	/// </summary>
 	internal ProgramSymbol ProgramRoot => programRoot;
 	/// <summary>
-	/// The <see cref="Binding.LabelBinder"/> for the binder.
+	/// The internal <see cref="LabelSymbol"/> binder.
 	/// </summary>
-	internal LabelBinder LabelBinder { get; }
+	internal IdentifierBinder<LabelSymbol> LabelBinder { get; }
 	/// <summary>
-	/// The <see cref="Binding.VariableBinder"/> for the binder.
+	/// The internal <see cref="IVariableSymbol"/> binder.
 	/// </summary>
-	internal VariableBinder VariableBinder { get; }
+	internal IdentifierBinder<IVariableSymbol> VariableBinder { get; }
 	/// <summary>
-	/// The <see cref="Binding.FunctionBinder"/> for the binder.
+	/// The internal <see cref="FunctionSymbol"/> binder.
 	/// </summary>
-	internal FunctionBinder FunctionBinder { get; }
+	internal IdentifierBinder<FunctionSymbol> FunctionBinder { get; }
 	/// <summary>
 	/// The <see cref="Binding.ExpressionEvaluator"/> for the binder.
 	/// </summary>
