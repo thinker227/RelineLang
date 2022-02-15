@@ -1,6 +1,7 @@
 ﻿using Reline.Compilation.Syntax;
 using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Symbols;
+using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Binding;
 
@@ -28,6 +29,13 @@ partial class Binder {
 		label.Identifier = labelSyntax.Identifier.Text;
 		label.Line = line;
 		line.Label = label;
+
+		string identifier = label.Identifier;
+		var existingIdentifier = GetIdentifier(identifier);
+		if (existingIdentifier is not null) {
+			AddDiagnostic(label, DiagnosticLevel.Error, $"An identifier with the name {identifier} is already defined.");
+			return;
+		}
 
 		LabelBinder.RegisterSymbol(label);
 		ProgramRoot.Labels.Add(label);
@@ -58,6 +66,14 @@ partial class Binder {
 		VariableSymbol symbol = new() {
 			Identifier = syntax.Identifier.Text
 		};
+
+		string identifier = symbol.Identifier;
+		var existingIdentifier = GetIdentifier(identifier);
+		if (existingIdentifier is not (null or VariableSymbol)) {
+			AddDiagnostic(symbol, DiagnosticLevel.Error, $"An identifier with the name {identifier} is already defined.");
+			return;
+		}
+
 		VariableBinder.RegisterSymbol(symbol);
 		ProgramRoot.Variables.Add(symbol);
 	}
@@ -78,19 +94,31 @@ partial class Binder {
 		declaration.Function = function;
 		function.Identifier = syntax.Identifier.Text;
 
-		FunctionBinder.RegisterSymbol(function);
-		ProgramRoot.Functions.Add(function);
+		string identifier = function.Identifier;
+		var existingIdentifier = GetIdentifier(identifier);
+		if (existingIdentifier is not null) {
+			AddDiagnostic(function, DiagnosticLevel.Error, $"An identifier with the name {identifier} is already defined.");
+		}
+		else {
+			FunctionBinder.RegisterSymbol(function);
+			ProgramRoot.Functions.Add(function);
+		}
 
 		// Bind body expression immediately in order to bind parameters to the proper range
 		function.RangeExpression = BindExpression(syntax.Body, ExpressionBindingFlags.ConstantsLabels);
 		var range = ExpressionEvaluator.EvaluateExpression(function.RangeExpression);
+		RangeLiteral rangeValue;
 		if (range.Type != LiteralType.Range) {
-			// Reporting a type error when the error is due to an error is a subexpression looks ugly
+			// Reporting a type error when the error is due to an error in a subexpression looks ugly
 			if (range.Type != LiteralType.None)
-				AddDiagnostic(function.RangeExpression, Diagnostics.DiagnosticLevel.Error, "Expected constant range.");
-			return;
+				AddDiagnostic(function.RangeExpression, DiagnosticLevel.Error, "Expected constant range.");
+			// Just pretend the function doesn't exist. Would be nice to eventually
+			// set the range as the line the function was declared on.
+			rangeValue = new(0, 0);
 		}
-		var rangeValue = range.GetAs<RangeLiteral>();
+		else {
+			rangeValue = range.GetAs<RangeLiteral>();
+		}
 		function.Range = rangeValue;
 
 		if (syntax.ParameterList is null) return;
@@ -103,11 +131,19 @@ partial class Binder {
 	private void BindParameter(SyntaxToken syntax, FunctionSymbol function) {
 		if (syntax.IsMissing) return;
 
+		string identifier = syntax.Text;
 		ParameterSymbol symbol = new() {
-			Identifier = syntax.Text,
+			Identifier = identifier,
 			Range = function.Range,
 			Function = function
 		};
+
+		var existingIdentifier = GetIdentifier(identifier);
+		if (existingIdentifier is not null) {
+			AddDiagnostic(symbol, DiagnosticLevel.Error, $"An identifier with the name {identifier} is already defined.");
+			return;
+		}
+
 		function.Parameters.Add(symbol);
 		VariableBinder.RegisterSymbol(symbol);
 	}

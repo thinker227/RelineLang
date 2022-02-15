@@ -8,7 +8,7 @@ public sealed class AssignmentStatementSymbol : SymbolNode, IStatementSymbol {
 	/// <summary>
 	/// The variable being assigned.
 	/// </summary>
-	public IVariableSymbol Variable { get; set; } = null!;
+	public IVariableSymbol? Variable { get; set; } = null!;
 	/// <summary>
 	/// The initializer expression.
 	/// </summary>
