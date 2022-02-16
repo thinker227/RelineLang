@@ -18,6 +18,9 @@
 			"include": "#digits"
 		},
 		{
+			"include": "#functionidentifier"
+		},
+		{
 			"include": "#function"
 		},
 		{
@@ -69,6 +72,16 @@
 			"patterns": [{
 				"name": "constant.numeric.reline",
 				"match": "[0-9]+"
+			}]
+		},
+		"functionidentifier": {
+			"patterns": [{
+				"match": "\\bfunction\\s*([a-zA-Z_@][a-zA-Z0-9_]*)",
+				"captures": {
+					"1": {
+						"name": "entity.name.function.reline"
+					}
+				}
 			}]
 		},
 		"function": {
