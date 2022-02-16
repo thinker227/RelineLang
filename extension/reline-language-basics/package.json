@@ -1,0 +1,25 @@
+{
+    "name": "reline-language-basics",
+    "displayName": "Reline Language Basics",
+    "description": "Basic syntax highlighting support for Reline",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.64.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "reline",
+            "aliases": ["Reline", "reline"],
+            "extensions": [".rl"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "reline",
+            "scopeName": "source.reline",
+            "path": "./syntaxes/reline.tmLanguage.json"
+        }]
+    }
+}
