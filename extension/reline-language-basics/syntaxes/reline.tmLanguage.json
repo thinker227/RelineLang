@@ -21,6 +21,9 @@
 			"include": "#function"
 		},
 		{
+			"include": "#label"
+		},
+		{
 			"include": "#identifier"
 		}
 	],
@@ -74,6 +77,16 @@
 				"captures": {
 					"1": {
 						"name": "entity.name.function.reline"
+					}
+				}
+			}]
+		},
+		"label": {
+			"patterns": [{
+				"match": "([a-zA-Z_@][a-zA-Z0-9_]*)\\s*:",
+				"captures": {
+					"1": {
+						"name": "entity.name.tag.reline"
 					}
 				}
 			}]
