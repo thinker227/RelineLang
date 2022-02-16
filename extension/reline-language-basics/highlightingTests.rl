@@ -29,11 +29,14 @@ lines"
 // Function identifiers
 
 function
+function 
 function Foo
 function _Foo_bar
 function 	Foo0123456789
-function @Foo@Bar // Only @Foo should be highlighted
+function @Foo@Bar // Only "@Foo" should be highlighted
+
 functionFoo // Should not be highlighted
+bfunction Foo // Should not be highlighted
 
 
 
@@ -56,8 +59,7 @@ P
 foo:
 _foo_bar :
 foo0123456789 	:
-// Only @bar should be highlighted
-@foo@bar:
+@foo@bar: // Only "@bar" should be highlighted
 
 // Should not be highlighted
 m

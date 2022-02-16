@@ -77,7 +77,7 @@
 		},
 		"functionidentifier": {
 			"patterns": [{
-				"match": "\\b(function)\\s+([a-zA-Z_@][a-zA-Z0-9_]*)?",
+				"match": "\\b(function)\\b(?:\\s+([a-zA-Z_@][a-zA-Z0-9_]*))?",
 				"captures": {
 					"1": {
 						"name": "keyword.control.reline"
@@ -85,7 +85,8 @@
 					"2": {
 						"name": "entity.name.function.reline"
 					}
-				}
+				},
+				"tests": "https://regex101.com/r/GQRUUd/1"
 			}]
 		},
 		"function": {
