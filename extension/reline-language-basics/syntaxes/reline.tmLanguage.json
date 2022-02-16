@@ -41,7 +41,8 @@
 			"patterns": [
 				{
 					"name": "keyword.control.reline",
-					"match": "\\b(move|swap|copy|to|with|function|return)\\b"
+					"match": "\\b(move|swap|copy|to|with|return)\\b",
+					"comment": "function keyword is not included because it is used in function identifiers"
 				},
 				{
 					"name": "constant.language.line.reline",
@@ -76,9 +77,12 @@
 		},
 		"functionidentifier": {
 			"patterns": [{
-				"match": "\\bfunction\\s*([a-zA-Z_@][a-zA-Z0-9_]*)",
+				"match": "\\b(function)\\s+([a-zA-Z_@][a-zA-Z0-9_]*)?",
 				"captures": {
 					"1": {
+						"name": "keyword.control.reline"
+					},
+					"2": {
 						"name": "entity.name.function.reline"
 					}
 				}
