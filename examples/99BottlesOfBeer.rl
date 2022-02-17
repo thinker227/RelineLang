@@ -6,7 +6,7 @@ copy loopEnd+1 to loopBegin+1    // Copies the line after the label loopEnd to t
 // Writes the lyrics
 Write (" bottles of beer on the wall, ")
 Write (bottles)
-Write (" bottles of beer\n"Take one down and pass it around, ")
+Write (" bottles of beer\nTake one down and pass it around, ")
 Write (bottles)
 Write (" bottles of beer on the wall")
 
