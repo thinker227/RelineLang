@@ -1,0 +1,37 @@
+{
+    "name": "reline-language-basics",
+    "displayName": "Reline Language Basics",
+    "description": "Basic syntax highlighting support for Reline",
+	"icon": "./images/icon.png",
+    "version": "1.0.0",
+    "engines": {
+        "vscode": "^1.64.0"
+    },
+    "categories": [
+        "Programming Languages",
+		"Snippets"
+    ],
+	"repository": {
+		"url": "https://github.com/thinker227/RelineLang",
+		"directory": "extension/reline-language-basics"
+	},
+    "contributes": {
+        "languages": [{
+            "id": "reline",
+            "aliases": ["Reline", "reline"],
+            "extensions": [".rl"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "reline",
+            "scopeName": "source.reline",
+            "path": "./syntaxes/reline.tmLanguage.json"
+        }],
+		"snippets": [
+			{
+				"language": "reline",
+				"path": "./snippets/snippets.json"
+			}
+		]
+    }
+}

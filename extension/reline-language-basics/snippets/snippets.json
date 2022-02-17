@@ -1,0 +1,113 @@
+{
+	"Move Statement": {
+		"prefix": ["move"],
+		"body": ["move ${1:source} to ${2:target}"],
+		"description": "A move statement."
+	},
+	"Swap Statement": {
+		"prefix": ["swap"],
+		"body": ["swap ${1:source} with ${2:target}"],
+		"description": "A swap statement."
+	},
+	"Copy Statement": {
+		"prefix": ["copy"],
+		"body": ["copy ${1:source} to ${2:target}"],
+		"description": "A copy statement."
+	},
+
+	"Function": {
+		"prefix": ["func", "function"],
+		"body": [
+			"function ${1:Func} ${2:here}..${3:here+1} ($4)",
+			"${0:// Function body}"
+		],
+		"description": "A function declaration."
+	},
+
+	"Swap Loop": {
+		"prefix": ["sloop", "swaploop"],
+		"body": [
+			"${1:loopBegin}:",
+			"copy ${2:loopEnd}+1 to here",
+			"",
+			"${0:// Loop body}",
+			"",
+			"${2:loopEnd}:",
+			"swap here with ${1:loopBegin}+1"
+		],
+		"description": "A swap loop."
+	},
+	"Conditional Swap Loop": {
+		"prefix": ["swaploopcond", "sloopcond"],
+		"body": [
+			"${1:loopBegin}:",
+			"copy ${2:loopEnd}+1 to here",
+			"",
+			"${0:// Loop body}",
+			"",
+			"move ${2:loopEnd}+1 to ${2:loopEnd}+1 * (${3:condition})",
+			"${2:loopEnd}:",
+			"swap here with ${1:loopBegin}+1"
+		],
+		"description": "A swap loop with a conditional exit."
+	},
+	"Copy Loop": {
+		"prefix": ["cloop", "copyloop"],
+		"body": [
+			"${1:loopBegin}:",
+			"${0:// Loop body}",
+			"",
+			"copy ${1:loopBegin}+1..here to here+1",
+			""
+		],
+		"description": "A copy loop."
+	},
+	"Conditional Copy Loop": {
+		"prefix": ["cloopcond", "copyloopcond"],
+		"body": [
+			"${1:loopBegin}:",
+			"${0:// Loop body}",
+			"",
+			"move here+1 to here+1 * (${2:condition})",
+			"copy ${1:loopBegin}+1..here to here+1",
+			""
+		],
+		"description": "A conditional copy loop."
+	},
+
+	"If Block": {
+		"prefix": ["if"],
+		"body": [
+			"move ${1:ifBegin}..${2:ifEnd} to ${1:ifBegin} * (${3:condition})",
+			"${1:ifBegin}:",
+			"",
+			"${0:// If body}",
+			"",
+			"${2:ifEnd}:"
+		],
+		"description": "A block executed conditionally."
+	},
+	"If/Else Block": {
+		"prefix": ["ifelse"],
+		"body": [
+			"move ${1:ifBegin}..${2:ifEnd} to ${1:ifBegin} * (${4:condition})",
+			"${1:ifBegin}:",
+			"",
+			"${5:// If body}",
+			"",
+			"move ${2:ifEnd}..${3:elseEnd} to 0",
+			"${2:ifEnd}:",
+			"",
+			"${0:// Else body}",
+			"",
+			"${3:elseEnd}:"
+		],
+		"description": "A block executed conditionally followed by a block executed based on the inverse condition."
+	},
+
+	"Current Line": {
+		"prefix": ["here", "line", "current"],
+		"body": ["$TM_LINE_NUMBER"],
+		"description": "The current line number."
+	}
+}
