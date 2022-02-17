@@ -3,6 +3,7 @@
     "displayName": "Reline Language Basics",
     "description": "Basic syntax highlighting support for Reline",
     "version": "0.0.1",
+	"icon": "./images/icon.png",
     "engines": {
         "vscode": "^1.64.0"
     },
