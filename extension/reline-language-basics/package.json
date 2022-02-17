@@ -11,6 +11,10 @@
         "Programming Languages",
 		"Snippets"
     ],
+	"repository": {
+		"url": "https://github.com/thinker227/RelineLang",
+		"directory": "extension/reline-language-basics"
+	},
     "contributes": {
         "languages": [{
             "id": "reline",
