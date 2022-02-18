@@ -1,9 +1,11 @@
-in = ReadLine ()    // Reads input as a string
-parsed = Clamp (ParseInt (in) 0 1)    // Parses input as an int and clamps it between 0 and 1
-move here+2..here+4 to (here+2)*parsed    // Moves the following three lines (not counting whitespace) to position 0 or nowhere
+input = ParseInt (ReadLine ())     // Reads input as a string and parses it as an integer
+trueFalse = Clamp (input 0 1)    // Clamps the input between 0 and 1
+move loopBegin..loopEnd to loopBegin * trueFalse    // Moves the lines between and including loopBegin and loopEnd to line 0 if trueFalse is 0, otherwise they are not moved anywhere
 
-copy here+2 to here-1    // Copies "swap 4 with 7" to the previous line
+loopBegin:
+copy loopEnd - 1 to here    // Copies the line "swap here with loopBegin+1" to this line, moving subsequent lines downward
 Write ("1")
-swap 4 with 7    // Swap moves the instruction pointer with it, causing a loop
+swap here with loopBegin + 1    // The line pointer is moved along with the swapped line, causing a loop
+loopEnd:
 
-Write ("0")    // Assuming the previous three lines were moved to position 0 (not counting whitespace), otherwise this would never execute
+Write ("0")    // This line only executes if 
