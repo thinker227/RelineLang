@@ -1,19 +1,16 @@
 bottles = 99    // Sets bottles to 99
 
 loopBegin:
-copy loopEnd+1 to loopBegin+1    // Copies the line after the label loopEnd to the line after the label loopBegin, setting up a loop
+copy loopEnd+1 to here     // Copies the line after the label loopEnd to the current line, setting up a loop
 
-// Writes the lyrics
-Write (" bottles of beer on the wall, ")
-Write (bottles)
-Write (" bottles of beer\nTake one down and pass it around, ")
-Write (bottles)
-Write (" bottles of beer on the wall")
+// Write the lyrics
+str = String (bottles)    // Converts bottles to a string
+Write (str < " bottles of beer on the wall, " < str < " bottles of beer")
+Write ("Take one down and pass it around, ")
 
-bottles = bottles - 1    // Decreases the value of bottles by 1
-move loopEnd+1 to loopEnd+1 * Clamp (bottles-1 0 1)    // Moves the line after the label loopEnd to line 0 (line 1) if bottles is equal to or less than 1, otherwise the line is moved nowhere
-
+move loopEnd+1 to loopEnd+2 * (Clamp (bottles - 1 0 1))    // Moves the two lines after the label loopEnd to line 0 if bottles is equal to or less than 1, otherwise the line is not moved anywhere
 loopEnd:
-swap loopBegin+1 with loopEnd+1    // Swaps the line after the label loopBegin with the line after the label loopBegin, causing a loop (see line 4)
+Write (str < " bottles of beer on the wall")
+swap here with loopBegin+1    // Swaps the line after the label loopBegin with the current line, causing a loop (see line 4)
 
-Write ("1 bottle of beer on the wall, 1 bottle of beer\nTake one down and pass it around, no more bottles of beer on the wall")
+Write ("No more bottles of beer on the wall")
