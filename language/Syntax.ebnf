@@ -37,8 +37,7 @@ primary = unary
 unary = multiplicative
 	| unaryPlusExpression
 	| unaryNegationExpression
-	| unaryFunctionPointerExpression
-	| unaryLinePointerExpression ;
+	| unaryFunctionPointerExpression ;
 multiplicative = additive
 	| binaryMultiplicationExpression
 	| binaryDivisionExpression
