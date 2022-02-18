@@ -127,7 +127,7 @@ In the following example, the function `WritePerson` is declared between the lin
 ```
 return <expression>
 ```
-A *return* statement returns the value of an expression (`<expression>`) from a function and terminates execution of the function immediately. Return statements can only be used within the range of a function.
+A *return* statement returns the value of an expression (`<expression>`) from a function and terminates execution of the function immediately. Return statements can only be used within the range of a function. If a function does not contain any return statements, a value of `?` is implicitly returned.
 
 In the following example, the function `Add` is declared on line 2 taking the parameters `a` and `b` and returning the value of `a + b`. The function is then called with the values `3` and `4`. Line numbers added for clarity.
 ```
@@ -168,11 +168,87 @@ Write (boo)   // Outputs "?"
 ```
 
 # Functions
-A *function* (more accurately, *user-defined function*, see [native functions](#Native-functions)) is a range of lines contained under an identifier which may take in parameters and/or return a value.
+A *function* (more accurately, *user-defined function*, see [native functions](#Native-functions)) is a range of lines contained under an identifier which may take in parameters and/or return a value. The range of a function may not overlap with the range of another function. Functions can be invoked/called by stating the function's identifier followed by parentheses containing any arguments to the function.
+
+In the following example, the function `Write` is called with a single argument of `"Hello world!"`.
+```
+Write ("Hello world!")
+```
+
+Because functions may return a value
 
 During compilation, functions are lowered into manipulation statements and variable assignments. As such, functions do not exist at runtime.
 
 ## Parameters
+Parameters act like regular variables but can only be used within the range of the function they are declared in. Like regular variables, they are implicitly and dynamically typed.
+
+In the following example, the function `Greet` is declared with a single parameter `name`.
+```
+1.  function Greet 2..2 (name)
+2.  Write ("Hello, " < name < "!")
+```
 
 ## Native functions
 *Native functions* are functions which are defined by the runtime as opposed to compiled source code and are treated separately from user-defined functions by the compiler. These functions include the standard library, such as `Write`, `ReadLine` and `Clamp`. Native functions may not be referenced using a function pointer expression (`*Function`) as they are not defined within source code.
+
+# Types
+
+## Numbers
+Numbers are 32-bit signed integers, supporting a range of `-2147483648` (inclusive) to `2147483647` (inclusive). A number literal can only be defined as a positive integer, though can be negated using the [unary negation operator](#Unary-arithmetic).
+
+## Strings
+Strings support UTF-16 encoding and a theoretically boundless length. String literals are defined by surrounding text in `""`, for instance `"This is a string."`.
+
+## Ranges
+Ranges are structures representing a contiguous range of numbers. Ranges and range literals are constructed using the [binary range operator](#Binary-range-operator-range-literal). In statements and expressions expecting a range, a singular number may be used in place of a range, in which case the number is implicitly converted into a range containing only the singular number.
+
+### String behavior
+When used as an argument to functions like `String` and `Write`, a range is converted into the string representation `"{x}..{y}"` where `{x}` is the lower bound of the range and `{y}` is the upper bound. This is the case even when the range only spans a single number.
+
+# Expressions
+
+## Built-in variables
+Built-in variables act like and can be referenced as regular variables though cannot be assigned and are managed by the runtime. The following built-in variables are supported.
+* `here`, refers to the line number of the currently executing line.
+* `start`, refers to the line number of the first line of the file.
+* `end`, refers to the line number of the last line of the file.
+
+## Operators
+
+### Unary arithmetic
+The supported unary arithmetic operators, where `x` is a number, are
+* Identity `+x`
+* Negation `-x`
+
+### Binary arithmetic
+The supported binary arithmetic operators, where `x` and `y` are numbers, are
+* Addition `x + y`
+* Subtraction `x - y`
+* Multiplication `x * y`
+* Division `x / y`
+* Modulo `x % y`
+
+### Binary string concatenation
+Binary string concatenation `x < y` where `x` and `y` are strings is evaluated by concatenating `y` to the end of `x`. For instance, `"Hello " < "world!"` is evaluated to `"Hello world!"`.
+
+### Binary range operator (range literal)
+The binary range operator `x..y` where `x` and `y` are numbers constructs a range from `x` (inclusive) to `y` (inclusive). For instance, the range expression `2..7` constructs a range with the numbers `1`, `2`, `3`, `4`, `5`, `6` and `7`.
+
+## Function pointer expressions
+```
+*Function
+```
+A *function pointer expression* is a compile-time convertion from a function to the line range of the function. It is equivalent to writing the line range of the function in place of the function pointer expression.
+
+In the following example, the range of the function `Add` is written to stdout. Line numbers added for clarity.
+```
+1.  function Add 2..3 (a b)
+2.  result = a + b
+3.  return result
+4.  
+5.  Write (*Add)
+```
+This produces the output
+```
+2..3
+```
