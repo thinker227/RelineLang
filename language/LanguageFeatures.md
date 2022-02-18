@@ -102,11 +102,6 @@ In the following example, the variable `foo` is assigned the value of `2`, is wr
 4.  Write (foo)
 ```
 
-## Function calls
-```
-<function> (<arguments>)
-```
-
 ## Function declarations (`function`)
 ```
 function <function> <range> [<parameters>]
@@ -234,6 +229,23 @@ Binary string concatenation `x < y` where `x` and `y` are strings is evaluated b
 ### Binary range operator (range literal)
 The binary range operator `x..y` where `x` and `y` are numbers constructs a range from `x` (inclusive) to `y` (inclusive). For instance, the range expression `2..7` constructs a range with the numbers `1`, `2`, `3`, `4`, `5`, `6` and `7`.
 
+## Function invocations
+Function invocations call a function with a list of arguments, optionally returning a value. If a function invocation which does not return anything is used within an expression, it is evaluated to `?`. See [functions](#Functions) for information about runtime representation.
+
+```
+1.  function Add 2..3 (a b)
+2.  result = a + b
+3.  return result
+4.  
+5.  Write (Add (59 41))
+6.  Write (Write ("Hello world!"))
+```
+The above example produces the output
+```
+100
+?
+```
+
 ## Function pointer expressions
 ```
 *Function
@@ -251,4 +263,15 @@ In the following example, the range of the function `Add` is written to stdout. 
 This produces the output
 ```
 2..3
+```
+
+## Groupings
+```
+(<expression>)
+```
+A grouping is denoted using parentheses surrounding an expression. Grouping have higher presidence than every operator.
+
+```
+1 + 2 * 3   // Evaluates to 7
+(1 + 2) * 3   // Evaluates to 9
 ```
