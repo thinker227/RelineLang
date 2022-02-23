@@ -7,7 +7,7 @@ namespace Reline.Compilation.Binding;
 /// </summary>
 internal sealed class IdentifierBinder<TSymbol> where TSymbol : IIdentifiableSymbol {
 
-	protected readonly Dictionary<string, TSymbol> symbols;
+	private readonly Dictionary<string, TSymbol> symbols;
 
 
 
