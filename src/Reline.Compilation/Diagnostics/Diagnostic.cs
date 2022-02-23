@@ -21,18 +21,25 @@ public readonly record struct Diagnostic {
 
 
 
-	/// <summary>
-	/// Initializes a new <see cref="Diagnostic"/> instance.
-	/// </summary>
-	/// <param name="description">The description of the diagnostic.</param>
-	/// <param name="location">The span of the diagnostic in the source text.</param>
-	public Diagnostic(DiagnosticDescription description, TextSpan? location, params object?[] formatArgs) {
+	private Diagnostic(DiagnosticDescription description, TextSpan? location, string formattedDescription) {
 		Description = description;
 		Location = location;
-		FormattedDescription = Description.FormatDescription(formatArgs);
+		FormattedDescription = formattedDescription;
 	}
 
 
+
+	/// <summary>
+	/// Creates a new <see cref="Diagnostic"/>.
+	/// </summary>
+	/// <param name="description">The description of the diagnostic.</param>
+	/// <param name="location">The span of the diagnostic in the source text.</param>
+	/// <param name="formatArgs">The arguments to format the description with.</param>
+	/// <returns>A new <see cref="Diagnostic"/>.</returns>
+	public static Diagnostic Create(DiagnosticDescription description, TextSpan? location, params object?[] formatArgs) {
+		string formattedDescription = description.FormatDescription(formatArgs);
+		return new Diagnostic(description, location, formattedDescription);
+	}
 
 	public override string ToString() {
 		string locationString = Location is not null ? $"({Location}) " : "";
