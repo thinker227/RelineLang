@@ -252,8 +252,8 @@ internal sealed class ExpressionBinder {
 		CreateSymbol<BadExpressionSymbol>(syntax);
 	private TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() =>
 		binder.CreateSymbol<TSymbol>(syntax);
-	private void AddDiagnostic(ISymbol symbol, DiagnosticLevel level, string description) =>
-		binder.AddDiagnostic(symbol, level, description);
+	private void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) =>
+		binder.AddDiagnostic(symbol, description, formatArgs);
 
 }
 

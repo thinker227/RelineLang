@@ -114,16 +114,13 @@ public sealed partial class Binder {
 	/// <param name="symbol">The to add the diagnostic to.</param>
 	/// <param name="level">The <see cref="DiagnosticLevel"/> of the diagnostic.</param>
 	/// <param name="description">The description of the diagnostic.</param>
-	internal void AddDiagnostic(ISymbol symbol, DiagnosticLevel level, string description) {
-		var textSpan = symbol.Syntax?.GetTextSpan();
-		Diagnostic diagnostic = new() {
-			Level = level,
-			Description = description,
-			Location = textSpan
-		};
+	internal void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) {
+		var textSpan = symbol.Syntax?.GetTextSpan() ?? TextSpan.Empty;
+		var diagnostic = description
+			.ToDiagnostic(textSpan, formatArgs);
 		diagnostics.AddDiagnostic(symbol, diagnostic);
 
-		if (level == DiagnosticLevel.Error) hasError = true;
+		if (description.Level == DiagnosticLevel.Error) hasError = true;
 	}
 
 	/// <summary>

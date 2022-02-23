@@ -2,7 +2,7 @@
 
 namespace Reline.Common.Text;
 
-public static class TextSpanExtensions {
+public static class StringExtensions {
 
 	/// <summary>
 	/// Retrieves a substring from a <see cref="string"/>.
