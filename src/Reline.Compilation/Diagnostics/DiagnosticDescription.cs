@@ -27,13 +27,6 @@ public sealed record class DiagnosticDescription {
 	/// <returns>The formatted description of the diagnostic.</returns>
 	public string FormatDescription(params object?[] args) =>
 		string.Format(Description, args).Trim();
-	/// <summary>
-	/// Formats the diagnostic.
-	/// </summary>
-	/// <param name="args">The arguments to format the description with.</param>
-	/// <returns>The formatted diagnostic string.</returns>
-	public string FormatDiagnostic(params object?[] args) =>
-		$"{Level.ToDisplayString()} {ErrorCode}: {FormatDescription(args)}";
 
 	public override string ToString() =>
 		$"{Level.ToDisplayString()} {ErrorCode}";
