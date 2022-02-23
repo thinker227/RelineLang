@@ -1,4 +1,6 @@
-﻿namespace Reline.Compilation.Diagnostics;
+﻿using Humanizer;
+
+namespace Reline.Compilation.Diagnostics;
 
 /// <summary>
 /// Describes a formattable diagnostic.
@@ -29,6 +31,6 @@ public sealed record class DiagnosticDescription {
 		string.Format(Description, args).Trim();
 
 	public override string ToString() =>
-		$"{Level.ToDisplayString()} {ErrorCode}";
+		$"{Level.Humanize(LetterCasing.Sentence)} {ErrorCode}";
 
 }
