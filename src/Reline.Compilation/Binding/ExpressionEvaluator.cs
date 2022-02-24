@@ -39,7 +39,7 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<LiteralValue> {
 				return -expression.GetAs<int>();
 		}
 
-		AddDiagnostic(symbol, DiagnosticLevel.Error, UnaryTypeError(symbol.OperatorType, expression.Type));
+		AddDiagnostic(symbol, CompilerDiagnostics.unaryOperatorTypeError, symbol.OperatorType, expression.Type);
 		return new();
 	}
 	public LiteralValue VisitBinary(BinaryExpressionSymbol symbol) {
@@ -58,7 +58,7 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<LiteralValue> {
 			case (BinaryOperatorType.Division, LiteralType.Number, LiteralType.Number):
 				int r = right.GetAs<int>();
 				if (r == 0) {
-					AddDiagnostic(symbol, DiagnosticLevel.Error, "Division by 0.");
+					AddDiagnostic(symbol, CompilerDiagnostics.divisionByZero);
 					return new();
 				}
 				return left.GetAs<int>() / r;
@@ -70,7 +70,7 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<LiteralValue> {
 				return new RangeLiteral(left.GetAs<int>(), right.GetAs<int>());
 		}
 
-		AddDiagnostic(symbol, DiagnosticLevel.Error, BinaryTypeError(symbol.OperatorType, left.Type, right.Type));
+		AddDiagnostic(symbol, CompilerDiagnostics.binaryOperatorTypeError, symbol.OperatorType, left.Type, right.Type);
 		return new();
 	}
 	public LiteralValue VisitKeyword(KeywordExpressionSymbol symbol) => symbol.KeywordType switch {
@@ -88,7 +88,7 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<LiteralValue> {
 	public LiteralValue VisitLiteral(LiteralExpressionSymbol symbol) =>
 		symbol.Literal;
 	public LiteralValue VisitFunctionInvocation(FunctionInvocationExpressionSymbol symbol) {
-		AddDiagnostic(symbol, DiagnosticLevel.Error, "Cannot invoke functions within a constant context.");
+		AddDiagnostic(symbol, CompilerDiagnostics.disallowedFunctionInvocations);
 		return new();
 	}
 	public LiteralValue VisitFunctionPointer(FunctionPointerExpressionSymbol symbol) =>
@@ -99,7 +99,7 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<LiteralValue> {
 			case LabelSymbol label:
 				return label.Line.LineNumber;
 			case IVariableSymbol:
-				AddDiagnostic(symbol, DiagnosticLevel.Error, "Cannot reference variable or parameter within a constant context.");
+				AddDiagnostic(symbol, CompilerDiagnostics.disallowedNonConstantsOnlyLabels);
 				return new();
 			// Function symbols will have been reported an error
 		}
@@ -107,11 +107,7 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<LiteralValue> {
 		return new();
 	}
 
-	private void AddDiagnostic(ISymbol symbol, DiagnosticLevel level, string message) =>
-		binder.AddDiagnostic(symbol, level, message);
-	private static string UnaryTypeError(UnaryOperatorType op, LiteralType type) =>
-		$"Cannot apply operator unary {op} to operand of type {type}.";
-	private static string BinaryTypeError(BinaryOperatorType op, LiteralType leftType, LiteralType rightType) =>
-		$"Cannot apply operator unary {op} to operands of type {leftType} and {rightType}.";
+	private void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) =>
+		binder.AddDiagnostic(symbol, description, formatArgs);
 
 }

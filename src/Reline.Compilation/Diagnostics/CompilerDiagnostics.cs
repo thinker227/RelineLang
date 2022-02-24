@@ -108,6 +108,26 @@ internal static class CompilerDiagnostics {
 		Description = "Cannot point to label, variable or parameter '{0}'",
 		Level = DiagnosticLevel.Error
 	};
+	public static readonly DiagnosticDescription unaryOperatorTypeError = new() {
+		ErrorCode = "RL0014",
+		Description = "Cannot apply operator unary {0} to operand of type {1}",
+		Level = DiagnosticLevel.Error
+	};
+	public static readonly DiagnosticDescription binaryOperatorTypeError = new() {
+		ErrorCode = "RL0015",
+		Description = "Cannot apply operator unary {0} to operands of type {1} and {2}",
+		Level = DiagnosticLevel.Error
+	};
+	public static readonly DiagnosticDescription divisionByZero = new() {
+		ErrorCode = "RL0016",
+		Description = "Division by 0",
+		Level = DiagnosticLevel.Error
+	};
+	public static readonly DiagnosticDescription disallowedNonConstantsOnlyLabels = new() {
+		ErrorCode = "RL0017",
+		Description = "Variables, parameters and functions may not be used in this context",
+		Level = DiagnosticLevel.Error
+	};
 
 	/*
 	public static readonly DiagnosticDescription diagnosticName = new() {
