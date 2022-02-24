@@ -33,7 +33,7 @@ partial class Binder {
 		string identifier = label.Identifier;
 		var existingIdentifier = GetIdentifier(identifier);
 		if (existingIdentifier is not null) {
-			AddDiagnostic(label, DiagnosticLevel.Error, $"An identifier with the name {identifier} is already defined.");
+			AddDiagnostic(label, CompilerDiagnostics.identifierAlreadyDefined, identifier);
 			return;
 		}
 
@@ -70,7 +70,7 @@ partial class Binder {
 		string identifier = symbol.Identifier;
 		var existingIdentifier = GetIdentifier(identifier);
 		if (existingIdentifier is not (null or VariableSymbol)) {
-			AddDiagnostic(symbol, DiagnosticLevel.Error, $"An identifier with the name {identifier} is already defined.");
+			AddDiagnostic(symbol, CompilerDiagnostics.identifierAlreadyDefined, identifier);
 			return;
 		}
 
@@ -97,7 +97,7 @@ partial class Binder {
 		string identifier = function.Identifier;
 		var existingIdentifier = GetIdentifier(identifier);
 		if (existingIdentifier is not null) {
-			AddDiagnostic(function, DiagnosticLevel.Error, $"An identifier with the name {identifier} is already defined.");
+			AddDiagnostic(function, CompilerDiagnostics.identifierAlreadyDefined, identifier);
 		}
 		else {
 			FunctionBinder.RegisterSymbol(function);
@@ -111,7 +111,7 @@ partial class Binder {
 		if (range.Type != LiteralType.Range) {
 			// Reporting a type error when the error is due to an error in a subexpression looks ugly
 			if (range.Type != LiteralType.None)
-				AddDiagnostic(function.RangeExpression, DiagnosticLevel.Error, "Expected constant range.");
+				AddDiagnostic(function.RangeExpression, CompilerDiagnostics.expectedType, "range");
 			// Just pretend the function doesn't exist. Would be nice to eventually
 			// set the range as the line the function was declared on.
 			rangeValue = new(0, 0);
@@ -140,7 +140,7 @@ partial class Binder {
 
 		var existingIdentifier = GetIdentifier(identifier);
 		if (existingIdentifier is not null) {
-			AddDiagnostic(symbol, DiagnosticLevel.Error, $"An identifier with the name {identifier} is already defined.");
+			AddDiagnostic(symbol, CompilerDiagnostics.identifierAlreadyDefined, identifier);
 			return;
 		}
 

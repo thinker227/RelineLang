@@ -114,17 +114,17 @@ internal sealed class ExpressionBinder {
 
 		if (OnlyConstants) {
 			// Return a bad expression if non-constants are not allowed
-			return BadExpression(syntax, "Labels, variables, parameters and functions may not be used in this context.");
+			return BadExpression(syntax, CompilerDiagnostics.disallowedNonConstants);
 		}
 
 		var identifierSymbol = binder.GetIdentifier(identifier);
 
 		switch (identifierSymbol) {
 			case null:
-				return BadExpression(syntax, $"Label, variable, parameter or function '{identifier}' is not declared.");
+				return BadExpression(syntax, CompilerDiagnostics.undeclaredIdentifier, identifier);
 
 			case FunctionSymbol:
-				return BadExpression(syntax, "Functions may only be used in function pointers or function invocations. Did you intend to invoke or point to it?");
+				return BadExpression(syntax, CompilerDiagnostics.uninvokedFunction);
 		}
 
 		var symbol = CreateSymbol<IdentifierExpressionSymbol>(syntax);
@@ -147,7 +147,7 @@ internal sealed class ExpressionBinder {
 	private IExpressionSymbol BindFunctionInvocation(FunctionInvocationExpressionSyntax syntax) {
 		if (NoFunctions) {
 			// Return a bad expression if non-constants are not allowed
-			return BadExpression(syntax, "Functions may not be used in this context.");
+			return BadExpression(syntax, CompilerDiagnostics.disallowedFunctionInvocations);
 		}
 
 		if (syntax.Identifier.IsMissing) {
@@ -163,10 +163,10 @@ internal sealed class ExpressionBinder {
 
 		switch (identifierSymbol) {
 			case null:
-				return BadExpression(syntax, $"Function '{identifier}' is not declared.");
+				return BadExpression(syntax, CompilerDiagnostics.undeclaredFunction);
 
 			case not FunctionSymbol:
-				return BadExpression(syntax, $"Cannot invoke label, variable or parameter '{identifier}'.");
+				return BadExpression(syntax, CompilerDiagnostics.invokeNonFunction);
 		}
 
 		var symbol = CreateSymbol<FunctionInvocationExpressionSymbol>(syntax);
@@ -186,7 +186,7 @@ internal sealed class ExpressionBinder {
 		// so as of now, function pointer expressions are not constant.
 
 		if (OnlyConstants) {
-			return BadExpression(syntax, "Function pointers may not be used in this context.");
+			return BadExpression(syntax, CompilerDiagnostics.disallowedNonConstants);
 		}
 
 		if (syntax.Identifier.IsMissing) {
@@ -198,10 +198,10 @@ internal sealed class ExpressionBinder {
 
 		switch (identifierSymbol) {
 			case null:
-				return BadExpression(syntax, $"Function '{identifier}' is not declared.");
+				return BadExpression(syntax, CompilerDiagnostics.undeclaredFunction, identifier);
 
 			case not FunctionSymbol:
-				return BadExpression(syntax, $"Cannot point to label, variable or parameter '{identifier}'.");
+				return BadExpression(syntax, CompilerDiagnostics.nonFunctionPointer);
 		}
 
 		var symbol = CreateSymbol<FunctionPointerExpressionSymbol>(syntax);
@@ -243,9 +243,9 @@ internal sealed class ExpressionBinder {
 		_ => throw new CompilationException("Unknown literal type."),
 	};
 
-	private BadExpressionSymbol BadExpression(ISyntaxNode syntax, string diagnosticDescription) {
+	private BadExpressionSymbol BadExpression(ISyntaxNode syntax, DiagnosticDescription description, params object?[] formatArgs) {
 		var symbol = CreateSymbol<BadExpressionSymbol>(syntax);
-		AddDiagnostic(symbol, DiagnosticLevel.Error, diagnosticDescription);
+		AddDiagnostic(symbol, description, formatArgs);
 		return symbol;
 	}
 	private BadExpressionSymbol BadExpression(ISyntaxNode syntax) =>
