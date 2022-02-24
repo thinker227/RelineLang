@@ -57,7 +57,7 @@ public sealed class Parser {
 		if (!SyntaxRules.CanEndLine(viewer.Current.Type))
 			statement = Statement();
 		
-		SyntaxToken newlineToken = Expect(SyntaxType.NewlineToken, SyntaxType.EndOfFile);
+		var newlineToken = Expect(SyntaxType.NewlineToken, SyntaxType.EndOfFile);
 
 		return new(lineNumber, label, statement, newlineToken);
 	}
@@ -123,7 +123,7 @@ public sealed class Parser {
 		// Only function invocations can be used as statements
 		// Make this prettier later
 		if (expression is not FunctionInvocationExpressionSyntax) {
-			Diagnostic diagnostic = CompilerDiagnostics.invalidExpressionStatement
+			var diagnostic = CompilerDiagnostics.invalidExpressionStatement
 				.ToDiagnostic(expression.GetTextSpan());
 			diagnostics.AddDiagnostic(expression, diagnostic);
 		}
@@ -238,7 +238,7 @@ public sealed class Parser {
 	private IExpressionSyntax CreateInvalidExpressionTerm() {
 		var span = viewer.Current.Span;
 		var token = CreateUnexpectedToken();
-		Diagnostic diagnostic = CompilerDiagnostics.invalidExpressionTerm
+		var diagnostic = CompilerDiagnostics.invalidExpressionTerm
 			.ToDiagnostic(span, viewer.Current.Text);
 		diagnostics.AddDiagnostic(token, diagnostic);
 		return new IdentifierExpressionSyntax(token);
