@@ -9,7 +9,6 @@ if (!File.Exists(path)) return;
 string text = File.ReadAllText(path);
 
 var parseResult = Parser.ParseString(text);
-
 var bindResult = Binder.BindTree(parseResult);
 
 Console.ReadLine();
