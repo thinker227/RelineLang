@@ -91,6 +91,8 @@ public partial class Binder {
 	private ReturnStatementSymbol BindReturnStatement(ReturnStatementSyntax syntax) {
 		var expression = BindExpression(syntax.Expression);
 
+		// Report error if return statement is not within a function
+
 		var symbol = CreateSymbol<ReturnStatementSymbol>(syntax);
 		symbol.Expression = expression;
 		return symbol;
