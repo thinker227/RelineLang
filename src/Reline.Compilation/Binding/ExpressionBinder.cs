@@ -163,10 +163,10 @@ internal sealed class ExpressionBinder {
 
 		switch (identifierSymbol) {
 			case null:
-				return BadExpression(syntax, CompilerDiagnostics.undeclaredFunction);
+				return BadExpression(syntax, CompilerDiagnostics.undeclaredFunction, identifier);
 
 			case not FunctionSymbol:
-				return BadExpression(syntax, CompilerDiagnostics.invokeNonFunction);
+				return BadExpression(syntax, CompilerDiagnostics.invokeNonFunction, identifier);
 		}
 
 		var symbol = CreateSymbol<FunctionInvocationExpressionSymbol>(syntax);
