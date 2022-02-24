@@ -3,7 +3,7 @@ using Reline.Compilation.Symbols;
 
 namespace Reline.Compilation.Binding;
 
-partial class Binder {
+public partial class Binder {
 
 	/// <summary>
 	/// Binds an <see cref="IStatementSyntax"/> into an <see cref="IStatementSymbol"/>.
