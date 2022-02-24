@@ -66,7 +66,8 @@ internal sealed class Lexer {
 
 		viewer.Advance();
 
-		var diagnostic = new Diagnostic(DiagnosticLevel.Error, $"Unexpected character '{current}' at position {lexemeStartPosition} in source", CurrentSpan);
+		var diagnostic = CompilerDiagnostics.unexpectedCharacter
+			.ToDiagnostic(CurrentSpan, current, lexemeStartPosition);
 		diagnostics.Add(diagnostic);
 		return CreateToken(SyntaxType.Unknown, diagnostic);
 	}
@@ -104,6 +105,7 @@ internal sealed class Lexer {
 					viewer.AdvanceDistance(2);
 					return CreateToken(SyntaxType.DotDotToken);
 				}
+				viewer.Advance();
 				return CreateToken(SyntaxType.DotToken);
 			case '/':
 				if (viewer.Next == '/') return GetComment();
@@ -143,7 +145,7 @@ internal sealed class Lexer {
 	}
 	private string GetIdentifierOrKeywordString() {
 		int startPosition = viewer.Position;
-		viewer.AdvanceWhile(SyntaxRules.IsKeywordValid);
+		viewer.AdvanceWhile(SyntaxRules.IsIdentifierValid);
 		int endPosition = viewer.Position;
 		return source[startPosition..endPosition];
 	}

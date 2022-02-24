@@ -18,6 +18,10 @@ public sealed class ProgramSymbol : SymbolNode {
 	/// </summary>
 	public int EndLine { get; set; }
 	/// <summary>
+	/// The full range of the program.
+	/// </summary>
+	public RangeLiteral FullRange => new(StartLine, EndLine);
+	/// <summary>
 	/// The declared labels in the program.
 	/// </summary>
 	public IList<LabelSymbol> Labels { get; } = new List<LabelSymbol>();

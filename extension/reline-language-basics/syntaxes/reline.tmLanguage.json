@@ -1,0 +1,120 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Reline",
+	"patterns": [
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#operators"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#digits"
+		},
+		{
+			"include": "#functionidentifier"
+		},
+		{
+			"include": "#function"
+		},
+		{
+			"include": "#label"
+		},
+		{
+			"include": "#identifier"
+		}
+	],
+	"repository": {
+		"comments": {
+			"patterns": [{
+				"name": "comment.line.reline",
+				"match": "\\/\\/.*\\n?"
+			}]
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.reline",
+					"match": "\\b(move|swap|copy|to|with|return)\\b",
+					"comment": "function keyword is not included because it is used in function identifiers"
+				},
+				{
+					"name": "constant.language.line.reline",
+					"match": "\\b(here|start|end)\\b"
+				}
+			]
+		},
+		"operators": {
+			"patterns": [
+				{
+					"name": "keyword.operator.reline",
+					"match": "\\+|\\-|\\*|\\/|\\%|\\<|(?:\\.\\.)"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.reline",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.reline",
+					"match": "\\\\."
+				}
+			]
+		},
+		"digits": {
+			"patterns": [{
+				"name": "constant.numeric.reline",
+				"match": "[0-9]+"
+			}]
+		},
+		"functionidentifier": {
+			"patterns": [{
+				"match": "\\b(function)\\b(?:\\s+([a-zA-Z_@][a-zA-Z0-9_]*))?",
+				"captures": {
+					"1": {
+						"name": "keyword.control.reline"
+					},
+					"2": {
+						"name": "entity.name.function.reline"
+					}
+				},
+				"tests": "https://regex101.com/r/GQRUUd/1"
+			}]
+		},
+		"function": {
+			"patterns": [{
+				"match": "([a-zA-Z_@][a-zA-Z0-9_]*)\\s*\\(",
+				"captures": {
+					"1": {
+						"name": "entity.name.function.reline"
+					}
+				}
+			}]
+		},
+		"label": {
+			"patterns": [{
+				"match": "([a-zA-Z_@][a-zA-Z0-9_]*)\\s*:",
+				"captures": {
+					"1": {
+						"name": "entity.name.tag.reline"
+					}
+				}
+			}]
+		},
+		"identifier": {
+			"patterns": [{
+				"match": "[a-zA-Z_@][a-zA-Z0-9_]*",
+				"name": "entity.name.variable.reline"
+			}]
+		}
+	},
+	"scopeName": "source.reline"
+}

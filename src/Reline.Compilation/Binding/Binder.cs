@@ -24,17 +24,17 @@ public sealed partial class Binder {
 	/// </summary>
 	internal ProgramSymbol ProgramRoot => programRoot;
 	/// <summary>
-	/// The <see cref="Binding.LabelBinder"/> for the binder.
+	/// The internal <see cref="LabelSymbol"/> binder.
 	/// </summary>
-	internal LabelBinder LabelBinder { get; }
+	internal IdentifierBinder<LabelSymbol> LabelBinder { get; }
 	/// <summary>
-	/// The <see cref="Binding.VariableBinder"/> for the binder.
+	/// The internal <see cref="IVariableSymbol"/> binder.
 	/// </summary>
-	internal VariableBinder VariableBinder { get; }
+	internal IdentifierBinder<IVariableSymbol> VariableBinder { get; }
 	/// <summary>
-	/// The <see cref="Binding.FunctionBinder"/> for the binder.
+	/// The internal <see cref="FunctionSymbol"/> binder.
 	/// </summary>
-	internal FunctionBinder FunctionBinder { get; }
+	internal IdentifierBinder<FunctionSymbol> FunctionBinder { get; }
 	/// <summary>
 	/// The <see cref="Binding.ExpressionEvaluator"/> for the binder.
 	/// </summary>
@@ -114,16 +114,13 @@ public sealed partial class Binder {
 	/// <param name="symbol">The to add the diagnostic to.</param>
 	/// <param name="level">The <see cref="DiagnosticLevel"/> of the diagnostic.</param>
 	/// <param name="description">The description of the diagnostic.</param>
-	internal void AddDiagnostic(ISymbol symbol, DiagnosticLevel level, string description) {
-		var textSpan = symbol.Syntax?.GetTextSpan();
-		Diagnostic diagnostic = new() {
-			Level = level,
-			Description = description,
-			Location = textSpan
-		};
+	internal void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) {
+		var textSpan = symbol.Syntax?.GetTextSpan() ?? TextSpan.Empty;
+		var diagnostic = description
+			.ToDiagnostic(textSpan, formatArgs);
 		diagnostics.AddDiagnostic(symbol, diagnostic);
 
-		if (level == DiagnosticLevel.Error) hasError = true;
+		if (description.Level == DiagnosticLevel.Error) hasError = true;
 	}
 
 	/// <summary>
