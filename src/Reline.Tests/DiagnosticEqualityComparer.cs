@@ -28,6 +28,7 @@ public class DiagnosticEqualityComparer : IEqualityComparer<Diagnostic> {
 
 }
 
+[Flags]
 public enum DiagnosticComparison {
 	IgnoreLocation = 1,
 	IgnoreDescription = 2,
