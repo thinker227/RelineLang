@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Reline.Tests;
@@ -67,7 +68,7 @@ public static class AssertAsync {
 				task.Exception.InnerExceptions[0] : task.Exception;
 		}
 
-		if (!completedInTime)
+		if (!completedInTime && !Debugger.IsAttached)
 			throw new TimeoutException($"Task did not complete in {timeout} seconds.");
 
 		return task.Result;
