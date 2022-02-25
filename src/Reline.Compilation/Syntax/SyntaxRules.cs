@@ -21,8 +21,6 @@ public static class SyntaxRules {
 	public static bool IsWhitespace(char c) =>
 		c != '\n' && char.IsWhiteSpace(c);
 
-	public static bool IsWhitespaceLike(SyntaxType type) =>
-		type is SyntaxType.Whitespace or SyntaxType.Comment;
 	public static bool CanEndLine(SyntaxType type) =>
 		type is SyntaxType.NewlineToken or SyntaxType.EndOfFile;
 	public static bool CanBeginStatement(SyntaxType type) =>

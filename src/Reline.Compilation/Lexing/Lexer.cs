@@ -30,7 +30,7 @@ internal sealed class Lexer {
 	/// </summary>
 	/// <param name="source">The source string.</param>
 	/// <returns>A <see cref="LexResult"/> containing
-	/// the lexed tokens and resulting diagnostics..</returns>
+	/// the lexed tokens and resulting diagnostics.</returns>
 	public static LexResult LexSource(string source) {
 		Lexer lexer = new(source);
 		var tokens = lexer.LexAll();
@@ -39,14 +39,32 @@ internal sealed class Lexer {
 	}
 	private ImmutableArray<SyntaxToken> LexAll() {
 		List<SyntaxToken> tokens = new();
-		while (!viewer.IsAtEnd) {
-			var token = LexNext();
+		List<SyntaxTrivia> trivia = new();
+		
+		void addToken(SyntaxToken token) {
+			if (trivia.Count > 0) {
+				token = token.WithLeadingTrivia(trivia);
+				trivia.Clear();
+			}
 			tokens.Add(token);
 		}
-		tokens.Add(new(SyntaxType.EndOfFile, TextSpan.Empty, "", null));
+
+		while (!viewer.IsAtEnd) {
+			var token = LexNext();
+
+			if (IsTriviaType(token.Type))
+				trivia.Add(token.ToSyntaxTrivia());
+			else addToken(token);
+		}
+
+		addToken(new(SyntaxType.EndOfFile, TextSpan.Empty, "", null));
 
 		return tokens.ToImmutableArray();
 	}
+	private static bool IsTriviaType(SyntaxType type) => type is
+		SyntaxType.Whitespace or
+		SyntaxType.Comment or
+		SyntaxType.Unknown;
 	private SyntaxToken LexNext() {
 		lexemeStartPosition = viewer.Position;
 		char current = viewer.Current;

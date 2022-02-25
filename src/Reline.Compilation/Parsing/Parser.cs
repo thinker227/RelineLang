@@ -248,10 +248,8 @@ public sealed class Parser {
 	/// Gets the current <see cref="SyntaxToken"/> with the current leading trivia,
 	/// then advances the current token.
 	/// </summary>
-	private SyntaxToken GetCurrentAdvance() {
-		var trivia = viewer.GetLeadingTrivia();
-		return viewer.AdvanceCurrent().WithLeadingTrivia(trivia);
-	}
+	private SyntaxToken GetCurrentAdvance() =>
+		viewer.AdvanceCurrent();
 	/// <summary>
 	/// Expects the current token with a specified <see cref="SyntaxType"/>.
 	/// </summary>
