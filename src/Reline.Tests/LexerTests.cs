@@ -1,5 +1,6 @@
 using Reline.Compilation.Syntax;
 using Reline.Compilation.Lexing;
+using Reline.Compilation.Diagnostics;
 
 namespace Reline.Tests;
 
@@ -110,6 +111,10 @@ public class LexerTests {
 	}
 	[Fact]
 	public void LexesInvalidCharacters() {
+		string source =
+			"&$.[]{}";
+		var lexResult = AssertAsync.CompletesIn(1000, () => Lexer.LexSource(source));
+
 		var expectedTokens = new[] {
 			Token(SyntaxType.EndOfFile, TextSpan.Empty, "").WithLeadingTrivia(new[] {
 				Trivia(0, "&"),
@@ -121,13 +126,34 @@ public class LexerTests {
 				Trivia(6, "}"),
 			}),
 		};
+		SyntaxTokenEqualityComparer tokenComparer = new(0);
+		Assert.Equal(expectedTokens, lexResult.Tokens, tokenComparer);
 
-		string source =
-			"&$.[]{}";
-		var tokens = AssertAsync.CompletesIn(1000, () => Lexer.LexSource(source).Tokens);
-
-		SyntaxTokenEqualityComparer comparer = new(0);
-		Assert.Equal(expectedTokens, tokens, comparer);
+		var expectedDiagnostics = new[] {
+			CompilerDiagnostics.unexpectedCharacter.ToDiagnostic(
+				new(0, 1), "", ""
+			),
+			CompilerDiagnostics.unexpectedCharacter.ToDiagnostic(
+				new(1, 2), "", ""
+			),
+			CompilerDiagnostics.unexpectedCharacter.ToDiagnostic(
+				new(2, 3), "", ""
+			),
+			CompilerDiagnostics.unexpectedCharacter.ToDiagnostic(
+				new(3, 4), "", ""
+			),
+			CompilerDiagnostics.unexpectedCharacter.ToDiagnostic(
+				new(4, 5), "", ""
+			),
+			CompilerDiagnostics.unexpectedCharacter.ToDiagnostic(
+				new(5, 6), "", ""
+			),
+			CompilerDiagnostics.unexpectedCharacter.ToDiagnostic(
+				new(6, 7), "", ""
+			),
+		};
+		DiagnosticEqualityComparer diagnosticComparer = new(DiagnosticComparison.IgnoreFormatting);
+		Assert.Equal(expectedDiagnostics, lexResult.Diagnostics, diagnosticComparer);
 	}
 
 }
