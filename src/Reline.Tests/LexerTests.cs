@@ -155,5 +155,41 @@ public class LexerTests {
 		DiagnosticEqualityComparer diagnosticComparer = new(DiagnosticComparison.IgnoreFormatting);
 		Assert.Equal(expectedDiagnostics, lexResult.Diagnostics, diagnosticComparer);
 	}
+	[Fact]
+	public void LexesWhitespace() {
+		string source =
+@" foo 
+	bar		
+baz
+ ";
+		var tokens = AssertAsync.CompletesIn(1000, () => Lexer.LexSource(source).Tokens);
+
+		var expectedTokens = new[] {
+			Token(SyntaxType.Identifier, 1, 3, "foo").WithLeadingTrivia(new[] {
+				Trivia(0, " ")
+			}),
+			Token(SyntaxType.NewlineToken, 6, "\n").WithLeadingTrivia(new[] {
+				Trivia(4, " "),
+				Trivia(5, "\r"),
+			}),
+			Token(SyntaxType.Identifier, 8, 10, "bar").WithLeadingTrivia(new[] {
+				Trivia(7, "\t"),
+			}),
+			Token(SyntaxType.NewlineToken, 14, "\n").WithLeadingTrivia(new[] {
+				Trivia(11, "\t"),
+				Trivia(12, "\t"),
+				Trivia(13, "\r"),
+			}),
+			Token(SyntaxType.Identifier, 15, 17, "baz"),
+			Token(SyntaxType.NewlineToken, 19, "\n").WithLeadingTrivia(new[] {
+				Trivia(18, "\r"),
+			}),
+			Token(SyntaxType.EndOfFile, TextSpan.Empty, "").WithLeadingTrivia(new[] {
+				Trivia(20, " "),
+			}),
+		};
+		SyntaxTokenEqualityComparer comparer = new(0);
+		Assert.Equal(expectedTokens, tokens, comparer);
+	}
 
 }
