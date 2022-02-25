@@ -87,7 +87,7 @@ internal sealed class Lexer {
 		var diagnostic = CompilerDiagnostics.unexpectedCharacter
 			.ToDiagnostic(CurrentSpan, current, lexemeStartPosition);
 		diagnostics.Add(diagnostic);
-		return CreateToken(SyntaxType.Unknown, diagnostic);
+		return CreateToken(SyntaxType.Unknown);
 	}
 
 	private SyntaxToken? GetCharacterToken(char c) {
@@ -133,7 +133,6 @@ internal sealed class Lexer {
 
 		return null;
 	}
-
 	private SyntaxToken GetNumericLiteral() {
 		int literal = 0;
 		while (!viewer.IsAtEnd && SyntaxRules.IsNumeric(viewer.Current))
@@ -141,7 +140,6 @@ internal sealed class Lexer {
 
 		return CreateToken(SyntaxType.NumberLiteral, literal);
 	}
-
 	private SyntaxToken GetStringLiteral() {
 		viewer.Advance();
 
@@ -159,7 +157,7 @@ internal sealed class Lexer {
 		string str = GetIdentifierOrKeywordString();
 		var keyword = GetKeywordType(str);
 		if (keyword is not null) return CreateToken(keyword.Value);
-		return CreateToken(SyntaxType.Identifier, str);
+		return CreateToken(SyntaxType.Identifier);
 	}
 	private string GetIdentifierOrKeywordString() {
 		int startPosition = viewer.Position;
