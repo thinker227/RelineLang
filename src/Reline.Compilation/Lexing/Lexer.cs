@@ -92,10 +92,8 @@ internal sealed class Lexer {
 
 	private SyntaxToken? GetCharacterToken(char c) {
 		SyntaxType? single = c switch {
-			',' => SyntaxType.CommaToken,
 			':' => SyntaxType.ColonToken,
 			'=' => SyntaxType.EqualsToken,
-			'>' => SyntaxType.GreaterThanToken,
 			'<' => SyntaxType.LesserThanToken,
 			'+' => SyntaxType.PlusToken,
 			'-' => SyntaxType.MinusToken,
@@ -104,10 +102,6 @@ internal sealed class Lexer {
 			'%' => SyntaxType.PercentToken,
 			'(' => SyntaxType.OpenBracketToken,
 			')' => SyntaxType.CloseBracketToken,
-			'[' => SyntaxType.OpenSquareToken,
-			']' => SyntaxType.CloseSquareToken,
-			'{' => SyntaxType.OpenBraceToken,
-			'}' => SyntaxType.CloseBraceToken,
 			'\n' => SyntaxType.NewlineToken,
 
 			_ => null
@@ -119,12 +113,9 @@ internal sealed class Lexer {
 
 		switch (c) {
 			case '.':
-				if (viewer.Next == '.') {
-					viewer.AdvanceDistance(2);
-					return CreateToken(SyntaxType.DotDotToken);
-				}
-				viewer.Advance();
-				return CreateToken(SyntaxType.DotToken);
+				if (viewer.Next != '.') break;
+				viewer.AdvanceDistance(2);
+				return CreateToken(SyntaxType.DotDotToken);
 			case '/':
 				if (viewer.Next == '/') return GetComment();
 				viewer.Advance();

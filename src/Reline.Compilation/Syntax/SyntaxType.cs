@@ -6,25 +6,13 @@
 public enum SyntaxType {
 	// Single-character tokens
 	/// <summary>
-	/// '<c>.</c>'
-	/// </summary>
-	DotToken = 1,
-	/// <summary>
-	/// '<c>,</c>'
-	/// </summary>
-	CommaToken,
-	/// <summary>
 	/// '<c>:</c>'
 	/// </summary>
-	ColonToken,
+	ColonToken = 1,
 	/// <summary>
 	/// '<c>=</c>'
 	/// </summary>
 	EqualsToken,
-	/// <summary>
-	/// '<c>&gt;</c>'
-	/// </summary>
-	GreaterThanToken,
 	/// <summary>
 	/// '<c>&lt;</c>'
 	/// </summary>
@@ -61,22 +49,6 @@ public enum SyntaxType {
 	/// '<c>)</c>'
 	/// </summary>
 	CloseBracketToken,
-	/// <summary>
-	/// '<c>[</c>'
-	/// </summary>
-	OpenSquareToken,
-	/// <summary>
-	/// '<c>]</c>'
-	/// </summary>
-	CloseSquareToken,
-	/// <summary>
-	/// '<c>{</c>'
-	/// </summary>
-	OpenBraceToken,
-	/// <summary>
-	/// '<c>}</c>'
-	/// </summary>
-	CloseBraceToken,
 	/// <summary>
 	/// Newline character.
 	/// </summary>
