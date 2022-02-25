@@ -9,7 +9,7 @@ public static class AssertAsync {
 	/// <summary>
 	/// Runs an <see cref="Action"/> and throws a
 	/// <see cref="TimeoutException"/> if the action
-	/// did not complete in a specified time interval.
+	/// does not complete in a specified time interval.
 	/// </summary>
 	/// <param name="timeout">The time interval after which
 	/// the method will throw a <see cref="TimeoutException"/>.</param>
@@ -26,7 +26,7 @@ public static class AssertAsync {
 	/// <summary>
 	/// Runs an <see cref="Action"/> and throws a
 	/// <see cref="TimeoutException"/> if the action
-	/// did not complete in a specified time interval.
+	/// does not complete in a specified time interval.
 	/// </summary>
 	/// <param name="timeout">The time interval specified in milliseconds after which
 	/// the method will throw a <see cref="TimeoutException"/>.</param>
@@ -41,7 +41,7 @@ public static class AssertAsync {
 	/// <summary>
 	/// Runs a <see cref="Func{TResult}"/> and throws a
 	/// <see cref="TimeoutException"/> if the function
-	/// did not complete in a specified time interval.
+	/// does not complete in a specified time interval.
 	/// </summary>
 	/// <typeparam name="TResult">The return type of the function to run.</typeparam>
 	/// <param name="timeout">The time interval after which
@@ -69,7 +69,7 @@ public static class AssertAsync {
 	/// <summary>
 	/// Runs a <see cref="Func{TResult}"/> and throws a
 	/// <see cref="TimeoutException"/> if the function
-	/// did not complete in a specified time interval.
+	/// does not complete in a specified time interval.
 	/// </summary>
 	/// <typeparam name="TResult">The return type of the function to run.</typeparam>
 	/// <param name="timeout">The time interval specified in milliseconds after which
