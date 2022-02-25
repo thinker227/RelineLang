@@ -128,6 +128,11 @@ internal static class CompilerDiagnostics {
 		Description = "Variables, parameters and functions may not be used in this context",
 		Level = DiagnosticLevel.Error
 	};
+	public static readonly DiagnosticDescription unexpectedToken = new() {
+		ErrorCode = "RL0018",
+		Description = "Unexpected syntax token, expected {0} got {1}",
+		Level = DiagnosticLevel.Error
+	};
 
 	/*
 	public static readonly DiagnosticDescription diagnosticName = new() {

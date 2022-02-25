@@ -21,8 +21,6 @@ public static class SyntaxRules {
 	public static bool IsWhitespace(char c) =>
 		c != '\n' && char.IsWhiteSpace(c);
 
-	public static bool IsWhitespaceLike(SyntaxType type) =>
-		type is SyntaxType.Whitespace or SyntaxType.Comment;
 	public static bool CanEndLine(SyntaxType type) =>
 		type is SyntaxType.NewlineToken or SyntaxType.EndOfFile;
 	public static bool CanBeginStatement(SyntaxType type) =>
@@ -48,11 +46,8 @@ public static class SyntaxRules {
 
 	public static string GetTypeSymbolOrName(this SyntaxType type) =>
 		type switch {
-			SyntaxType.DotToken => ".",
-			SyntaxType.CommaToken => ",",
 			SyntaxType.ColonToken => ":",
 			SyntaxType.EqualsToken => "=",
-			SyntaxType.GreaterThanToken => ">",
 			SyntaxType.LesserThanToken => "<",
 			SyntaxType.PlusToken => "+",
 			SyntaxType.MinusToken => "-",
@@ -62,22 +57,14 @@ public static class SyntaxRules {
 			SyntaxType.PercentToken => "%",
 			SyntaxType.OpenBracketToken => "(",
 			SyntaxType.CloseBracketToken => ")",
-			SyntaxType.OpenSquareToken => "[",
-			SyntaxType.CloseSquareToken => "]",
-			SyntaxType.OpenBraceToken => "{",
-			SyntaxType.CloseBraceToken => "}",
 			SyntaxType.NewlineToken => "newline",
-
 			SyntaxType.DotDotToken => "..",
 
 			_ => GetTypeName(type)
 		};
 	public static string GetTypeName(this SyntaxType type) => type switch {
-		SyntaxType.DotToken => "dot",
-		SyntaxType.CommaToken => "comma",
 		SyntaxType.ColonToken => "colon",
 		SyntaxType.EqualsToken => "equals",
-		SyntaxType.GreaterThanToken => "greater than",
 		SyntaxType.LesserThanToken => "lesser than",
 		SyntaxType.PlusToken => "plus",
 		SyntaxType.MinusToken => "minus",
@@ -87,10 +74,6 @@ public static class SyntaxRules {
 		SyntaxType.PercentToken => "percent",
 		SyntaxType.OpenBracketToken => "open bracket",
 		SyntaxType.CloseBracketToken => "close bracket",
-		SyntaxType.OpenSquareToken => "open square bracket",
-		SyntaxType.CloseSquareToken => "close square bracket",
-		SyntaxType.OpenBraceToken => "open brace",
-		SyntaxType.CloseBraceToken => " close brace",
 		SyntaxType.NewlineToken => "newline",
 
 		SyntaxType.DotDotToken => "dot dot",

@@ -6,127 +6,99 @@
 public enum SyntaxType {
 	// Single-character tokens
 	/// <summary>
-	/// '<c>.</c>'
+	/// <c>:</c>
 	/// </summary>
-	DotToken = 1,
+	ColonToken = 1,
 	/// <summary>
-	/// '<c>,</c>'
-	/// </summary>
-	CommaToken,
-	/// <summary>
-	/// '<c>:</c>'
-	/// </summary>
-	ColonToken,
-	/// <summary>
-	/// '<c>=</c>'
+	/// <c>=</c>
 	/// </summary>
 	EqualsToken,
 	/// <summary>
-	/// '<c>&gt;</c>'
-	/// </summary>
-	GreaterThanToken,
-	/// <summary>
-	/// '<c>&lt;</c>'
+	/// <c>&lt;</c>
 	/// </summary>
 	LesserThanToken,
 	/// <summary>
-	/// '<c>+</c>'
+	/// <c>+</c>
 	/// </summary>
 	PlusToken,
 	/// <summary>
-	/// '<c>-</c>'
+	/// <c>-</c>
 	/// </summary>
 	MinusToken,
 	/// <summary>
-	/// '<c>*</c>'
+	/// <c>*</c>
 	/// </summary>
 	StarToken,
 	/// <summary>
-	/// '<c>/</c>'
+	/// <c>/</c>
 	/// </summary>
 	SlashToken,
 	/// <summary>
-	/// '<c>\</c>'
+	/// <c>\</c>
 	/// </summary>
 	BackslashToken,
 	/// <summary>
-	/// '<c>%</c>'
+	/// <c>%</c>
 	/// </summary>
 	PercentToken,
 	/// <summary>
-	/// '<c>(</c>'
+	/// <c>(</c>
 	/// </summary>
 	OpenBracketToken,
 	/// <summary>
-	/// '<c>)</c>'
+	/// <c>)</c>
 	/// </summary>
 	CloseBracketToken,
 	/// <summary>
-	/// '<c>[</c>'
-	/// </summary>
-	OpenSquareToken,
-	/// <summary>
-	/// '<c>]</c>'
-	/// </summary>
-	CloseSquareToken,
-	/// <summary>
-	/// '<c>{</c>'
-	/// </summary>
-	OpenBraceToken,
-	/// <summary>
-	/// '<c>}</c>'
-	/// </summary>
-	CloseBraceToken,
-	/// <summary>
-	/// Newline character.
+	/// Newline character (<c>\n</c>).
 	/// </summary>
 	NewlineToken,
 
 	// Compound character tokens
 	/// <summary>
-	/// '<c>.</c>'
+	/// <c>..</c>
 	/// </summary>
 	DotDotToken,
 
 	// Keywords
 	/// <summary>
-	/// '<c>here</c>'
+	/// <c>here</c>
 	/// </summary>
 	HereKeyword,
 	/// <summary>
-	/// '<c>start</c>'
+	/// <c>start</c>
 	/// </summary>
 	StartKeyword,
 	/// <summary>
-	/// '<c>end</c>'
+	/// <c>end</c>
 	/// </summary>
 	EndKeyword,
 	/// <summary>
-	/// '<c>move</c>'
+	/// <c>move</c>
 	/// </summary>
 	MoveKeyword,
 	/// <summary>
-	/// '<c>swap</c>'
+	/// <c>swap</c>
 	/// </summary>
 	SwapKeyword,
 	/// <summary>
-	/// '<c>copy</c>'
+	/// <c>copy</c>
 	/// </summary>
 	CopyKeyword,
 	/// <summary>
-	/// '<c>to</c>'
+	/// <c>to</c>
 	/// </summary>
 	ToKeyword,
 	/// <summary>
-	/// '<c>with</c>'
+	/// <c>with</c>
 	/// </summary>
 	WithKeyword,
 	/// <summary>
-	/// '<c>return</c>'
+	/// <c>return</c>
 	/// </summary>
 	ReturnKeyword,
 	/// <summary>
-	/// '<c>function</c>'
+	/// <c>function</c>
 	/// </summary>
 	FunctionKeyword,
 
@@ -146,7 +118,7 @@ public enum SyntaxType {
 
 	// Special
 	/// <summary>
-	/// Whitespace exluding newline.
+	/// Whitespace exluding newline (<c>\n</c>).
 	/// </summary>
 	Whitespace,
 	/// <summary>

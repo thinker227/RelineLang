@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Collections;
+﻿using System.Collections;
 using System.Runtime.CompilerServices;
 using Reline.Compilation.Syntax;
 
@@ -14,8 +13,8 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 	public ImmutableArray<SyntaxToken> Tokens { get; }
 	public int Position => position;
 	public SyntaxToken Current => GetAt(position);
-	public SyntaxToken Next => NextNotWhitespace(1);
-	public SyntaxToken Previous => NextNotWhitespace(-1);
+	public SyntaxToken Next => GetAt(position + 1);
+	public SyntaxToken Previous => GetAt(position - 1);
 	public bool IsAtEnd => position >= Tokens.Length;
 
 
@@ -23,8 +22,6 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 	public TokenViewer(ImmutableArray<SyntaxToken> tokens) {
 		Tokens = tokens;
 		position = 0;
-
-		ExpectNotWhitespace();
 	}
 
 
@@ -32,32 +29,11 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private SyntaxToken GetAt(int position) =>
 		position < Tokens.Length && position >= 0 ? Tokens[position] : default;
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private SyntaxToken NextNotWhitespace(int direction) {
-		int i = position;
-		while (true) {
-			i += direction;
-			var current = GetAt(i);
-			if (SyntaxRules.IsWhitespaceLike(current.Type)) continue;
-			return current;
-		}
-	}
 
-	public void Advance() {
-		do position++;
-		while (SyntaxRules.IsWhitespaceLike(Current.Type));
-	}
-	public SyntaxToken Ahead(int distance) {
-		int remaining = distance;
-		int i = 0;
-		SyntaxToken current = default;
-		while (remaining > 0) {
-			i++;
-			current = GetAt(position + i);
-			if (!SyntaxRules.IsWhitespaceLike(current.Type)) remaining--;
-		}
-		return current;
-	}
+	public void Advance() =>
+		position++;
+	public SyntaxToken Ahead(int distance) =>
+		GetAt(Position + distance);
 
 
 	/// <summary>
@@ -76,14 +52,6 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 	public SyntaxToken ExpectType(params SyntaxType[] types) {
 		do position++;
 		while (!types.Contains(Current.Type));
-		return Current;
-	}
-	/// <summary>
-	/// Advances the viewer to the next token not matching
-	/// <see cref="SyntaxRules.IsWhitespaceLike(SyntaxType)"/>.
-	/// </summary>
-	public SyntaxToken ExpectNotWhitespace() {
-		while (SyntaxRules.IsWhitespaceLike(Current.Type)) Advance();
 		return Current;
 	}
 
@@ -122,39 +90,12 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 		while (currentMatch < types.Length) {
 			currentPos++;
 			var current = GetAt(currentPos);
-			if (SyntaxRules.IsWhitespaceLike(current.Type)) continue;
 			if (current.Type != types[currentMatch]) return false;
 			currentMatch++;
 		}
 
 		return true;
 	}
-
-	private ImmutableArray<SyntaxTrivia> GetTrivia(int direction) {
-		List<SyntaxTrivia> tokens = new();
-		int i = 0;
-		while (true) {
-			i += direction;
-			var current = GetAt(position + i);
-			if (!SyntaxRules.IsWhitespaceLike(current.Type))
-				return tokens.ToImmutableArray();
-			tokens.Add(current.ToSyntaxTrivia());
-		}
-	}
-	/// <summary>
-	/// Gets the leading trivia of the current token.
-	/// </summary>
-	/// <returns>An immutable array of <see cref="SyntaxTrivia"/> constructed from
-	/// the whitespace-like tokens directly before the current tokens.</returns>
-	public ImmutableArray<SyntaxTrivia> GetLeadingTrivia() =>
-		GetTrivia(-1);
-	/// <summary>
-	/// Gets the trailing trivia of the current token.
-	/// </summary>
-	/// <returns>An immutable array of <see cref="SyntaxTrivia"/> constructed from
-	/// the whitespace-like tokens directly after the current tokens.</returns>
-	public ImmutableArray<SyntaxTrivia> GetTrailingTrivia() =>
-		GetTrivia(1);
 
 	public IEnumerator<SyntaxToken> GetEnumerator() =>
 		Tokens.AsEnumerable().GetEnumerator();

@@ -30,7 +30,7 @@ internal sealed class Lexer {
 	/// </summary>
 	/// <param name="source">The source string.</param>
 	/// <returns>A <see cref="LexResult"/> containing
-	/// the lexed tokens and resulting diagnostics..</returns>
+	/// the lexed tokens and resulting diagnostics.</returns>
 	public static LexResult LexSource(string source) {
 		Lexer lexer = new(source);
 		var tokens = lexer.LexAll();
@@ -39,14 +39,32 @@ internal sealed class Lexer {
 	}
 	private ImmutableArray<SyntaxToken> LexAll() {
 		List<SyntaxToken> tokens = new();
-		while (!viewer.IsAtEnd) {
-			var token = LexNext();
+		List<SyntaxTrivia> trivia = new();
+		
+		void addToken(SyntaxToken token) {
+			if (trivia.Count > 0) {
+				token = token.WithLeadingTrivia(trivia);
+				trivia.Clear();
+			}
 			tokens.Add(token);
 		}
-		tokens.Add(new(SyntaxType.EndOfFile, TextSpan.Empty, "", null));
+
+		while (!viewer.IsAtEnd) {
+			var token = LexNext();
+
+			if (IsTriviaType(token.Type))
+				trivia.Add(token.ToSyntaxTrivia());
+			else addToken(token);
+		}
+
+		addToken(new(SyntaxType.EndOfFile, TextSpan.Empty, "", null));
 
 		return tokens.ToImmutableArray();
 	}
+	private static bool IsTriviaType(SyntaxType type) => type is
+		SyntaxType.Whitespace or
+		SyntaxType.Comment or
+		SyntaxType.Unknown;
 	private SyntaxToken LexNext() {
 		lexemeStartPosition = viewer.Position;
 		char current = viewer.Current;
@@ -69,15 +87,13 @@ internal sealed class Lexer {
 		var diagnostic = CompilerDiagnostics.unexpectedCharacter
 			.ToDiagnostic(CurrentSpan, current, lexemeStartPosition);
 		diagnostics.Add(diagnostic);
-		return CreateToken(SyntaxType.Unknown, diagnostic);
+		return CreateToken(SyntaxType.Unknown);
 	}
 
 	private SyntaxToken? GetCharacterToken(char c) {
 		SyntaxType? single = c switch {
-			',' => SyntaxType.CommaToken,
 			':' => SyntaxType.ColonToken,
 			'=' => SyntaxType.EqualsToken,
-			'>' => SyntaxType.GreaterThanToken,
 			'<' => SyntaxType.LesserThanToken,
 			'+' => SyntaxType.PlusToken,
 			'-' => SyntaxType.MinusToken,
@@ -86,10 +102,6 @@ internal sealed class Lexer {
 			'%' => SyntaxType.PercentToken,
 			'(' => SyntaxType.OpenBracketToken,
 			')' => SyntaxType.CloseBracketToken,
-			'[' => SyntaxType.OpenSquareToken,
-			']' => SyntaxType.CloseSquareToken,
-			'{' => SyntaxType.OpenBraceToken,
-			'}' => SyntaxType.CloseBraceToken,
 			'\n' => SyntaxType.NewlineToken,
 
 			_ => null
@@ -101,12 +113,9 @@ internal sealed class Lexer {
 
 		switch (c) {
 			case '.':
-				if (viewer.Next == '.') {
-					viewer.AdvanceDistance(2);
-					return CreateToken(SyntaxType.DotDotToken);
-				}
-				viewer.Advance();
-				return CreateToken(SyntaxType.DotToken);
+				if (viewer.Next != '.') break;
+				viewer.AdvanceDistance(2);
+				return CreateToken(SyntaxType.DotDotToken);
 			case '/':
 				if (viewer.Next == '/') return GetComment();
 				viewer.Advance();
@@ -115,7 +124,6 @@ internal sealed class Lexer {
 
 		return null;
 	}
-
 	private SyntaxToken GetNumericLiteral() {
 		int literal = 0;
 		while (!viewer.IsAtEnd && SyntaxRules.IsNumeric(viewer.Current))
@@ -123,7 +131,6 @@ internal sealed class Lexer {
 
 		return CreateToken(SyntaxType.NumberLiteral, literal);
 	}
-
 	private SyntaxToken GetStringLiteral() {
 		viewer.Advance();
 
@@ -141,7 +148,7 @@ internal sealed class Lexer {
 		string str = GetIdentifierOrKeywordString();
 		var keyword = GetKeywordType(str);
 		if (keyword is not null) return CreateToken(keyword.Value);
-		return CreateToken(SyntaxType.Identifier, str);
+		return CreateToken(SyntaxType.Identifier);
 	}
 	private string GetIdentifierOrKeywordString() {
 		int startPosition = viewer.Position;

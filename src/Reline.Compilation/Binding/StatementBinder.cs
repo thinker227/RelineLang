@@ -3,7 +3,7 @@ using Reline.Compilation.Symbols;
 
 namespace Reline.Compilation.Binding;
 
-partial class Binder {
+public partial class Binder {
 
 	/// <summary>
 	/// Binds an <see cref="IStatementSyntax"/> into an <see cref="IStatementSymbol"/>.
@@ -90,6 +90,8 @@ partial class Binder {
 	/// </summary>
 	private ReturnStatementSymbol BindReturnStatement(ReturnStatementSyntax syntax) {
 		var expression = BindExpression(syntax.Expression);
+
+		// Report error if return statement is not within a function
 
 		var symbol = CreateSymbol<ReturnStatementSymbol>(syntax);
 		symbol.Expression = expression;

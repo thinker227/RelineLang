@@ -3,7 +3,7 @@ using Reline.Compilation.Syntax.Nodes;
 
 namespace Reline.Compilation.Binding;
 
-partial class Binder {
+public partial class Binder {
 
 	/// <summary>
 	/// Partially binds a <see cref="ProgramSyntax"/>

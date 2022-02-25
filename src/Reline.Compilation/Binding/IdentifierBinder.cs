@@ -1,13 +1,18 @@
-﻿using Reline.Compilation.Symbols;
+﻿using System.Collections;
+using Reline.Compilation.Symbols;
 
 namespace Reline.Compilation.Binding;
 
 /// <summary>
 /// Base for binders binding identifiers.
 /// </summary>
-internal sealed class IdentifierBinder<TSymbol> where TSymbol : IIdentifiableSymbol {
+internal sealed class IdentifierBinder<TSymbol> : IReadOnlyCollection<TSymbol> where TSymbol : IIdentifiableSymbol {
 
 	private readonly Dictionary<string, TSymbol> symbols;
+
+
+
+	public int Count => symbols.Count;
 
 
 
@@ -25,5 +30,10 @@ internal sealed class IdentifierBinder<TSymbol> where TSymbol : IIdentifiableSym
 
 	public bool IsDefined(string identifier) =>
 		symbols.ContainsKey(identifier);
+
+	public IEnumerator<TSymbol> GetEnumerator() =>
+		symbols.Values.GetEnumerator();
+	IEnumerator IEnumerable.GetEnumerator() =>
+		GetEnumerator();
 
 }
