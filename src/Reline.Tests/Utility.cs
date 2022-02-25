@@ -15,4 +15,9 @@ public static class Utility {
 	public static SyntaxToken Token(SyntaxType type, int position, string text, object? literal) =>
 		new(type, new(position, position + 1), text, literal);
 
+	public static SyntaxTrivia Trivia(int position, string text) =>
+		new(new(position, position + 1), text);
+	public static SyntaxTrivia Trivia(TextSpan span, string text) =>
+		new(span, text);
+
 }
