@@ -2,6 +2,7 @@
 using Reline.Compilation.Syntax;
 using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Diagnostics;
+using Humanizer;
 
 namespace Reline.Compilation.Parsing;
 
@@ -56,7 +57,7 @@ public sealed class Parser {
 		IStatementSyntax? statement = null;
 		if (!SyntaxRules.CanEndLine(viewer.Current.Type))
 			statement = Statement();
-		
+
 		var newlineToken = Expect(SyntaxType.NewlineToken, SyntaxType.EndOfFile);
 
 		return new(lineNumber, label, statement, newlineToken);
@@ -209,16 +210,22 @@ public sealed class Parser {
 		// Either a variable expression or a function invocation expression
 		if (viewer.CheckType(SyntaxType.Identifier)) {
 			// Function invocation expression
-			if (viewer.Next.Type == SyntaxType.OpenBracketToken) {
+			if (viewer.Next.Type == SyntaxType.OpenBracketToken)
 				return FunctionInvocationExpression();
-			}
 
 			// Variable expression
 			var identifier = GetCurrentAdvance();
 			return new IdentifierExpressionSyntax(identifier);
 		}
 
-		return CreateInvalidExpressionTerm();
+		// Bad expression
+		var badToken = CreateEmptyToken(SyntaxType.Unknown);
+		var diagnostic = Diagnostic.Create(
+			CompilerDiagnostics.invalidExpressionTerm,
+			viewer.Current.Span,
+			viewer.Current.Text);
+		diagnostics.AddDiagnostic(badToken, diagnostic);
+		return new IdentifierExpressionSyntax(badToken);
 	}
 
 	private FunctionInvocationExpressionSyntax FunctionInvocationExpression() {
@@ -235,30 +242,55 @@ public sealed class Parser {
 
 		return new(identifier, openBracketToken, arguments.ToImmutableArray(), closeBracketToken);
 	}
-	private IExpressionSyntax CreateInvalidExpressionTerm() {
-		var span = viewer.Current.Span;
-		var token = CreateUnexpectedToken();
-		var diagnostic = CompilerDiagnostics.invalidExpressionTerm
-			.ToDiagnostic(span, viewer.Current.Text);
-		diagnostics.AddDiagnostic(token, diagnostic);
-		return new IdentifierExpressionSyntax(token);
-	}
 	#endregion
 
+	/// <summary>
+	/// Gets the current <see cref="SyntaxToken"/> with the current leading trivia,
+	/// then advances the current token.
+	/// </summary>
 	private SyntaxToken GetCurrentAdvance() {
 		var trivia = viewer.GetLeadingTrivia();
 		return viewer.AdvanceCurrent().WithLeadingTrivia(trivia);
 	}
-	private SyntaxToken Expect(params SyntaxType[] type) {
+	/// <summary>
+	/// Expects the current token with a specified <see cref="SyntaxType"/>.
+	/// </summary>
+	/// <param name="type">The <see cref="SyntaxType"/> to expect.</param>
+	/// <returns>The current token if its type matches <paramref name="type"/>,
+	/// otherwise a fabricated token with the type of <paramref name="type"/>
+	/// with a reported diagnostic.</returns>
+	private SyntaxToken Expect(SyntaxType type) {
 		if (viewer.CheckType(type))
 			return GetCurrentAdvance();
 
-		var token = CreateUnexpectedToken();
+		var token = CreateEmptyToken(type);
+		var diagnostic = Diagnostic.Create(
+			CompilerDiagnostics.unexpectedToken,
+			viewer.Current.Span,
+			type.Humanize(LetterCasing.LowerCase),
+			viewer.Current.Type.Humanize(LetterCasing.LowerCase));
+		diagnostics.AddDiagnostic(token, diagnostic);
 		return token;
 	}
-	private SyntaxToken CreateUnexpectedToken() =>
-		CreateUnexpectedToken(viewer.Current.Span);
-	private static SyntaxToken CreateUnexpectedToken(TextSpan span) =>
-		new(SyntaxType.Unknown, span, string.Empty, null);
+	/// <summary>
+	/// Expects primary and secondary syntax types
+	/// and returns the primary type if the current token does not match.
+	/// </summary>
+	/// <param name="primaryType">The primary type to expect.</param>
+	/// <param name="secondaryTypes">The secondary types to expect.</param>
+	/// <returns>The current <see cref="SyntaxToken"/> matching either
+	/// <paramref name="primaryType"/> or <paramref name="secondaryTypes"/>,
+	/// otherwise a fabricated token with type <paramref name="primaryType"/>.</returns>
+	private SyntaxToken Expect(SyntaxType primaryType, params SyntaxType[] secondaryTypes) =>
+		viewer.CheckType(secondaryTypes) ? GetCurrentAdvance() : Expect(primaryType);
+	/// <summary>
+	/// Creates a <see cref="SyntaxToken"/> with a specified
+	/// syntax type and a text span of <see cref="TextSpan.Empty"/>.
+	/// </summary>
+	/// <param name="type">The <see cref="SyntaxType"/> of the token.</param>
+	/// <returns>A new <see cref="SyntaxToken"/> with <paramref name="type"/>
+	/// as its type and <see cref="TextSpan.Empty"/> as its text span.</returns>
+	private static SyntaxToken CreateEmptyToken(SyntaxType type) =>
+		new(type, TextSpan.Empty, string.Empty, null);
 
 }
