@@ -152,6 +152,7 @@ internal sealed class Lexer {
 	}
 	private string GetIdentifierOrKeywordString() {
 		int startPosition = viewer.Position;
+		viewer.Advance();
 		viewer.AdvanceWhile(SyntaxRules.IsIdentifierValid);
 		int endPosition = viewer.Position;
 		return source[startPosition..endPosition];

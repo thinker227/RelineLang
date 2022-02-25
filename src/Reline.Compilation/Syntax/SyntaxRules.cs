@@ -14,7 +14,7 @@ public static class SyntaxRules {
 	public static bool IsKeywordValid(char c) =>
 		c is (>= 'a' and <= 'z') or (>= 'A' and <= 'Z');
 	public static bool IsIdentifierValid(char c) =>
-		IsKeywordValid(c) || c is '_';
+		IsKeywordValid(c) || c is '_' || c is >= '0' and <= '9';
 	public static bool CanBeginIdentifier(char c) =>
 		IsIdentifierValid(c) || c is '@';
 
