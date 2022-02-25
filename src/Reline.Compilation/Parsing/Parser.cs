@@ -31,7 +31,10 @@ public sealed class Parser {
 		Parser parser = new(tokens.Tokens);
 		var root = parser.Program();
 
-		return new(root, parser.diagnostics.ToImmutableArray());
+		var diagnostics = tokens.Diagnostics
+			.Concat(parser.diagnostics)
+			.ToImmutableArray();
+		return new(root, diagnostics);
 	}
 
 	private ProgramSyntax Program() {
