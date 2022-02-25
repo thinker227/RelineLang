@@ -18,18 +18,11 @@ public static class AssertAsync {
 	/// <paramref name="action"/> did not complete in
 	/// the <paramref name="timeout"/> interval.
 	/// </exception>
-	public static void CompletesIn(TimeSpan timeout, Action action) {
-		var task = Task.Run(action);
-		bool completedInTime = Task.WaitAll(new[] { task }, timeout);
-
-		if (task.Exception is not null) {
-			throw task.Exception.InnerExceptions.Count == 1 ?
-				task.Exception.InnerExceptions[0] : task.Exception;
-		}
-
-		if (!completedInTime)
-			throw new TimeoutException($"Task did not complete in {timeout} seconds.");
-	}
+	public static void CompletesIn(TimeSpan timeout, Action action) =>
+		CompletesIn(timeout, () => {
+			action();
+			return 0;
+		});
 	/// <summary>
 	/// Runs an <see cref="Action"/> and throws a
 	/// <see cref="TimeoutException"/> if the action
@@ -88,6 +81,6 @@ public static class AssertAsync {
 	/// the <paramref name="timeout"/> interval.
 	/// </exception>
 	public static TResult CompletesIn<TResult>(double timeout, Func<TResult> func) =>
-		CompletesIn<TResult>(TimeSpan.FromMilliseconds(timeout), func);
+		CompletesIn(TimeSpan.FromMilliseconds(timeout), func);
 
 }
