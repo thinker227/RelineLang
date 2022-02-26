@@ -38,13 +38,31 @@ public abstract class ParserTestBase : TestBase {
 			throw new InvalidOperationException($"{nameof(SetTree)} must be called before {nameof(Node)}.");
 
 		try {
-			Assert.True(nodeEnumerator.MoveNext());
+			Assert.True(nodeEnumerator.MoveNext(), "The tree contained no more nodes.");
 			var current = nodeEnumerator.Current;
 			Assert.IsType<TNode>(current);
 			return (TNode)current;
 		} catch (XunitException e) {
 			nodeEnumerator = null;
 			throw e;
+		}
+	}
+
+	/// <summary>
+	/// Asserts that there are no more nodes in the tree.
+	/// </summary>
+	/// <exception cref="InvalidOperationException">
+	/// <see cref="SetTree(string)"/> has not been called
+	/// and the tree to enumerate is <see langword="null"/>.
+	/// </exception>
+	protected void End() {
+		if (nodeEnumerator is null)
+			throw new InvalidOperationException($"{nameof(SetTree)} must be called before {nameof(End)}.");
+
+		try {
+			Assert.False(nodeEnumerator.MoveNext(), "The tree contained more nodes.");
+		} finally {
+			nodeEnumerator = null;
 		}
 	}
 
