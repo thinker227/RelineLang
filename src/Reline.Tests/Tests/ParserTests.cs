@@ -10,14 +10,17 @@ public class ParserTests : ParserTestBase {
 @"Write (""Hello world!"")";
 		SetTree(source);
 
-		Node<LineSyntax>();
+		Node<ProgramSyntax>();
 		{
-			Node<ExpressionStatementSyntax>();
+			Node<LineSyntax>();
 			{
-				Node<FunctionInvocationExpressionSyntax>();
+				Node<ExpressionStatementSyntax>();
 				{
-					var literal = Node<LiteralExpressionSyntax>();
-					Assert.Equal("Hello world!", literal.Literal.Literal);
+					Node<FunctionInvocationExpressionSyntax>();
+					{
+						var literal = Node<LiteralExpressionSyntax>();
+						Assert.Equal("Hello world!", literal.Literal.Literal);
+					}
 				}
 			}
 		}

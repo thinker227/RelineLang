@@ -1,4 +1,5 @@
-﻿using Reline.Common;
+﻿using System.Linq;
+using Reline.Common;
 using Reline.Compilation.Parsing;
 using Reline.Compilation.Syntax.Nodes;
 using Xunit.Sdk;
@@ -18,7 +19,9 @@ public abstract class ParserTestBase : TestBase {
 	protected void SetTree(string source) {
 		var tree = AssertAsync.CompletesIn(2000, () => Parser.ParseString(source));
 		var nodes = tree.Root.GetAllDescendants();
-		nodeEnumerator = nodes.AsEnumerable().GetEnumerator();
+		nodeEnumerator = nodes.AsEnumerable()
+			.Prepend(tree.Root) // Test for ProgramSyntax
+			.GetEnumerator();
 	}
 
 	/// <summary>
