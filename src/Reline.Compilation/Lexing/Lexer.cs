@@ -72,7 +72,6 @@ internal sealed class Lexer {
 		var characterToken = GetCharacterToken(current);
 		if (characterToken is not null) return characterToken.Value;
 
-
 		if (SyntaxRules.IsQuote(current)) return GetStringLiteral();
 		if (SyntaxRules.IsNumeric(current)) return GetNumericLiteral();
 		if (SyntaxRules.CanBeginIdentifier(current)) return GetIdentifierOrKeywordToken();
@@ -83,7 +82,6 @@ internal sealed class Lexer {
 		}
 
 		viewer.Advance();
-
 		var diagnostic = CompilerDiagnostics.unexpectedCharacter
 			.ToDiagnostic(CurrentSpan, current, lexemeStartPosition);
 		diagnostics.Add(diagnostic);

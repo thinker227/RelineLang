@@ -24,11 +24,10 @@ public static class SyntaxNodeExtensions {
 	/// </summary>
 	/// <param name="node">The node to get the children of.</param>
 	/// <returns>The recursive child nodes of <paramref name="node"/>.</returns>
-	public static ImmutableArray<ISyntaxNode> GetAllDescendants(this ISyntaxNode node) {
-		var children = node.GetChildren();
-		var subchildren = children.SelectMany(n => n.GetAllDescendants());
-		return children.AddRange(subchildren);
-	}
+	public static ImmutableArray<ISyntaxNode> GetAllDescendants(this ISyntaxNode node) =>
+		node.GetChildren()
+			.SelectMany(n => n.GetAllDescendants().Prepend(n))
+			.ToImmutableArray();
 	/// <summary>
 	/// Recursively gets all the child nodes of a specified type of a syntax node.
 	/// </summary>
@@ -118,7 +117,7 @@ public static class SyntaxNodeExtensions {
 		public ImmutableArray<ISyntaxNode> VisitLabel(LabelSyntax syntax) =>
 			ImmutableArray<ISyntaxNode>.Empty;
 		public ImmutableArray<ISyntaxNode> VisitParameterList(ParameterListSyntax syntax) =>
-			syntax.Parameters.As<ISyntaxNode>();
+			ImmutableArray<ISyntaxNode>.Empty;
 
 		public ImmutableArray<ISyntaxNode> VisitAssignmentStatement(AssignmentStatementSyntax syntax) =>
 			ImmutableArray.Create<ISyntaxNode>(syntax.Initializer);
