@@ -117,7 +117,7 @@ public static class SyntaxNodeExtensions {
 		public ImmutableArray<ISyntaxNode> VisitLabel(LabelSyntax syntax) =>
 			ImmutableArray<ISyntaxNode>.Empty;
 		public ImmutableArray<ISyntaxNode> VisitParameterList(ParameterListSyntax syntax) =>
-			syntax.Parameters.As<ISyntaxNode>();
+			ImmutableArray<ISyntaxNode>.Empty;
 
 		public ImmutableArray<ISyntaxNode> VisitAssignmentStatement(AssignmentStatementSyntax syntax) =>
 			ImmutableArray.Create<ISyntaxNode>(syntax.Initializer);
