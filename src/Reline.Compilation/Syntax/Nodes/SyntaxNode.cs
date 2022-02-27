@@ -1,6 +1,4 @@
-﻿using Reline.Compilation.Diagnostics;
-
-namespace Reline.Compilation.Syntax.Nodes;
+﻿namespace Reline.Compilation.Syntax.Nodes;
 
 /// <summary>
 /// Represents an abstract syntax node.
