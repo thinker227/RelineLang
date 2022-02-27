@@ -1,5 +1,5 @@
 ﻿using Reline.Compilation.Diagnostics;
-using Reline.Compilation.Parsing;
+using Reline.Compilation.Syntax;
 using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Symbols;
 

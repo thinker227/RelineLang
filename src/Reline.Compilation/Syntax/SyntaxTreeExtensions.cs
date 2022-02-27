@@ -1,7 +1,6 @@
-﻿using Reline.Compilation.Parsing;
-using Reline.Compilation.Syntax.Nodes;
+﻿using Reline.Compilation.Syntax.Nodes;
 
-namespace Reline.Compilation;
+namespace Reline.Compilation.Syntax;
 
 internal static class SyntaxTreeExtensions {
 
