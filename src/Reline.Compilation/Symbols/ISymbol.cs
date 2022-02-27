@@ -12,4 +12,10 @@ public interface ISymbol {
 	/// </summary>
 	ISyntaxNode? Syntax { get; }
 
+	/// <summary>
+	/// Gets the child nodes of the symbol.
+	/// </summary>
+	/// <returns>A collection of children symbol nodes.</returns>
+	IEnumerable<ISymbol> GetChildren();
+
 }
