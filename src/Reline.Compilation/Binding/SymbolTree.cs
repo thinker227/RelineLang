@@ -5,12 +5,12 @@ namespace Reline.Compilation.Binding;
 
 public sealed class SymbolTree {
 
-	public ImmutableArray<Diagnostic> Diagnostics { get; }
 	public ProgramSymbol Root { get; }
+	public ImmutableArray<Diagnostic> Diagnostics { get; }
 
 
 
-	public SymbolTree(ProgramSymbol root, ImmutableArray<Diagnostic> diagnostics) {
+	internal SymbolTree(ProgramSymbol root, ImmutableArray<Diagnostic> diagnostics) {
 		Root = root;
 		Diagnostics = diagnostics;
 	}
