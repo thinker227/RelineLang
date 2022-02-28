@@ -11,25 +11,6 @@ public static class SyntaxNodeExtensions {
 	public static TextSpan GetTextSpan(this ISyntaxNode node) =>
 		node.Accept(TextSpanEvaluator.Instance);
 
-	/// <summary>
-	/// Recursively gets all the child nodes of a syntax node.
-	/// </summary>
-	/// <param name="node">The node to get the children of.</param>
-	/// <returns>The recursive child nodes of <paramref name="node"/>.</returns>
-	public static IEnumerable<ISyntaxNode> GetAllDescendants(this ISyntaxNode node) =>
-		node.GetChildren()
-			.SelectMany(n => n.GetAllDescendants().Prepend(n))
-			.ToImmutableArray();
-	/// <summary>
-	/// Recursively gets all the child nodes of a specified type of a syntax node.
-	/// </summary>
-	/// <typeparam name="TNode">The type to get the nodes of.</typeparam>
-	/// <param name="node">The node to get the children of.</param>
-	/// <returns>The recursive child nodes of <paramref name="node"/>
-	/// of type <typeparamref name="TNode"/>.</returns>
-	public static IEnumerable<TNode> GetAllDescendants<TNode>(this ISyntaxNode node) where TNode : ISyntaxNode =>
-		GetAllDescendants(node).OfType<TNode>();
-
 	private sealed class TextSpanEvaluator : ISyntaxVisitor<TextSpan> {
 
 		public static TextSpanEvaluator Instance { get; } = new();
