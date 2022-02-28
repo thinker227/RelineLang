@@ -6,5 +6,8 @@ public sealed record class ReturnStatementSyntax(
 ) : SyntaxNode, IStatementSyntax {
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitReturnStatement(this);
+	public override IEnumerable<ISyntaxNode> GetChildren() {
+		yield return Expression;
+	}
 
 }

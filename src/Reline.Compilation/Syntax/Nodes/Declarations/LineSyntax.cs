@@ -8,5 +8,9 @@ public sealed record class LineSyntax(
 ) : SyntaxNode {
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitLine(this);
+	public override IEnumerable<ISyntaxNode> GetChildren() {
+		if (Label is not null) yield return Label;
+		if (Statement is not null) yield return Statement;
+	}
 
 }

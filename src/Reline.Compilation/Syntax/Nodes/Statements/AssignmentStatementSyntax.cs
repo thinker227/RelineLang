@@ -7,5 +7,8 @@ public sealed record class AssignmentStatementSyntax(
 ) : SyntaxNode, IStatementSyntax {
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitAssignmentStatement(this);
+	public override IEnumerable<ISyntaxNode> GetChildren() {
+		yield return Initializer;
+	}
 
 }

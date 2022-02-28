@@ -5,5 +5,7 @@ public sealed record class ProgramSyntax(
 ) : SyntaxNode {
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitProgram(this);
+	public override IEnumerable<ISyntaxNode> GetChildren() =>
+		Lines;
 
 }

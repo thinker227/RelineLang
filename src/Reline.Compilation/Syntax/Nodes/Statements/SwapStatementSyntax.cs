@@ -11,5 +11,9 @@ public sealed record class SwapStatementSyntax(
 	SyntaxToken IManipulationStatementSyntax.TargetKeyword => WithKeyword;
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitSwapStatement(this);
+	public override IEnumerable<ISyntaxNode> GetChildren() {
+		yield return Source;
+		yield return Target;
+	}
 
 }

@@ -6,5 +6,7 @@
 public abstract record class SyntaxNode : ISyntaxNode {
 
 	public abstract T Accept<T>(ISyntaxVisitor<T> visitor);
+	public virtual IEnumerable<ISyntaxNode> GetChildren() =>
+		Enumerable.Empty<ISyntaxNode>();
 
 }
