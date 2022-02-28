@@ -20,6 +20,13 @@ public sealed class BinaryExpressionSymbol : SymbolNode, IExpressionSymbol {
 	/// </summary>
 	public BinaryOperatorType OperatorType { get; set; }
 
+
+
 	public T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitBinary(this);
+
+	public override IEnumerable<ISymbol> GetChildren() {
+		yield return Left;
+		yield return Right;
+	}
 
 }

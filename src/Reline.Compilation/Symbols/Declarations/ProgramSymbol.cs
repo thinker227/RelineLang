@@ -34,4 +34,9 @@ public sealed class ProgramSymbol : SymbolNode {
 	/// </summary>
 	public IList<FunctionSymbol> Functions { get; } = new List<FunctionSymbol>();
 
+
+	// Labels, variables and functions are references and not children
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Lines; 
+
 }

@@ -18,4 +18,10 @@ public sealed class LabelSymbol : SymbolNode, IIdentifiableSymbol {
 	/// </summary>
 	public IList<ISymbol> References { get; } = new List<ISymbol>();
 
+
+
+	public override IEnumerable<ISymbol> GetChildren() {
+		yield return Line;
+	}
+
 }

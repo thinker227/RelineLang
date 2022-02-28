@@ -12,6 +12,11 @@ public sealed class KeywordExpressionSymbol : SymbolNode, IExpressionSymbol {
 	/// </summary>
 	public KeywordExpressionType KeywordType { get; set; }
 
+
+
 	public T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitKeyword(this);
+
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Enumerable.Empty<ISymbol>();
 
 }
