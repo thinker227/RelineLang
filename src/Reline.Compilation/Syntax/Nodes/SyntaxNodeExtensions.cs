@@ -95,55 +95,5 @@ public static class SyntaxNodeExtensions {
 			syntax.Identifier.Span.End);
 
 	}
-	private sealed class ChildEvaluator : ISyntaxVisitor<ImmutableArray<ISyntaxNode>> {
-
-		public static ChildEvaluator Instance { get; } = new();
-		private ChildEvaluator() { }
-
-		public ImmutableArray<ISyntaxNode> VisitProgram(ProgramSyntax syntax) =>
-			syntax.Lines.As<ISyntaxNode>();
-		public ImmutableArray<ISyntaxNode> VisitLine(LineSyntax syntax) =>
-			ImmutableArray<ISyntaxNode>.Empty
-				.AddNotNull(syntax.Label)
-				.AddNotNull(syntax.Statement);
-		public ImmutableArray<ISyntaxNode> VisitLabel(LabelSyntax syntax) =>
-			ImmutableArray<ISyntaxNode>.Empty;
-		public ImmutableArray<ISyntaxNode> VisitParameterList(ParameterListSyntax syntax) =>
-			ImmutableArray<ISyntaxNode>.Empty;
-
-		public ImmutableArray<ISyntaxNode> VisitAssignmentStatement(AssignmentStatementSyntax syntax) =>
-			ImmutableArray.Create<ISyntaxNode>(syntax.Initializer);
-		public ImmutableArray<ISyntaxNode> VisitExpressionStatement(ExpressionStatementSyntax syntax) =>
-			ImmutableArray.Create<ISyntaxNode>(syntax.Expression);
-		public ImmutableArray<ISyntaxNode> VisitMoveStatement(MoveStatementSyntax syntax) =>
-			ImmutableArray.Create<ISyntaxNode>(syntax.Source, syntax.Target);
-		public ImmutableArray<ISyntaxNode> VisitSwapStatement(SwapStatementSyntax syntax) =>
-			ImmutableArray.Create<ISyntaxNode>(syntax.Source, syntax.Target);
-		public ImmutableArray<ISyntaxNode> VisitCopyStatement(CopyStatementSyntax syntax) =>
-			ImmutableArray.Create<ISyntaxNode>(syntax.Source, syntax.Target);
-		public ImmutableArray<ISyntaxNode> VisitFunctionDeclarationStatement(FunctionDeclarationStatementSyntax syntax) =>
-			ImmutableArray.Create<ISyntaxNode>(syntax.Body)
-			.AddNotNull(syntax.ParameterList);
-		public ImmutableArray<ISyntaxNode> VisitReturnStatement(ReturnStatementSyntax syntax) =>
-			ImmutableArray.Create<ISyntaxNode>(syntax.Expression);
-
-		public ImmutableArray<ISyntaxNode> VisitUnaryExpression(UnaryExpressionSyntax syntax) =>
-			ImmutableArray.Create<ISyntaxNode>(syntax.Expression);
-		public ImmutableArray<ISyntaxNode> VisitBinaryExpression(BinaryExpressionSyntax syntax) =>
-			ImmutableArray.Create<ISyntaxNode>(syntax.Left, syntax.Right);
-		public ImmutableArray<ISyntaxNode> VisitKeywordExpression(KeywordExpressionSyntax syntax) =>
-			ImmutableArray<ISyntaxNode>.Empty;
-		public ImmutableArray<ISyntaxNode> VisitLiteralExpression(LiteralExpressionSyntax syntax) =>
-			ImmutableArray<ISyntaxNode>.Empty;
-		public ImmutableArray<ISyntaxNode> VisitGroupingExpression(GroupingExpressionSyntax syntax) =>
-			ImmutableArray.Create<ISyntaxNode>(syntax.Expression);
-		public ImmutableArray<ISyntaxNode> VisitIdentifierExpression(IdentifierExpressionSyntax syntax) =>
-			ImmutableArray<ISyntaxNode>.Empty;
-		public ImmutableArray<ISyntaxNode> VisitFunctionInvocationExpression(FunctionInvocationExpressionSyntax syntax) =>
-			syntax.Arguments.As<ISyntaxNode>();
-		public ImmutableArray<ISyntaxNode> VisitFunctionPointerExpression(FunctionPointerExpressionSyntax syntax) =>
-			ImmutableArray<ISyntaxNode>.Empty;
-
-	}
 
 }
