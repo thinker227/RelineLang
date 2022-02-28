@@ -12,19 +12,11 @@ public static class SyntaxNodeExtensions {
 		node.Accept(TextSpanEvaluator.Instance);
 
 	/// <summary>
-	/// Gets the child nodes of a syntax node.
-	/// </summary>
-	/// <param name="node">The node to get the children of.</param>
-	/// <returns>The child nodes of <paramref name="node"/>.</returns>
-	/// <exception cref="NotSupportedException">The syntax node type is not supported.</exception>
-	public static ImmutableArray<ISyntaxNode> GetChildren(this ISyntaxNode node) =>
-		node.Accept(ChildEvaluator.Instance);
-	/// <summary>
 	/// Recursively gets all the child nodes of a syntax node.
 	/// </summary>
 	/// <param name="node">The node to get the children of.</param>
 	/// <returns>The recursive child nodes of <paramref name="node"/>.</returns>
-	public static ImmutableArray<ISyntaxNode> GetAllDescendants(this ISyntaxNode node) =>
+	public static IEnumerable<ISyntaxNode> GetAllDescendants(this ISyntaxNode node) =>
 		node.GetChildren()
 			.SelectMany(n => n.GetAllDescendants().Prepend(n))
 			.ToImmutableArray();
@@ -35,8 +27,8 @@ public static class SyntaxNodeExtensions {
 	/// <param name="node">The node to get the children of.</param>
 	/// <returns>The recursive child nodes of <paramref name="node"/>
 	/// of type <typeparamref name="TNode"/>.</returns>
-	public static ImmutableArray<TNode> GetAllDescendants<TNode>(this ISyntaxNode node) where TNode : ISyntaxNode =>
-		GetAllDescendants(node).OfType<TNode>().ToImmutableArray();
+	public static IEnumerable<TNode> GetAllDescendants<TNode>(this ISyntaxNode node) where TNode : ISyntaxNode =>
+		GetAllDescendants(node).OfType<TNode>();
 
 	private sealed class TextSpanEvaluator : ISyntaxVisitor<TextSpan> {
 
