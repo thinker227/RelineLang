@@ -1,7 +1,6 @@
-﻿using Reline.Compilation.Diagnostics;
-using Reline.Compilation.Symbols;
+using Reline.Compilation.Diagnostics;
 
-namespace Reline.Compilation.Binding;
+namespace Reline.Compilation.Symbols;
 
 public sealed class SymbolTree {
 
