@@ -4,16 +4,17 @@ using System.Collections.Immutable;
 
 namespace Reline.Common;
 
-public static class Extensions {
+public static class ImmutableArrayExtensions {
 
 	/// <summary>
-	/// Returns an <see cref="ImmutableArray{T}"/> as an <see cref="IEnumerable{T}"/>.
+	/// Returns a properly typed <see cref="IEnumerator{T}"/>
+	/// from an <see cref="ImmutableArray{T}"/>.
 	/// </summary>
 	/// <typeparam name="T">The type of the elements in the immutable array.</typeparam>
 	/// <param name="immutableArray">The source immutable array.</param>
-	/// <returns><paramref name="immutableArray"/> as an <see cref="IEnumerable{T}"/>.</returns>
-	public static IEnumerable<T> AsEnumerable<T>(this ImmutableArray<T> immutableArray) {
-		foreach (T element in immutableArray) yield return element;
+	/// <returns>An <see cref="IEnumerator{T}"/> of <paramref name="immutableArray"/>.</returns>
+	public static IEnumerator<T> GetTypedEnumerator<T>(this ImmutableArray<T> immutableArray) {
+		foreach (var element in immutableArray) yield return element;
 	}
 
 	/// <summary>

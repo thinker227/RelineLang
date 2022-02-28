@@ -98,7 +98,7 @@ internal sealed class TokenViewer : IViewer<SyntaxToken> {
 	}
 
 	public IEnumerator<SyntaxToken> GetEnumerator() =>
-		Tokens.AsEnumerable().GetEnumerator();
+		Tokens.GetTypedEnumerator();
 	IEnumerator IEnumerable.GetEnumerator() =>
 		GetEnumerator();
 
