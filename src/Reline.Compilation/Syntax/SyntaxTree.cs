@@ -42,4 +42,17 @@ public sealed class SyntaxTree {
 	public ISyntaxNode? GetParent(ISyntaxNode node) =>
 		parentMap.GetParent(node);
 
+	/// <summary>
+	/// Gets the statements of a specified type in the tree.
+	/// </summary>
+	/// <typeparam name="TStatement">The type of the statements to get.</typeparam>
+	/// <returns>A collection of statements of type <typeparamref name="TStatement"/>.</returns>
+	public IEnumerable<TStatement> GetStatementsOfType<TStatement>() where TStatement : IStatementSyntax {
+		foreach (var line in Root.Lines) {
+			var statement = line.Statement;
+			if (statement is TStatement s)
+				yield return s;
+		}
+	}
+
 }
