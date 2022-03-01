@@ -5,7 +5,7 @@ namespace Reline.Compilation.Symbols;
 /// <summary>
 /// Represents a symbol.
 /// </summary>
-public interface ISymbol {
+public interface ISymbol : INode<ISymbol> {
 
 	/// <summary>
 	/// The <see cref="ISyntaxNode"/> this symbol was created from.

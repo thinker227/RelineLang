@@ -10,4 +10,10 @@ public sealed class FunctionDeclarationStatementSymbol : SymbolNode, IStatementS
 	/// </summary>
 	public FunctionSymbol Function { get; set; } = null!;
 
+
+
+	public override IEnumerable<ISymbol> GetChildren() {
+		yield return Function;
+	}
+
 }

@@ -16,6 +16,12 @@ public sealed class UnaryExpressionSymbol : SymbolNode, IExpressionSymbol {
 	/// </summary>
 	public UnaryOperatorType OperatorType { get; set; }
 
+
+
 	public T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitUnary(this);
+
+	public override IEnumerable<ISymbol> GetChildren() {
+		yield return Expression;
+	}
 
 }

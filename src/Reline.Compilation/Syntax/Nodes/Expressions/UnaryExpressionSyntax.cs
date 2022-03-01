@@ -6,5 +6,10 @@ public sealed record class UnaryExpressionSyntax(
 ) : SyntaxNode, IExpressionSyntax {
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitUnaryExpression(this);
+	public override IEnumerable<ISyntaxNode> GetChildren() {
+		yield return Expression;
+	}
+	public override TextSpan GetTextSpan() =>
+		TextSpan.FromBounds(OperatorToken.Span, Expression.GetTextSpan());
 
 }

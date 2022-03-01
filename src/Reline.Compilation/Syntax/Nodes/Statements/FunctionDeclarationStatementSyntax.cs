@@ -8,5 +8,13 @@ public sealed record class FunctionDeclarationStatementSyntax(
 ) : SyntaxNode, IStatementSyntax {
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitFunctionDeclarationStatement(this);
+	public override IEnumerable<ISyntaxNode> GetChildren() {
+		yield return Body;
+		if (ParameterList is not null) yield return ParameterList;
+	}
+	public override TextSpan GetTextSpan() => new(
+		FunctionKeyword.Span.Start,
+		ParameterList?.GetTextSpan().End ??
+		Body.GetTextSpan().End);
 
 }

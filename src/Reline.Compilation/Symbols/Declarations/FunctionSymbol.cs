@@ -34,4 +34,14 @@ public sealed class FunctionSymbol : SymbolNode, IIdentifiableSymbol {
 	/// </summary>
 	public IList<ISymbol> References { get; } = new List<ISymbol>();
 
+
+
+	public override IEnumerable<ISymbol> GetChildren() {
+		// The declaration and references are
+		// more or less parents rather than children
+		yield return RangeExpression;
+		foreach (var line in Body) yield return line;
+		foreach (var param in Parameters) yield return param;
+	}
+
 }

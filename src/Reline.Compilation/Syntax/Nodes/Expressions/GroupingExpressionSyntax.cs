@@ -7,5 +7,10 @@ public sealed record class GroupingExpressionSyntax(
 ) : SyntaxNode, IExpressionSyntax {
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitGroupingExpression(this);
+	public override IEnumerable<ISyntaxNode> GetChildren() {
+		yield return Expression;
+	}
+	public override TextSpan GetTextSpan() =>
+		TextSpan.FromBounds(OpenBracketToken.Span, CloseBracketToken.Span);
 
 }

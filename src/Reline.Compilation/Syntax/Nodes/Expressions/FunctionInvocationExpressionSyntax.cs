@@ -8,5 +8,9 @@ public sealed record class FunctionInvocationExpressionSyntax(
 ) : SyntaxNode, IExpressionSyntax {
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitFunctionInvocationExpression(this);
+	public override IEnumerable<ISyntaxNode> GetChildren() =>
+		Arguments;
+	public override TextSpan GetTextSpan() =>
+		TextSpan.FromBounds(Identifier.Span, CloseBracketToken.Span);
 
 }

@@ -10,7 +10,12 @@ public sealed class LiteralExpressionSymbol : SymbolNode, IExpressionSymbol {
 	/// </summary>
 	public LiteralValue Literal { get; set; }
 
+
+
 	public T Accept<T>(IExpressionVisitor<T> visitor) =>
 		visitor.VisitLiteral(this);
+
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Enumerable.Empty<ISymbol>();
 
 }

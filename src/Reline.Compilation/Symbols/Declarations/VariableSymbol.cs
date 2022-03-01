@@ -25,6 +25,9 @@ public sealed class VariableSymbol : SymbolNode, IVariableSymbol {
 
 
 
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Enumerable.Empty<ISymbol>();
+
 	public bool Equals(IVariableSymbol? other) =>
 		other is VariableSymbol &&
 		Identifier == other.Identifier;
@@ -56,6 +59,9 @@ public sealed class ParameterSymbol : SymbolNode, IVariableSymbol {
 	public FunctionSymbol Function { get; set; } = null!;
 
 
+
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Enumerable.Empty<ISymbol>();
 
 	public bool Equals(IVariableSymbol? other) =>
 		other is ParameterSymbol parameter &&
