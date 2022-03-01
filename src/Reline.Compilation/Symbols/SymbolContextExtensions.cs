@@ -3,16 +3,18 @@
 public static class SymbolContextExtensions {
 
 	/// <summary>
-	/// Gets a parent node of a specified type of an <see cref="ISymbol"/>.
+	/// Gets an ancestor node of a specified type of an <see cref="ISymbol"/>.
 	/// </summary>
-	/// <typeparam name="TParent">The type of the parent node to get.</typeparam>
-	/// <param name="node">The <see cref="ISymbol"/> to get the parent of.</param>
-	/// <returns>An <see cref="ISymbol"/> of type <typeparamref name="TParent"/>,
+	/// <typeparam name="TAncestor">The type of the ancestor node to get.</typeparam>
+	/// <param name="context">The <see cref="ISymbolContext"/>
+	/// use as the context for the nodes.</param>
+	/// <param name="node">The <see cref="ISymbol"/> to get the ancestor of.</param>
+	/// <returns>An <see cref="ISymbol"/> of type <typeparamref name="TAncestor"/>,
 	/// or <see langword="null"/> if none was found.</returns>
-	public static TParent? GetParentOfType<TParent>(this ISymbolContext context, ISymbol? node) where TParent : ISymbol => node switch {
+	public static TAncestor? GetAncestor<TAncestor>(this ISymbolContext context, ISymbol? node) where TAncestor : ISymbol => node switch {
 		null => default,
-		TParent p => p,
-		_ => context.GetParentOfType<TParent>(context.GetParent(node))
+		TAncestor a => a,
+		_ => context.GetAncestor<TAncestor>(context.GetParent(node))
 	};
 
 }

@@ -41,6 +41,18 @@ public sealed class SyntaxTree {
 	/// if the node is the root of the syntax tree.</returns>
 	public ISyntaxNode? GetParent(ISyntaxNode node) =>
 		parentMap.GetParent(node);
+	/// <summary>
+	/// Gets an ancestor node of a specified type of an <see cref="ISyntaxNode"/>.
+	/// </summary>
+	/// <typeparam name="TAncestor">The type of the ancestor node to get.</typeparam>
+	/// <param name="node">The <see cref="ISyntaxNode"/> to get the ancestor of.</param>
+	/// <returns>An <see cref="ISyntaxNode"/> of type <typeparamref name="TAncestor"/>,
+	/// or <see langword="null"/> if none was found.</returns>
+	public TAncestor? GetAncestor<TAncestor>(ISyntaxNode node) where TAncestor : ISyntaxNode => node switch {
+		null => default,
+		TAncestor a => a,
+		_ => GetAncestor<TAncestor>(node)
+	};
 
 	/// <summary>
 	/// Gets the statements of a specified type in the tree.
