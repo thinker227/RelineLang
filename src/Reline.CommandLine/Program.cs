@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Reline.Common;
 using Reline.Compilation.Parsing;
 using Reline.Compilation.Binding;
 
@@ -11,8 +10,5 @@ string text = File.ReadAllText(path);
 
 var parseResult = Parser.ParseString(text);
 var bindResult = Binder.BindTree(parseResult);
-
-var parseDescendants = parseResult.Root.GetDescendants();
-var bindDescendants = bindResult.Root.GetDescendants();
 
 Console.ReadLine();
