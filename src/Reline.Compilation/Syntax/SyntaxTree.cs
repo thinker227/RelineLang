@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using Reline.Compilation.Syntax.Nodes;
+﻿using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Syntax;
@@ -10,10 +9,10 @@ namespace Reline.Compilation.Syntax;
 /// </summary>
 public sealed class SyntaxTree {
 
-	private IReadOnlyDictionary<ISyntaxNode, ISyntaxNode?>? parents;
+	private readonly ParentMap<ISyntaxNode> parentMap;
 
 
-	
+
 	/// <summary>
 	/// The diagnostics generated during parsing.
 	/// </summary>
@@ -28,6 +27,7 @@ public sealed class SyntaxTree {
 	internal SyntaxTree(ProgramSyntax root, ImmutableArray<Diagnostic> diagnostics) {
 		Root = root;
 		Diagnostics = diagnostics;
+		parentMap = new(Root);
 	}
 
 
@@ -39,26 +39,7 @@ public sealed class SyntaxTree {
 	/// to get the parent of.</param>
 	/// <returns>The parent of <paramref name="node"/>, or <see langword="null"/>
 	/// if the node is the root of the syntax tree.</returns>
-	public ISyntaxNode? GetParent(ISyntaxNode node) {
-		if (parents is null) {
-			var initializedParents = CreateParentsDictionary(Root);
-			Interlocked.CompareExchange(ref parents, initializedParents, null);
-		}
-		
-		return parents[node];
-	}
-	private static IReadOnlyDictionary<ISyntaxNode, ISyntaxNode?> CreateParentsDictionary(ISyntaxNode root) {
-		Dictionary<ISyntaxNode, ISyntaxNode?> result = new();
-		result.Add(root, null);
-		AddParentsToDictionary(result, root);
-		return result;
-	}
-	private static void AddParentsToDictionary(IDictionary<ISyntaxNode, ISyntaxNode?> dictionary, ISyntaxNode node) {
-		var children = node.GetChildren();
-		foreach (var child in children) {
-			dictionary.Add(child, node);
-			AddParentsToDictionary(dictionary, child);
-		}
-	}
+	public ISyntaxNode? GetParent(ISyntaxNode node) =>
+		parentMap.GetParent(node);
 
 }
