@@ -41,14 +41,5 @@ public sealed class SyntaxTree {
 	/// if the node is the root of the syntax tree.</returns>
 	public ISyntaxNode? GetParent(ISyntaxNode node) =>
 		parentMap.GetParent(node);
-	/// <summary>
-	/// Gets a parent node of a specified type of a <see cref="ISyntaxNode"/>.
-	/// </summary>
-	/// <typeparam name="TParent">The type of the parent node to get.</typeparam>
-	/// <param name="node">The <see cref="ISyntaxNode"/> to get the parent of.</param>
-	/// <returns>A <see cref="ISyntaxNode"/> of type <typeparamref name="TParent"/>,
-	/// or <see langword="null"/> if none was found.</returns>
-	public TParent? GetParentOfType<TParent>(ISyntaxNode node) where TParent : ISyntaxNode =>
-		parentMap.GetParentOfType<TParent>(node);
 
 }
