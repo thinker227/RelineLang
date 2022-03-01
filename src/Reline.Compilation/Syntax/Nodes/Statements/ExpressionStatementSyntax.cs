@@ -8,5 +8,6 @@ public record class ExpressionStatementSyntax(
 	public override IEnumerable<ISyntaxNode> GetChildren() {
 		yield return Expression;
 	}
+	public override TextSpan GetTextSpan() => Expression.GetTextSpan();
 
 }

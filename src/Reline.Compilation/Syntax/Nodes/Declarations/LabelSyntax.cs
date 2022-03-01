@@ -6,5 +6,7 @@ public sealed record class LabelSyntax(
 ) : SyntaxNode {
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitLabel(this);
+	public override TextSpan GetTextSpan() =>
+		TextSpan.FromBounds(Identifier.Span, ColonToken.Span);
 
 }

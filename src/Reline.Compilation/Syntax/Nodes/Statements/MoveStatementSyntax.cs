@@ -15,5 +15,7 @@ public sealed record class MoveStatementSyntax(
 		yield return Source;
 		yield return Target;
 	}
+	public override TextSpan GetTextSpan() =>
+		TextSpan.FromBounds(MoveKeyword.Span, Target.GetTextSpan());
 
 }

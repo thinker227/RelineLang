@@ -15,5 +15,7 @@ public sealed record class CopyStatementSyntax(
 		yield return Source;
 		yield return Target;
 	}
+	public override TextSpan GetTextSpan() =>
+		TextSpan.FromBounds(CopyKeyword.Span, Target.GetTextSpan());
 
 }

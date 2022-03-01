@@ -11,5 +11,7 @@ public sealed record class BinaryExpressionSyntax(
 		yield return Left;
 		yield return Right;
 	}
+	public override TextSpan GetTextSpan() =>
+		TextSpan.FromBounds(Left.GetTextSpan(), Right.GetTextSpan());
 
 }

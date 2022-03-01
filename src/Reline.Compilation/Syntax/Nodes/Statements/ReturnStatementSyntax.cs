@@ -9,5 +9,7 @@ public sealed record class ReturnStatementSyntax(
 	public override IEnumerable<ISyntaxNode> GetChildren() {
 		yield return Expression;
 	}
+	public override TextSpan GetTextSpan() =>
+		TextSpan.FromBounds(ReturnKeyword.Span, Expression.GetTextSpan());
 
 }

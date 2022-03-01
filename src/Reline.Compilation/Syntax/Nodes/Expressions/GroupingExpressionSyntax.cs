@@ -10,5 +10,7 @@ public sealed record class GroupingExpressionSyntax(
 	public override IEnumerable<ISyntaxNode> GetChildren() {
 		yield return Expression;
 	}
+	public override TextSpan GetTextSpan() =>
+		TextSpan.FromBounds(OpenBracketToken.Span, CloseBracketToken.Span);
 
 }

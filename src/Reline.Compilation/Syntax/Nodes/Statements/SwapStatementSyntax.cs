@@ -15,5 +15,7 @@ public sealed record class SwapStatementSyntax(
 		yield return Source;
 		yield return Target;
 	}
+	public override TextSpan GetTextSpan() =>
+		TextSpan.FromBounds(SwapKeyword.Span, Target.GetTextSpan());
 
 }

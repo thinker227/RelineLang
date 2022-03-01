@@ -9,5 +9,7 @@ public sealed record class UnaryExpressionSyntax(
 	public override IEnumerable<ISyntaxNode> GetChildren() {
 		yield return Expression;
 	}
+	public override TextSpan GetTextSpan() =>
+		TextSpan.FromBounds(OperatorToken.Span, Expression.GetTextSpan());
 
 }

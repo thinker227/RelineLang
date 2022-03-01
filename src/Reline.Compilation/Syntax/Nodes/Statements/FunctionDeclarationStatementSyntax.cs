@@ -12,5 +12,9 @@ public sealed record class FunctionDeclarationStatementSyntax(
 		yield return Body;
 		if (ParameterList is not null) yield return ParameterList;
 	}
+	public override TextSpan GetTextSpan() => new(
+		FunctionKeyword.Span.Start,
+		ParameterList?.GetTextSpan().End ??
+		Body.GetTextSpan().End);
 
 }

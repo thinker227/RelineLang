@@ -5,5 +5,6 @@ public sealed record class KeywordExpressionSyntax(
 ) : SyntaxNode, IExpressionSyntax {
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitKeywordExpression(this);
+	public override TextSpan GetTextSpan() => Keyword.Span;
 
 }

@@ -5,6 +5,7 @@
 /// </summary>
 public interface ISyntaxNode : INode<ISyntaxNode> {
 
-	public T Accept<T>(ISyntaxVisitor<T> visitor);
+	T Accept<T>(ISyntaxVisitor<T> visitor);
+	TextSpan GetTextSpan();
 
 }

@@ -10,5 +10,7 @@ public sealed record class AssignmentStatementSyntax(
 	public override IEnumerable<ISyntaxNode> GetChildren() {
 		yield return Initializer;
 	}
+	public override TextSpan GetTextSpan() =>
+		TextSpan.FromBounds(Identifier.Span, Initializer.GetTextSpan());
 
 }
