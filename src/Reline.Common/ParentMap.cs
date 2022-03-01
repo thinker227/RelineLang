@@ -53,4 +53,17 @@ public sealed class ParentMap<TNode> where TNode : INode<TNode> {
 		}
 	}
 
+	/// <summary>
+	/// Gets a parent node of a specified type of a <typeparamref name="TNode"/>.
+	/// </summary>
+	/// <typeparam name="TParent">The type of the parent node to get.</typeparam>
+	/// <param name="node">The <typeparamref name="TNode"/> to get the parent of.</param>
+	/// <returns>A <typeparamref name="TNode"/> of type <typeparamref name="TParent"/>,
+	/// or <see langword="null"/> if none was found.</returns>
+	public TParent? GetParentOfType<TParent>(TNode? node) where TParent : TNode => node switch {
+		null => default,
+		TParent p => p,
+		_ => GetParentOfType<TParent>(GetParent(node))
+	};
+
 }
