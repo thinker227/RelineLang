@@ -14,13 +14,13 @@ public sealed class SyntaxTree {
 
 
 	/// <summary>
-	/// The diagnostics generated during parsing.
-	/// </summary>
-	public ImmutableArray<Diagnostic> Diagnostics { get; }
-	/// <summary>
 	/// The root node of the tree.
 	/// </summary>
 	public ProgramSyntax Root { get; }
+	/// <summary>
+	/// The diagnostics generated during parsing.
+	/// </summary>
+	public ImmutableArray<Diagnostic> Diagnostics { get; }
 
 
 
