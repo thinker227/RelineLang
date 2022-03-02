@@ -8,10 +8,11 @@ namespace Reline.Compilation.Binding;
 /// <summary>
 /// Binds syntax nodes into symbols.
 /// </summary>
-public sealed partial class Binder {
+public sealed partial class Binder : ISymbolContext {
 
 	private readonly BinderDiagnosticMap diagnostics;
 	private readonly SyntaxSymbolBinder syntaxSymbolBinder;
+	private ParentMap<ISymbol> symbolParentMap;
 	private ProgramSymbol programRoot;
 	private bool hasError;
 
@@ -23,6 +24,7 @@ public sealed partial class Binder {
 	/// The <see cref="ProgramSymbol"/> which is the root of the symbol tree.
 	/// </summary>
 	internal ProgramSymbol ProgramRoot => programRoot;
+	ProgramSymbol ISymbolContext.Root => programRoot;
 	/// <summary>
 	/// The internal <see cref="LabelSymbol"/> binder.
 	/// </summary>
@@ -141,5 +143,10 @@ public sealed partial class Binder {
 
 		return null;
 	}
+
+	internal ISymbol? GetParent(ISymbol symbol) =>
+		symbolParentMap.GetParent(symbol);
+	ISymbol? ISymbolContext.GetParent(ISymbol node) =>
+		GetParent(node);
 
 }
