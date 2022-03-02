@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
 
 namespace Reline.Common;
 
@@ -32,14 +31,15 @@ public sealed class ParentMap<TNode> where TNode : INode<TNode> {
 	/// <returns>The parent of <paramref name="node"/>, or <see langword="default"/>
 	/// if the node is the root of the tree.</returns>
 	public TNode? GetParent(TNode node) {
-		if (parents is null) {
-			var createdParents = CreateParentsDictionary(root);
-			Interlocked.CompareExchange(ref parents, createdParents, null);
+		if (parents is null || !parents.TryGetValue(node, out var parent)) {
+			var createdParents = GenerateParentsDictionary(root);
+			parents = createdParents;
+			parents.TryGetValue(node, out parent);
 		}
 
-		return parents[node];
+		return parent;
 	}
-	private static IReadOnlyDictionary<TNode, TNode?> CreateParentsDictionary(TNode root) {
+	private static IReadOnlyDictionary<TNode, TNode?> GenerateParentsDictionary(TNode root) {
 		Dictionary<TNode, TNode?> result = new();
 		result.Add(root, default);
 		AddParentsToDictionary(result, root);
