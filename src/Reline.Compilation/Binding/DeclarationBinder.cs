@@ -112,9 +112,8 @@ public partial class Binder {
 			// Reporting a type error when the error is due to an error in a subexpression looks ugly
 			if (range.Type != LiteralType.None)
 				AddDiagnostic(function.RangeExpression, CompilerDiagnostics.expectedType, "range");
-			// Just pretend the function doesn't exist. Would be nice to eventually
-			// set the range as the line the function was declared on.
-			rangeValue = new(0, 0);
+			int lineNumber = SyntaxTree.GetAncestor<LineSyntax>(syntax)!.LineNumber;
+			rangeValue = new(lineNumber, lineNumber);
 		}
 		else {
 			rangeValue = range.GetAs<RangeLiteral>();
