@@ -130,18 +130,11 @@ public sealed partial class Binder : ISymbolContext {
 	/// <param name="identifier">The identifier to get the symbol of.</param>
 	/// <returns>A <see cref="IIdentifiableSymbol"/> corresponding to
 	/// <paramref name="identifier"/>, or <see langword="null"/> if none was found.</returns>
-	internal IIdentifiableSymbol? GetIdentifier(string identifier) {
-		var label = LabelBinder.GetSymbol(identifier);
-		if (label is not null) return label;
-
-		var variable = VariableBinder.GetSymbol(identifier);
-		if (variable is not null) return variable;
-
-		var function = FunctionBinder.GetSymbol(identifier);
-		if (function is not null) return function;
-
-		return null;
-	}
+	internal IIdentifiableSymbol? GetIdentifier(string identifier) =>
+		LabelBinder.GetSymbol(identifier) ??
+		VariableBinder.GetSymbol(identifier) ??
+		FunctionBinder.GetSymbol(identifier) ??
+		(IIdentifiableSymbol?)null;
 
 	internal ISymbol? GetParent(ISymbol symbol) =>
 		(symbolParentMap ?? throw new InvalidOperationException("Parent map uninitialized."))
