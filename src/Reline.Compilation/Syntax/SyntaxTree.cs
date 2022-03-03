@@ -48,10 +48,10 @@ public sealed class SyntaxTree {
 	/// <param name="node">The <see cref="ISyntaxNode"/> to get the ancestor of.</param>
 	/// <returns>An <see cref="ISyntaxNode"/> of type <typeparamref name="TAncestor"/>,
 	/// or <see langword="null"/> if none was found.</returns>
-	public TAncestor? GetAncestor<TAncestor>(ISyntaxNode node) where TAncestor : ISyntaxNode => node switch {
+	public TAncestor? GetAncestor<TAncestor>(ISyntaxNode? node) where TAncestor : ISyntaxNode => node switch {
 		null => default,
 		TAncestor a => a,
-		_ => GetAncestor<TAncestor>(node)
+		_ => GetAncestor<TAncestor>(GetParent(node))
 	};
 
 	/// <summary>
