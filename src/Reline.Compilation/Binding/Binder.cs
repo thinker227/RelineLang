@@ -10,7 +10,7 @@ namespace Reline.Compilation.Binding;
 /// </summary>
 public sealed partial class Binder : ISymbolContext {
 
-	private readonly BinderDiagnosticMap diagnostics;
+	private readonly List<Diagnostic> diagnostics;
 	private readonly SyntaxSymbolBinder syntaxSymbolBinder;
 	private ParentMap<ISymbol>? symbolParentMap;
 	private ProgramSymbol? programRoot;
@@ -87,7 +87,7 @@ public sealed partial class Binder : ISymbolContext {
 		BindVariablesFromAssignments();
 		BindFunctionsFromTree();
 		BindProgram(ProgramRoot);
-
+		
 		var diagnostics = this.diagnostics.ToImmutableArray();
 		return new(ProgramRoot, diagnostics);
 	}
@@ -109,17 +109,36 @@ public sealed partial class Binder : ISymbolContext {
 		syntaxSymbolBinder.Bind(syntax, symbol);
 		return symbol;
 	}
+
 	/// <summary>
-	/// Adds a diagnostic to a symbol.
+	/// Adds a diagnostic to an <see cref="ISymbol"/>.
 	/// </summary>
-	/// <param name="symbol">The to add the diagnostic to.</param>
-	/// <param name="level">The <see cref="DiagnosticLevel"/> of the diagnostic.</param>
+	/// <param name="symbol">The <see cref="ISymbol"/> to add the diagnostic to.</param>
 	/// <param name="description">The description of the diagnostic.</param>
+	/// <param name="formatArgs">The arguments to format the description with.</param>
 	internal void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) {
-		var textSpan = symbol.Syntax?.GetTextSpan() ?? TextSpan.Empty;
-		var diagnostic = description
-			.ToDiagnostic(textSpan, formatArgs);
-		diagnostics.AddDiagnostic(symbol, diagnostic);
+		var location = symbol.Syntax?.GetTextSpan();
+		AddDiagnostic(location, description, formatArgs);
+	}
+	/// <summary>
+	/// Adds a diagnostic to an <see cref="ISyntaxNode"/>.
+	/// </summary>
+	/// <param name="symbol">The <see cref="ISyntaxNode"/> to add the diagnostic to.</param>
+	/// <param name="description">The description of the diagnostic.</param>
+	/// <param name="formatArgs">The arguments to format the description with.</param>
+	internal void AddDiagnostic(ISyntaxNode syntax, DiagnosticDescription description, params object?[] formatArgs) {
+		var location = syntax.GetTextSpan();
+		AddDiagnostic(location, description, formatArgs);
+	}
+	/// <summary>
+	/// Adds a diagnostic.
+	/// </summary>
+	/// <param name="location">The location of the diagnostic.</param>
+	/// <param name="description">The description of the diagnostic.</param>
+	/// <param name="formatArgs">The arguments to format the description with.</param>
+	internal void AddDiagnostic(TextSpan? location, DiagnosticDescription description, params object?[] formatArgs) {
+		var diagnostic = Diagnostic.Create(description, location, formatArgs);
+		diagnostics.Add(diagnostic);
 
 		if (description.Level == DiagnosticLevel.Error) hasError = true;
 	}
