@@ -12,8 +12,8 @@ public sealed partial class Binder : ISymbolContext {
 
 	private readonly BinderDiagnosticMap diagnostics;
 	private readonly SyntaxSymbolBinder syntaxSymbolBinder;
-	private ParentMap<ISymbol> symbolParentMap;
-	private ProgramSymbol programRoot;
+	private ParentMap<ISymbol>? symbolParentMap;
+	private ProgramSymbol? programRoot;
 	private bool hasError;
 
 	/// <summary>
@@ -23,8 +23,10 @@ public sealed partial class Binder : ISymbolContext {
 	/// <summary>
 	/// The <see cref="ProgramSymbol"/> which is the root of the symbol tree.
 	/// </summary>
-	internal ProgramSymbol ProgramRoot => programRoot;
-	ProgramSymbol ISymbolContext.Root => programRoot;
+	internal ProgramSymbol ProgramRoot =>
+		programRoot ??
+		throw new InvalidOperationException("Program root uninitialized.");
+	ProgramSymbol ISymbolContext.Root => ProgramRoot;
 	/// <summary>
 	/// The internal <see cref="LabelSymbol"/> binder.
 	/// </summary>
@@ -51,8 +53,9 @@ public sealed partial class Binder : ISymbolContext {
 	private Binder(SyntaxTree tree) {
 		diagnostics = new();
 		syntaxSymbolBinder = new();
+		symbolParentMap = null;
 		hasError = false;
-		programRoot = null!;
+		programRoot = null;
 
 		SyntaxTree = tree;
 		LabelBinder = new();
@@ -79,6 +82,7 @@ public sealed partial class Binder : ISymbolContext {
 	/// </summary>
 	private SymbolTree BindTree() {
 		programRoot = BindProgramPartialFromTree();
+		symbolParentMap = new(ProgramRoot);
 		BindLabelsFromTree();
 		BindVariablesFromAssignments();
 		BindFunctionsFromTree();
@@ -140,7 +144,8 @@ public sealed partial class Binder : ISymbolContext {
 	}
 
 	internal ISymbol? GetParent(ISymbol symbol) =>
-		symbolParentMap.GetParent(symbol);
+		(symbolParentMap ?? throw new InvalidOperationException("Parent map uninitialized."))
+		.GetParent(symbol);
 	ISymbol? ISymbolContext.GetParent(ISymbol node) =>
 		GetParent(node);
 
