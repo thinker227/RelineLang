@@ -20,7 +20,7 @@ public sealed class FunctionSymbol : SymbolNode, IIdentifiableSymbol {
 	/// <summary>
 	/// The range of the function.
 	/// </summary>
-	public RangeLiteral Range { get; set; }
+	public RangeValue Range { get; set; }
 	/// <summary>
 	/// The lines of the body of the function.
 	/// </summary>

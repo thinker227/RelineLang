@@ -1,9 +1,9 @@
 ﻿namespace Reline.Compilation.Symbols;
 
 /// <summary>
-/// Represents the type of a literal.
+/// Represents the type of a <see cref="BoundValue"/>.
 /// </summary>
-public enum LiteralType {
+public enum BoundValueType {
 	/// <summary>
 	/// The literal does not have a type or is invalid.
 	/// </summary>

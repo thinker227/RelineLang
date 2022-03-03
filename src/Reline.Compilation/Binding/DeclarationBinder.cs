@@ -107,17 +107,17 @@ public partial class Binder {
 		// Bind body expression immediately in order to bind parameters to the proper range
 		function.RangeExpression = BindExpression(syntax.Body, ExpressionBindingFlags.ConstantsLabels);
 		var range = ExpressionEvaluator.EvaluateExpression(function.RangeExpression);
-		RangeLiteral rangeValue;
-		if (range.Type != LiteralType.Range) {
+		RangeValue rangeValue;
+		if (range.Type != BoundValueType.Range) {
 			// Reporting a type error when the error is due to an error in a subexpression looks ugly
-			if (range.Type != LiteralType.None)
+			if (range.Type != BoundValueType.None)
 				AddDiagnostic(function.RangeExpression, CompilerDiagnostics.expectedType, "range");
 			// Just pretend the function doesn't exist. Would be nice to eventually
 			// set the range as the line the function was declared on.
 			rangeValue = new(0, 0);
 		}
 		else {
-			rangeValue = range.GetAs<RangeLiteral>();
+			rangeValue = range.GetAs<RangeValue>();
 		}
 		function.Range = rangeValue;
 

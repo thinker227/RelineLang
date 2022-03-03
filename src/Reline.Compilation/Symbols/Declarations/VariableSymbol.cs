@@ -52,7 +52,7 @@ public sealed class ParameterSymbol : SymbolNode, IVariableSymbol {
 	/// <summary>
 	/// The range the parameter is valid within.
 	/// </summary>
-	public RangeLiteral Range { get; set; }
+	public RangeValue Range { get; set; }
 	/// <summary>
 	/// The function the parameter is a parameter to.
 	/// </summary>

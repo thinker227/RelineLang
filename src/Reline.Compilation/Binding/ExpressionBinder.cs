@@ -235,10 +235,10 @@ internal sealed class ExpressionBinder {
 
 		_ => throw new ArgumentException($"Syntax type '{syntaxType.GetTypeSymbolOrName()}' can not be converted to a keyword type.", nameof(syntaxType))
 	};
-	private static LiteralValue BindLiteralValue(object value) => value switch {
+	private static BoundValue BindLiteralValue(object value) => value switch {
 		int i => new(i),
 		string s => new(s),
-		RangeLiteral range => new(range),
+		RangeValue range => new(range),
 
 		_ => throw new CompilationException("Unknown literal type."),
 	};
