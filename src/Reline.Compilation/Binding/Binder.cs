@@ -42,10 +42,6 @@ public sealed partial class Binder : ISymbolContext {
 	/// </summary>
 	internal ExpressionEvaluator ExpressionEvaluator { get; }
 	/// <summary>
-	/// The current <see cref="LineSymbol"/> being bound.
-	/// </summary>
-	internal LineSymbol? CurrentLine { get; set; }
-	/// <summary>
 	/// Whether any errors have been generated.
 	/// </summary>
 	internal bool HasError => hasError;
@@ -63,7 +59,6 @@ public sealed partial class Binder : ISymbolContext {
 		VariableBinder = new();
 		FunctionBinder = new();
 		ExpressionEvaluator = new(this);
-		CurrentLine = null;
 	}
 
 

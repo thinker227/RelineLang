@@ -57,7 +57,6 @@ public partial class Binder {
 	/// Fully binds a <see cref="LineSymbol"/>.
 	/// </summary>
 	private void BindLine(LineSymbol symbol) {
-		CurrentLine = symbol;
 		var statement = ((LineSyntax)symbol.Syntax!).Statement;
 		if (statement is not null)
 			symbol.Statement = BindStatement(statement);
