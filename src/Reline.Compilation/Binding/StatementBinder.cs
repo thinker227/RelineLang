@@ -1,5 +1,6 @@
 ﻿using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Symbols;
+using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Binding;
 
@@ -91,10 +92,15 @@ public partial class Binder {
 	private ReturnStatementSymbol BindReturnStatement(ReturnStatementSyntax syntax) {
 		var expression = BindExpression(syntax.Expression);
 
-		// Report error if return statement is not within a function
+		int line = SyntaxTree.GetAncestor<LineSyntax>(syntax)!.LineNumber;
+		var function = FunctionBinder.FirstOrDefault(f => f.Range.Contains(line));
+		if (function is null) {
+			AddDiagnostic(syntax, CompilerDiagnostics.returnOutsideFunction);
+		}
 
 		var symbol = CreateSymbol<ReturnStatementSymbol>(syntax);
 		symbol.Expression = expression;
+		symbol.Function = function;
 		return symbol;
 	}
 

@@ -9,6 +9,10 @@ public sealed class ReturnStatementSymbol : SymbolNode, IStatementSymbol {
 	/// The expression being returned.
 	/// </summary>
 	public IExpressionSymbol Expression { get; set; } = null!;
+	/// <summary>
+	/// The function being returned from.
+	/// </summary>
+	public FunctionSymbol? Function { get; set; }
 
 
 
