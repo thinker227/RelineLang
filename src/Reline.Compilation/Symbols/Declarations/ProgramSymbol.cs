@@ -20,7 +20,7 @@ public sealed class ProgramSymbol : SymbolNode {
 	/// <summary>
 	/// The full range of the program.
 	/// </summary>
-	public RangeLiteral FullRange => new(StartLine, EndLine);
+	public RangeValue FullRange => new(StartLine, EndLine);
 	/// <summary>
 	/// The declared labels in the program.
 	/// </summary>

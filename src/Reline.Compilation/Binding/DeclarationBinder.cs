@@ -107,16 +107,16 @@ public partial class Binder {
 		// Bind body expression immediately in order to bind parameters to the proper range
 		function.RangeExpression = BindExpression(syntax.Body, ExpressionBindingFlags.ConstantsLabels);
 		var range = ExpressionEvaluator.EvaluateExpression(function.RangeExpression);
-		RangeLiteral rangeValue;
-		if (range.Type != LiteralType.Range) {
+		RangeValue rangeValue;
+		if (range.Type != BoundValueType.Range) {
 			// Reporting a type error when the error is due to an error in a subexpression looks ugly
-			if (range.Type != LiteralType.None)
+			if (range.Type != BoundValueType.None)
 				AddDiagnostic(function.RangeExpression, CompilerDiagnostics.expectedType, "range");
 			int lineNumber = SyntaxTree.GetAncestor<LineSyntax>(syntax)!.LineNumber;
 			rangeValue = new(lineNumber, lineNumber);
 		}
 		else {
-			rangeValue = range.GetAs<RangeLiteral>();
+			rangeValue = range.GetAs<RangeValue>();
 		}
 		function.Range = rangeValue;
 
