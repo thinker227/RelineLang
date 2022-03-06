@@ -12,12 +12,12 @@ public sealed class AssignmentStatementSymbol : SymbolNode, IStatementSymbol {
 	/// <summary>
 	/// The initializer expression.
 	/// </summary>
-	public IExpressionSymbol Initializer { get; set; } = null!;
+	public IExpressionSymbol? Initializer { get; set; } = null!;
 
 
 
 	public override IEnumerable<ISymbol> GetChildren() {
-		yield return Initializer;
+		if (Initializer is not null) yield return Initializer;
 	}
 
 }
