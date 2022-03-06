@@ -33,7 +33,7 @@ public partial class Binder {
 		string identifier = label.Identifier;
 		var existingIdentifier = GetIdentifier(identifier);
 		if (existingIdentifier is not null) {
-			AddDiagnostic(label, CompilerDiagnostics.identifierAlreadyDefined, identifier);
+			AddDiagnostic(labelSyntax.Identifier, CompilerDiagnostics.identifierAlreadyDefined, identifier);
 			return;
 		}
 
@@ -70,7 +70,7 @@ public partial class Binder {
 		string identifier = symbol.Identifier;
 		var existingIdentifier = GetIdentifier(identifier);
 		if (existingIdentifier is not (null or VariableSymbol)) {
-			AddDiagnostic(symbol, CompilerDiagnostics.identifierAlreadyDefined, identifier);
+			AddDiagnostic(syntax.Identifier, CompilerDiagnostics.identifierAlreadyDefined, identifier);
 			return;
 		}
 
@@ -101,7 +101,7 @@ public partial class Binder {
 		string identifier = function.Identifier;
 		var existingIdentifier = GetIdentifier(identifier);
 		if (existingIdentifier is not null) {
-			AddDiagnostic(function, CompilerDiagnostics.identifierAlreadyDefined, identifier);
+			AddDiagnostic(syntax.FunctionKeyword, CompilerDiagnostics.identifierAlreadyDefined, identifier);
 		}
 		else {
 			FunctionBinder.RegisterSymbol(function);
@@ -143,7 +143,7 @@ public partial class Binder {
 
 		var existingIdentifier = GetIdentifier(identifier);
 		if (existingIdentifier is not null) {
-			AddDiagnostic(symbol, CompilerDiagnostics.identifierAlreadyDefined, identifier);
+			AddDiagnostic(syntax, CompilerDiagnostics.identifierAlreadyDefined, identifier);
 			return;
 		}
 
