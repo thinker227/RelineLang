@@ -9,10 +9,17 @@ public sealed class FunctionDeclarationStatementSymbol : SymbolNode, IStatementS
 	/// The function declared by the declaration.
 	/// </summary>
 	public FunctionSymbol Function { get; set; } = null!;
+	/// <summary>
+	/// The <see cref="IExpressionSymbol"/> describing the range of the function.
+	/// </summary>
+	public IExpressionSymbol RangeExpression => Function.RangeExpression;
 
 
 
-	public override IEnumerable<ISymbol> GetChildren() =>
-		Enumerable.Empty<ISymbol>();
+	public override IEnumerable<ISymbol> GetChildren() {
+		// This is the only way to get the range expression as a child
+		// because the function is never returned as a child.
+		yield return RangeExpression;
+	}
 
 }
