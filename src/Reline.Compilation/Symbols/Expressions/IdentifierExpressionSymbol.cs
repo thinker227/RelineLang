@@ -15,8 +15,7 @@ public sealed class IdentifierExpressionSymbol : SymbolNode, IExpressionSymbol {
 	public T Accept<T>(IExpressionVisitor<T> visitor) =>
 		visitor.VisitVariable(this);
 
-	public override IEnumerable<ISymbol> GetChildren() {
-		yield return Identifier;
-	}
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Enumerable.Empty<ISymbol>();
 
 }

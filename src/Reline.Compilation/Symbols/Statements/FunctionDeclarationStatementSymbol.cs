@@ -12,8 +12,7 @@ public sealed class FunctionDeclarationStatementSymbol : SymbolNode, IStatementS
 
 
 
-	public override IEnumerable<ISymbol> GetChildren() {
-		yield return Function;
-	}
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Enumerable.Empty<ISymbol>();
 
 }

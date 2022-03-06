@@ -17,7 +17,6 @@ public sealed class AssignmentStatementSymbol : SymbolNode, IStatementSymbol {
 
 
 	public override IEnumerable<ISymbol> GetChildren() {
-		if (Variable is not null) yield return Variable;
 		yield return Initializer;
 	}
 

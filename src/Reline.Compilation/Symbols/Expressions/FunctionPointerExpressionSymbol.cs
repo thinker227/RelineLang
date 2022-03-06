@@ -14,8 +14,7 @@ public sealed class FunctionPointerExpressionSymbol : SymbolNode, IExpressionSym
 
 	public T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitFunctionPointer(this);
 
-	public override IEnumerable<ISymbol> GetChildren() {
-		yield return Function;
-	}
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Enumerable.Empty<ISymbol>();
 
 }

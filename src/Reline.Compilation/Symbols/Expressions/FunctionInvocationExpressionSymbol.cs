@@ -19,9 +19,7 @@ public sealed class FunctionInvocationExpressionSymbol : SymbolNode, IExpression
 	public T Accept<T>(IExpressionVisitor<T> visitor) =>
 		visitor.VisitFunctionInvocation(this);
 
-	public override IEnumerable<ISymbol> GetChildren() {
-		yield return Function;
-		foreach (var arg in Arguments) yield return arg;
-	}
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Arguments;
 
 }
