@@ -116,20 +116,24 @@ public sealed partial class Binder : ISymbolContext {
 	/// <param name="symbol">The <see cref="ISymbol"/> to add the diagnostic to.</param>
 	/// <param name="description">The description of the diagnostic.</param>
 	/// <param name="formatArgs">The arguments to format the description with.</param>
-	internal void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) {
-		var location = symbol.Syntax?.GetTextSpan();
-		AddDiagnostic(location, description, formatArgs);
-	}
+	internal void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) =>
+		AddDiagnostic(symbol.Syntax?.GetTextSpan(), description, formatArgs);
 	/// <summary>
 	/// Adds a diagnostic to an <see cref="ISyntaxNode"/>.
 	/// </summary>
-	/// <param name="symbol">The <see cref="ISyntaxNode"/> to add the diagnostic to.</param>
+	/// <param name="syntax">The <see cref="ISyntaxNode"/> to add the diagnostic to.</param>
 	/// <param name="description">The description of the diagnostic.</param>
 	/// <param name="formatArgs">The arguments to format the description with.</param>
-	internal void AddDiagnostic(ISyntaxNode syntax, DiagnosticDescription description, params object?[] formatArgs) {
-		var location = syntax.GetTextSpan();
-		AddDiagnostic(location, description, formatArgs);
-	}
+	internal void AddDiagnostic(ISyntaxNode syntax, DiagnosticDescription description, params object?[] formatArgs) =>
+		AddDiagnostic(syntax.GetTextSpan(), description, formatArgs);
+	/// <summary>
+	/// Adds a diagnostic to a <see cref="SyntaxToken"/>.
+	/// </summary>
+	/// <param name="token">The <see cref="SyntaxToken"/> to add the diagnostic to.</param>
+	/// <param name="description">The description of the diagnostic.</param>
+	/// <param name="formatArgs">The arguments to format the description with.</param>
+	internal void AddDiagnostic(SyntaxToken token, DiagnosticDescription description, params object?[] formatArgs) =>
+		AddDiagnostic(token.Span, description, formatArgs);
 	/// <summary>
 	/// Adds a diagnostic.
 	/// </summary>
