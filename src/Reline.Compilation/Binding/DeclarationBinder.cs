@@ -81,8 +81,12 @@ public partial class Binder {
 	/// Binds all functions and parameters from the tree.
 	/// </summary>
 	private void BindFunctionsFromTree() {
-		var functions = SyntaxTree.GetStatementsOfType<FunctionDeclarationStatementSyntax>();
-		foreach (var function in functions) BindFunction(function);
+		foreach (var line in SyntaxTree.Root.Lines) {
+			if (line.Statement is not FunctionDeclarationStatementSyntax declaration) continue;
+			var lineSymbol = CreateSymbol<LineSymbol>(line);
+			lineSymbol.Statement = CreateSymbol<FunctionDeclarationStatementSymbol>(declaration);
+			BindFunction(declaration);
+		}
 	}
 	/// <summary>
 	/// Binds a function and its parameters.
