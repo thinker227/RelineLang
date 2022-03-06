@@ -84,7 +84,7 @@ public sealed partial class Binder : ISymbolContext {
 		programRoot = BindProgramPartialFromTree();
 		symbolParentMap = new(ProgramRoot);
 		BindLabelsFromTree();
-		BindVariablesFromAssignments();
+		BindVariablesFromTree();
 		BindFunctionsFromTree();
 		BindProgram(ProgramRoot);
 		

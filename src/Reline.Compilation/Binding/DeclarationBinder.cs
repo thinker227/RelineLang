@@ -52,65 +52,72 @@ public partial class Binder {
 		symbol.Label = label;
 		return symbol;
 	}
+
 	/// <summary>
 	/// Binds all variables from assignments.
 	/// </summary>
-	private void BindVariablesFromAssignments() {
-		var assignments = SyntaxTree.GetStatementsOfType<AssignmentStatementSyntax>();
-		foreach (var assignment in assignments) BindVariableFromAssignment(assignment);
+	private void BindVariablesFromTree() {
+		foreach (var line in SyntaxTree.Root.Lines) BindVariableFromLine(line);
 	}
 	/// <summary>
 	/// Binds an <see cref="AssignmentStatementSyntax"/> into a <see cref="VariableSymbol"/>.
 	/// </summary>
-	private void BindVariableFromAssignment(AssignmentStatementSyntax syntax) {
+	private void BindVariableFromLine(LineSyntax lineSyntax) {
+		if (lineSyntax.Statement is not AssignmentStatementSyntax syntax) return;
+
+		var assignmentSymbol = CreateSymbol<AssignmentStatementSymbol>(syntax);
+		CreateSymbol<LineSymbol>(lineSyntax).Statement = assignmentSymbol;
+
+		if (syntax.Identifier.IsMissing) return;
+
+		string identifier = syntax.Identifier.Text;
 		VariableSymbol symbol = new() {
 			Identifier = syntax.Identifier.Text
 		};
-
-		string identifier = symbol.Identifier;
 		var existingIdentifier = GetIdentifier(identifier);
 		if (existingIdentifier is not (null or VariableSymbol)) {
 			AddDiagnostic(syntax.Identifier, CompilerDiagnostics.identifierAlreadyDefined, identifier);
 			return;
 		}
 
+		assignmentSymbol.Variable = symbol;
 		VariableBinder.RegisterSymbol(symbol);
 		ProgramRoot.Variables.Add(symbol);
 	}
+
 	/// <summary>
 	/// Binds all functions and parameters from the tree.
 	/// </summary>
 	private void BindFunctionsFromTree() {
-		foreach (var line in SyntaxTree.Root.Lines) {
-			if (line.Statement is not FunctionDeclarationStatementSyntax declaration) continue;
-			var lineSymbol = CreateSymbol<LineSymbol>(line);
-			lineSymbol.Statement = CreateSymbol<FunctionDeclarationStatementSymbol>(declaration);
-			BindFunction(declaration);
-		}
+		foreach (var line in SyntaxTree.Root.Lines) BindFunctionFromLine(line);
 	}
 	/// <summary>
 	/// Binds a function and its parameters.
 	/// </summary>
-	private void BindFunction(FunctionDeclarationStatementSyntax syntax) {
+	private void BindFunctionFromLine(LineSyntax lineSyntax) {
+		if (lineSyntax.Statement is not FunctionDeclarationStatementSyntax syntax) return;
+
 		var declaration = CreateSymbol<FunctionDeclarationStatementSymbol>(syntax);
+		CreateSymbol<LineSymbol>(lineSyntax).Statement = declaration;
+
 		FunctionSymbol function = new();
 		function.Declaration = declaration;
 		declaration.Function = function;
-		function.Identifier = syntax.Identifier.Text;
 
-		string identifier = function.Identifier;
+		string identifier = syntax.Identifier.Text;
+		function.Identifier = identifier;
 		var existingIdentifier = GetIdentifier(identifier);
-		if (existingIdentifier is not null) {
+		if (existingIdentifier is not null)
 			AddDiagnostic(syntax.FunctionKeyword, CompilerDiagnostics.identifierAlreadyDefined, identifier);
-		}
 		else {
 			FunctionBinder.RegisterSymbol(function);
 			ProgramRoot.Functions.Add(function);
 		}
-
+		
 		// Bind body expression immediately in order to bind parameters to the proper range
-		function.RangeExpression = BindExpression(syntax.Body, ExpressionBindingFlags.ConstantsLabels);
-		var range = ExpressionEvaluator.EvaluateExpression(function.RangeExpression);
+		var expression = BindExpression(syntax.Body, ExpressionBindingFlags.ConstantsLabels);
+		declaration.RangeExpression = expression;
+		var range = ExpressionEvaluator.EvaluateExpression(expression);
 		RangeValue rangeValue;
 		if (range.Type != BoundValueType.Range) {
 			// Reporting a type error when the error is due to an error in a subexpression looks ugly
@@ -119,13 +126,12 @@ public partial class Binder {
 			int lineNumber = SyntaxTree.GetAncestor<LineSyntax>(syntax)!.LineNumber;
 			rangeValue = new(lineNumber, lineNumber);
 		}
-		else {
-			rangeValue = range.GetAs<RangeValue>();
-		}
+		else rangeValue = range.GetAs<RangeValue>();
 		function.Range = rangeValue;
 
-		if (syntax.ParameterList is null) return;
-		foreach (var p in syntax.ParameterList.Parameters) BindParameter(p, function);
+		if (syntax.ParameterList is not null) {
+			foreach (var p in syntax.ParameterList.Parameters) BindParameter(p, function);
+		}
 	}
 	/// <summary>
 	/// Binds a <see cref="ParameterSymbol"/> from a
