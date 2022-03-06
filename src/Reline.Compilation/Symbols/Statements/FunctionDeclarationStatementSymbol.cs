@@ -12,7 +12,7 @@ public sealed class FunctionDeclarationStatementSymbol : SymbolNode, IStatementS
 	/// <summary>
 	/// The <see cref="IExpressionSymbol"/> describing the range of the function.
 	/// </summary>
-	public IExpressionSymbol RangeExpression => Function.RangeExpression;
+	public IExpressionSymbol RangeExpression { get; set; } = null!;
 
 
 

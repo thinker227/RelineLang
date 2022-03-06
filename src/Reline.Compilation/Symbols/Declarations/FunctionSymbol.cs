@@ -16,7 +16,7 @@ public sealed class FunctionSymbol : SymbolNode, IIdentifiableSymbol {
 	/// <summary>
 	/// The <see cref="IExpressionSymbol"/> describing the range of the function.
 	/// </summary>
-	public IExpressionSymbol RangeExpression { get; set; } = null!;
+	public IExpressionSymbol RangeExpression => Declaration.RangeExpression;
 	/// <summary>
 	/// The range of the function.
 	/// </summary>
