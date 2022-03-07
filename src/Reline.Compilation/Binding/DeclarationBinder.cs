@@ -111,7 +111,7 @@ public partial class Binder {
 			function.Identifier = identifier;
 			var existingIdentifier = GetIdentifier(identifier);
 			if (existingIdentifier is not null)
-				AddDiagnostic(syntax.FunctionKeyword, CompilerDiagnostics.identifierAlreadyDefined, identifier);
+				AddDiagnostic(syntax.Identifier, CompilerDiagnostics.identifierAlreadyDefined, identifier);
 			else {
 				FunctionBinder.RegisterSymbol(function);
 				ProgramRoot.Functions.Add(function);
