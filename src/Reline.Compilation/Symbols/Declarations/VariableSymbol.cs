@@ -55,8 +55,9 @@ public sealed class ParameterSymbol : SymbolNode, IVariableSymbol {
 	public RangeValue Range { get; set; }
 	/// <summary>
 	/// The function the parameter is a parameter to.
+	/// May be <see langword="null"/> if the function is invalid.
 	/// </summary>
-	public FunctionSymbol Function { get; set; } = null!;
+	public FunctionSymbol? Function { get; set; }
 
 
 

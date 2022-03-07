@@ -100,20 +100,28 @@ public partial class Binder {
 		var declaration = CreateSymbol<FunctionDeclarationStatementSymbol>(syntax);
 		CreateSymbol<LineSymbol>(lineSyntax).Statement = declaration;
 
-		FunctionSymbol function = new();
-		function.Declaration = declaration;
-		declaration.Function = function;
+			// Bind identifier
+		// If the identifier is missing, don't bind the function.
+		// This causes both the declaration and parameters to have invalid functions.
+		FunctionSymbol? function = null;
+		if (!syntax.Identifier.IsMissing) {
+			function = new();
 
-		string identifier = syntax.Identifier.Text;
-		function.Identifier = identifier;
-		var existingIdentifier = GetIdentifier(identifier);
-		if (existingIdentifier is not null)
-			AddDiagnostic(syntax.FunctionKeyword, CompilerDiagnostics.identifierAlreadyDefined, identifier);
-		else {
-			FunctionBinder.RegisterSymbol(function);
-			ProgramRoot.Functions.Add(function);
+			string identifier = syntax.Identifier.Text;
+			function.Identifier = identifier;
+			var existingIdentifier = GetIdentifier(identifier);
+			if (existingIdentifier is not null)
+				AddDiagnostic(syntax.FunctionKeyword, CompilerDiagnostics.identifierAlreadyDefined, identifier);
+			else {
+				FunctionBinder.RegisterSymbol(function);
+				ProgramRoot.Functions.Add(function);
+			}
+
+			function.Declaration = declaration;
+			declaration.Function = function;
 		}
-		
+
+			// Body expression
 		// Bind body expression immediately in order to bind parameters to the proper range
 		var expression = BindExpression(syntax.Body, ExpressionBindingFlags.ConstantsLabels);
 		declaration.RangeExpression = expression;
@@ -122,28 +130,29 @@ public partial class Binder {
 		if (range.Type != BoundValueType.Range) {
 			// Reporting a type error when the error is due to an error in a subexpression looks ugly
 			if (range.Type != BoundValueType.None)
-				AddDiagnostic(function.RangeExpression, CompilerDiagnostics.expectedType, "range");
+				AddDiagnostic(expression, CompilerDiagnostics.expectedType, "range");
 			int lineNumber = SyntaxTree.GetAncestor<LineSyntax>(syntax)!.LineNumber;
 			rangeValue = new(lineNumber, lineNumber);
 		}
 		else rangeValue = range.GetAs<RangeValue>();
-		function.Range = rangeValue;
+		if (function is not null) function.Range = rangeValue;
 
+		// Parameters
 		if (syntax.ParameterList is not null) {
-			foreach (var p in syntax.ParameterList.Parameters) BindParameter(p, function);
+			foreach (var p in syntax.ParameterList.Parameters) BindParameter(p, rangeValue, function);
 		}
 	}
 	/// <summary>
 	/// Binds a <see cref="ParameterSymbol"/> from a
 	/// <see cref="SyntaxToken"/> and <see cref="FunctionSymbol"/>.
 	/// </summary>
-	private void BindParameter(SyntaxToken syntax, FunctionSymbol function) {
+	private void BindParameter(SyntaxToken syntax, RangeValue range, FunctionSymbol? function) {
 		if (syntax.IsMissing) return;
 
 		string identifier = syntax.Text;
 		ParameterSymbol symbol = new() {
 			Identifier = identifier,
-			Range = function.Range,
+			Range = range,
 			Function = function
 		};
 
@@ -153,8 +162,9 @@ public partial class Binder {
 			return;
 		}
 
-		function.Parameters.Add(symbol);
+		function?.Parameters.Add(symbol);
 		VariableBinder.RegisterSymbol(symbol);
+		ProgramRoot.Variables.Add(symbol);
 	}
 
 }

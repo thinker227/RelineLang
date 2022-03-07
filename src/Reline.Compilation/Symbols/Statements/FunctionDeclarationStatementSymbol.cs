@@ -7,8 +7,9 @@ public sealed class FunctionDeclarationStatementSymbol : SymbolNode, IStatementS
 
 	/// <summary>
 	/// The function declared by the declaration.
+	/// May be <see langword="null"/> if the function is invalid.
 	/// </summary>
-	public FunctionSymbol Function { get; set; } = null!;
+	public FunctionSymbol? Function { get; set; }
 	/// <summary>
 	/// The <see cref="IExpressionSymbol"/> describing the range of the function.
 	/// </summary>
