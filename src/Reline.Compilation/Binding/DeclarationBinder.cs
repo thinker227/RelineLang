@@ -122,15 +122,16 @@ public partial class Binder {
 		}
 
 			// Body expression
-		// Bind body expression immediately in order to bind parameters to the proper range
+		// Bind body expression immediately in order to bind parameters to the proper range.
 		var expression = BindExpression(syntax.Body, ExpressionBindingFlags.ConstantsLabels);
 		declaration.RangeExpression = expression;
 		var range = ExpressionEvaluator.EvaluateExpression(expression);
 		RangeValue rangeValue;
 		if (range.Type != BoundValueType.Range) {
-			// Reporting a type error when the error is due to an error in a subexpression looks ugly
+			// Reporting a type error when the error is due to an error in a subexpression looks ugly.
 			if (range.Type != BoundValueType.None)
 				AddDiagnostic(expression, CompilerDiagnostics.expectedType, "range");
+			// If the range cannot be resolved, set the range to just the line of the declaration.
 			int lineNumber = SyntaxTree.GetAncestor<LineSyntax>(syntax)!.LineNumber;
 			rangeValue = new(lineNumber, lineNumber);
 		}
