@@ -163,7 +163,8 @@ internal sealed class ExpressionBinder {
 
 		switch (identifierSymbol) {
 			case null:
-				return BadExpression(syntax, CompilerDiagnostics.undeclaredFunction, identifier);
+				AddDiagnostic(syntax.Identifier, CompilerDiagnostics.undeclaredFunction, identifier);
+				return BadExpression(syntax);
 
 			case not IFunctionSymbol:
 				return BadExpression(syntax, CompilerDiagnostics.invokeNonFunction, identifier);
@@ -172,6 +173,8 @@ internal sealed class ExpressionBinder {
 		var symbol = CreateSymbol<FunctionInvocationExpressionSymbol>(syntax);
 		var function = (IFunctionSymbol)identifierSymbol;
 		symbol.Function = function;
+		foreach (var arg in arguments)
+			symbol.Arguments.Add(arg);
 		// This is kind of bad
 		if (function is IDefinedIdentifiableSymbol defined) {
 			foreach (var arg in arguments) defined.References.Add(arg);
@@ -201,6 +204,9 @@ internal sealed class ExpressionBinder {
 		switch (identifierSymbol) {
 			case null:
 				return BadExpression(syntax, CompilerDiagnostics.undeclaredFunction, identifier);
+
+			case NativeFunctionSymbol:
+				return BadExpression(syntax, CompilerDiagnostics.nativeFunctionPointer, identifier);
 
 			case not FunctionSymbol:
 				return BadExpression(syntax, CompilerDiagnostics.nonFunctionPointer);
@@ -256,6 +262,10 @@ internal sealed class ExpressionBinder {
 		binder.CreateSymbol<TSymbol>(syntax);
 	private void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) =>
 		binder.AddDiagnostic(symbol, description, formatArgs);
+	private void AddDiagnostic(ISyntaxNode node, DiagnosticDescription description, params object?[] formatArgs) =>
+		binder.AddDiagnostic(node, description, formatArgs);
+	private void AddDiagnostic(SyntaxToken token, DiagnosticDescription description, params object?[] formatArgs) =>
+		binder.AddDiagnostic(token, description, formatArgs);
 
 }
 

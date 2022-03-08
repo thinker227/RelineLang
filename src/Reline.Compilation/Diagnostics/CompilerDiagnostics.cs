@@ -138,6 +138,11 @@ internal static class CompilerDiagnostics {
 		Description = "Return statements may not be used outside of functions bodies",
 		Level = DiagnosticLevel.Error
 	};
+	public static readonly DiagnosticDescription nativeFunctionPointer = new() {
+		ErrorCode = "RL0020",
+		Description = "Cannot point to native function '{0}'",
+		Level = DiagnosticLevel.Error
+	};
 
 	/*
 	public static readonly DiagnosticDescription diagnosticName = new() {
