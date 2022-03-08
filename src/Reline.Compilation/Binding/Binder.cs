@@ -38,7 +38,7 @@ public sealed partial class Binder : ISymbolContext {
 	/// <summary>
 	/// The internal <see cref="FunctionSymbol"/> binder.
 	/// </summary>
-	internal IdentifierBinder<FunctionSymbol> FunctionBinder { get; }
+	internal FunctionBinder FunctionBinder { get; }
 	/// <summary>
 	/// The <see cref="Binding.ExpressionEvaluator"/> for the binder.
 	/// </summary>

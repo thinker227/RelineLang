@@ -6,9 +6,9 @@ namespace Reline.Compilation.Binding;
 /// <summary>
 /// Base for binders binding identifiers.
 /// </summary>
-internal sealed class IdentifierBinder<TSymbol> : IReadOnlyCollection<TSymbol> where TSymbol : IIdentifiableSymbol {
+internal class IdentifierBinder<TSymbol> : IReadOnlyCollection<TSymbol> where TSymbol : IIdentifiableSymbol {
 
-	private readonly Dictionary<string, TSymbol> symbols;
+	protected readonly Dictionary<string, TSymbol> symbols;
 
 
 
@@ -22,16 +22,16 @@ internal sealed class IdentifierBinder<TSymbol> : IReadOnlyCollection<TSymbol> w
 
 
 
-	public void RegisterSymbol(TSymbol symbol) =>
+	public virtual void RegisterSymbol(TSymbol symbol) =>
 		symbols.TryAdd(symbol.Identifier, symbol);
 
-	public TSymbol? GetSymbol(string identifier) =>
+	public virtual TSymbol? GetSymbol(string identifier) =>
 		symbols.TryGetValue(identifier, out var symbol) ? symbol : default;
 
-	public bool IsDefined(string identifier) =>
+	public virtual bool IsDefined(string identifier) =>
 		symbols.ContainsKey(identifier);
 
-	public IEnumerator<TSymbol> GetEnumerator() =>
+	public virtual IEnumerator<TSymbol> GetEnumerator() =>
 		symbols.Values.GetEnumerator();
 	IEnumerator IEnumerable.GetEnumerator() =>
 		GetEnumerator();

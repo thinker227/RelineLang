@@ -165,15 +165,17 @@ internal sealed class ExpressionBinder {
 			case null:
 				return BadExpression(syntax, CompilerDiagnostics.undeclaredFunction, identifier);
 
-			case not FunctionSymbol:
+			case not IFunctionSymbol:
 				return BadExpression(syntax, CompilerDiagnostics.invokeNonFunction, identifier);
 		}
 
 		var symbol = CreateSymbol<FunctionInvocationExpressionSymbol>(syntax);
-		var function = (FunctionSymbol)identifierSymbol;
+		var function = (IFunctionSymbol)identifierSymbol;
 		symbol.Function = function;
 		// This is kind of bad
-		foreach (var arg in arguments) function.References.Add(arg);
+		if (function is IDefinedIdentifiableSymbol defined) {
+			foreach (var arg in arguments) defined.References.Add(arg);
+		}
 		return symbol;
 	}
 	private IExpressionSymbol BindFunctionPointer(FunctionPointerExpressionSyntax syntax) {

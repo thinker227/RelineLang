@@ -78,13 +78,8 @@ public partial class Binder {
 	/// <summary>
 	/// Binds a <see cref="FunctionDeclarationStatementSyntax"/> into a <see cref="FunctionDeclarationStatementSymbol"/>.
 	/// </summary>
-	private FunctionDeclarationStatementSymbol BindFunctionDeclarationStatement(FunctionDeclarationStatementSyntax syntax) {
-		var symbol = CreateSymbol<FunctionDeclarationStatementSymbol>(syntax);
-		// Functions have already been bound from function declarations so function will never be null.
-		var function = FunctionBinder.GetSymbol(syntax.Identifier.Text)!;
-		symbol.Function = function;
-		return symbol;
-	}
+	private FunctionDeclarationStatementSymbol BindFunctionDeclarationStatement(FunctionDeclarationStatementSyntax syntax) =>
+		CreateSymbol<FunctionDeclarationStatementSymbol>(syntax);
 	/// <summary>
 	/// Binds a <see cref="ReturnStatementSyntax"/>
 	/// into a <see cref="ReturnStatementSymbol"/>.
@@ -93,7 +88,8 @@ public partial class Binder {
 		var expression = BindExpression(syntax.Expression);
 
 		int line = SyntaxTree.GetAncestor<LineSyntax>(syntax)!.LineNumber;
-		var function = FunctionBinder.FirstOrDefault(f => f.Range.Contains(line));
+		var function = FunctionBinder.GetDefinedFunctions()
+			.FirstOrDefault(f => f.Range.Contains(line));
 		if (function is null) {
 			AddDiagnostic(syntax, CompilerDiagnostics.returnOutsideFunction);
 		}
