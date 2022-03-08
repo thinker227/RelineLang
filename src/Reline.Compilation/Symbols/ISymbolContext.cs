@@ -1,5 +1,8 @@
 ﻿namespace Reline.Compilation.Symbols;
 
+/// <summary>
+/// A context containing symbol.
+/// </summary>
 public interface ISymbolContext {
 
 	/// <summary>

@@ -159,6 +159,13 @@ public sealed partial class Binder : ISymbolContext {
 		FunctionBinder.GetSymbol(identifier) ??
 		(IIdentifiableSymbol?)null;
 
+	/// <summary>
+	/// Gets the parent node of a specified <see cref="ISymbol"/>.
+	/// </summary>
+	/// <param name="symbol">The <see cref="ISymbol"/>
+	/// to get the parent of.</param>
+	/// <returns>The parent of <paramref name="symbol"/>, or <see langword="null"/>
+	/// if the node is the root of the context.</returns>
 	internal ISymbol? GetParent(ISymbol symbol) =>
 		(symbolParentMap ?? throw new InvalidOperationException("Parent map uninitialized."))
 		.GetParent(symbol);

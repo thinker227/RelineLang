@@ -39,6 +39,10 @@ internal sealed class FunctionBinder : IdentifierBinder<IFunctionSymbol> {
 		GetNativeFunction(identifier) is not null ||
 		base.IsDefined(identifier);
 
+	/// <summary>
+	/// Gets the bound user-defined functions.
+	/// </summary>
+	/// <returns>A collection of user-defined functions.</returns>
 	public IEnumerable<FunctionSymbol> GetDefinedFunctions() =>
 		symbols.Values.OfType<FunctionSymbol>();
 
