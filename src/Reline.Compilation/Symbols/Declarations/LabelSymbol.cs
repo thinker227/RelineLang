@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a label.
 /// </summary>
-public sealed class LabelSymbol : SymbolNode, IIdentifiableSymbol {
+public sealed class LabelSymbol : SymbolNode, IDefinedIdentifiableSymbol {
 
 	/// <summary>
 	/// The label identifier.
@@ -17,6 +17,7 @@ public sealed class LabelSymbol : SymbolNode, IIdentifiableSymbol {
 	/// The references to the label.
 	/// </summary>
 	public IList<ISymbol> References { get; } = new List<ISymbol>();
+	ICollection<ISymbol> IDefinedIdentifiableSymbol.References => References;
 
 
 

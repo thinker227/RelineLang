@@ -8,7 +8,7 @@ public sealed class FunctionInvocationExpressionSymbol : SymbolNode, IExpression
 	/// <summary>
 	/// The function being invoked.
 	/// </summary>
-	public FunctionSymbol Function { get; set; } = null!;
+	public IFunctionSymbol Function { get; set; } = null!;
 	/// <summary>
 	/// The arguments passed to the function invocation.
 	/// </summary>

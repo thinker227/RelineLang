@@ -3,12 +3,7 @@
 /// <summary>
 /// Represents either a variable or parameter.
 /// </summary>
-public interface IVariableSymbol : IIdentifiableSymbol, IEquatable<IVariableSymbol> {
-
-	/// <summary>
-	/// The references to the variable.
-	/// </summary>
-	IList<ISymbol> References { get; }
+public interface IVariableSymbol : IDefinedIdentifiableSymbol, IEquatable<IVariableSymbol> {
 
 }
 
@@ -22,6 +17,7 @@ public sealed class VariableSymbol : SymbolNode, IVariableSymbol {
 	/// </summary>
 	public string Identifier { get; set; } = null!;
 	public IList<ISymbol> References { get; } = new List<ISymbol>();
+	ICollection<ISymbol> IDefinedIdentifiableSymbol.References => References;
 
 
 
@@ -49,6 +45,7 @@ public sealed class ParameterSymbol : SymbolNode, IVariableSymbol {
 	/// </summary>
 	public string Identifier { get; set; } = null!;
 	public IList<ISymbol> References { get; } = new List<ISymbol>();
+	ICollection<ISymbol> IDefinedIdentifiableSymbol.References => References;
 	/// <summary>
 	/// The range the parameter is valid within.
 	/// </summary>
@@ -73,4 +70,5 @@ public sealed class ParameterSymbol : SymbolNode, IVariableSymbol {
 		Equals(variable);
 	public override int GetHashCode() =>
 		HashCode.Combine(Identifier, Range);
+
 }
