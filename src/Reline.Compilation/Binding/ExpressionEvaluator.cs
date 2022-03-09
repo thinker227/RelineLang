@@ -104,6 +104,8 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<BoundValue> {
 
 		return new();
 	}
+	public BoundValue VisitBad(BadExpressionSymbol symbol) =>
+		new();
 
 	private void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) {
 		if (context is Binder binder) binder.AddDiagnostic(symbol, description, formatArgs);
