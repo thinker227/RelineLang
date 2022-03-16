@@ -149,6 +149,8 @@ public sealed partial class Binder : IBindingContext {
 
 		if (description.Level == DiagnosticLevel.Error) hasError = true;
 	}
+	void IBindingContext.AddDiagnostic(TextSpan? location, DiagnosticDescription description, params object?[] formatArgs) =>
+		AddDiagnostic(location, description, formatArgs);
 
 	/// <summary>
 	/// Gets a symbol corresponding to an identifier.
@@ -161,6 +163,8 @@ public sealed partial class Binder : IBindingContext {
 		VariableBinder.GetSymbol(identifier) ??
 		FunctionBinder.GetSymbol(identifier) ??
 		(IIdentifiableSymbol?)null;
+	IIdentifiableSymbol? IBindingContext.GetIdentifier(string identifier) =>
+		GetIdentifier(identifier);
 
 	/// <summary>
 	/// Gets the parent node of a specified <see cref="ISymbol"/>.

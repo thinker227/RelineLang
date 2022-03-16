@@ -31,7 +31,7 @@ public partial class Binder {
 internal sealed class ExpressionBinder {
 
 	private readonly ExpressionBindingFlags flags;
-	private readonly Binder binder;
+	private readonly IBindingContext context;
 
 	private bool NoVariables => flags.HasFlag(ExpressionBindingFlags.NoVariables);
 	private bool NoFunctions => flags.HasFlag(ExpressionBindingFlags.NoFunctions);
@@ -41,9 +41,9 @@ internal sealed class ExpressionBinder {
 
 
 
-	public ExpressionBinder(ExpressionBindingFlags flags, Binder binder) {
+	public ExpressionBinder(ExpressionBindingFlags flags, IBindingContext context) {
 		this.flags = flags;
-		this.binder = binder;
+		this.context = context;
 	}
 
 
@@ -104,8 +104,8 @@ internal sealed class ExpressionBinder {
 
 		// Try bind labels immediately if labels are treated as constant
 		if (LabelsAsConstant) {
-			var labelSymbol = binder.LabelBinder.GetSymbol(syntax.Identifier.Text);
-			if (labelSymbol is not null) {
+			var labelSymbol = context.GetIdentifier(syntax.Identifier.Text);
+			if (labelSymbol is LabelSymbol) {
 				var labelIdentifierSymbol = GetSymbol<IdentifierExpressionSymbol>(syntax);
 				labelIdentifierSymbol.Identifier = labelSymbol;
 				return labelIdentifierSymbol;
@@ -117,7 +117,7 @@ internal sealed class ExpressionBinder {
 			return BadExpression(syntax, CompilerDiagnostics.disallowedNonConstants);
 		}
 
-		var identifierSymbol = binder.GetIdentifier(identifier);
+		var identifierSymbol = context.GetIdentifier(identifier);
 
 		switch (identifierSymbol) {
 			case null:
@@ -155,7 +155,7 @@ internal sealed class ExpressionBinder {
 		}
 
 		string identifier = syntax.Identifier.Text;
-		var identifierSymbol = binder.GetIdentifier(identifier);
+		var identifierSymbol = context.GetIdentifier(identifier);
 
 		List<IExpressionSymbol> arguments = new();
 		foreach (var argument in syntax.Arguments)
@@ -199,7 +199,7 @@ internal sealed class ExpressionBinder {
 		}
 
 		string identifier = syntax.Identifier.Text;
-		var identifierSymbol = binder.GetIdentifier(identifier);
+		var identifierSymbol = context.GetIdentifier(identifier);
 
 		switch (identifierSymbol) {
 			case null:
@@ -259,13 +259,13 @@ internal sealed class ExpressionBinder {
 	private BadExpressionSymbol BadExpression(ISyntaxNode syntax) =>
 		GetSymbol<BadExpressionSymbol>(syntax);
 	private TSymbol GetSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() =>
-		binder.GetSymbol<TSymbol>(syntax);
+		context.GetSymbol<TSymbol>(syntax);
 	private void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) =>
-		binder.AddDiagnostic(symbol, description, formatArgs);
+		context.AddDiagnostic(symbol.Syntax?.GetTextSpan(), description, formatArgs);
 	private void AddDiagnostic(ISyntaxNode node, DiagnosticDescription description, params object?[] formatArgs) =>
-		binder.AddDiagnostic(node, description, formatArgs);
+		context.AddDiagnostic(node.GetTextSpan(), description, formatArgs);
 	private void AddDiagnostic(SyntaxToken token, DiagnosticDescription description, params object?[] formatArgs) =>
-		binder.AddDiagnostic(token, description, formatArgs);
+		context.AddDiagnostic(token.Span, description, formatArgs);
 
 }
 
