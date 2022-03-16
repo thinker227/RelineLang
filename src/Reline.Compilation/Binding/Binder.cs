@@ -8,7 +8,7 @@ namespace Reline.Compilation.Binding;
 /// <summary>
 /// Binds syntax nodes into symbols.
 /// </summary>
-public sealed partial class Binder : ISymbolContext {
+public sealed partial class Binder : IBindingContext {
 
 	private readonly List<Diagnostic> diagnostics;
 	private readonly SyntaxSymbolBinder syntaxSymbolBinder;
@@ -20,6 +20,7 @@ public sealed partial class Binder : ISymbolContext {
 	/// The <see cref="Parsing.SyntaxTree"/> being bound.
 	/// </summary>
 	internal SyntaxTree SyntaxTree { get; }
+	SyntaxTree ISymbolContext.SyntaxTree => SyntaxTree;
 	/// <summary>
 	/// The <see cref="ProgramSymbol"/> which is the root of the symbol tree.
 	/// </summary>
@@ -89,7 +90,7 @@ public sealed partial class Binder : ISymbolContext {
 		BindProgram(ProgramRoot);
 		
 		var diagnostics = this.diagnostics.ToImmutableArray();
-		return new(ProgramRoot, diagnostics);
+		return new(SyntaxTree, ProgramRoot, diagnostics);
 	}
 
 	/// <summary>
@@ -109,6 +110,8 @@ public sealed partial class Binder : ISymbolContext {
 		syntaxSymbolBinder.Bind(syntax, symbol);
 		return symbol;
 	}
+	TSymbol IBindingContext.GetSymbol<TSymbol>(ISyntaxNode syntax) =>
+		CreateSymbol<TSymbol>(syntax);
 
 	/// <summary>
 	/// Adds a diagnostic to an <see cref="ISymbol"/>.

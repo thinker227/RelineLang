@@ -1,4 +1,5 @@
 using Reline.Compilation.Diagnostics;
+using Reline.Compilation.Syntax;
 
 namespace Reline.Compilation.Symbols;
 
@@ -13,6 +14,10 @@ public sealed class SymbolTree : ISymbolContext {
 
 
 	/// <summary>
+	/// The <see cref="Syntax.SyntaxTree"/> which created the tree.
+	/// </summary>
+	public SyntaxTree SyntaxTree { get; }
+	/// <summary>
 	/// The root node of the tree.
 	/// </summary>
 	public ProgramSymbol Root { get; }
@@ -23,7 +28,8 @@ public sealed class SymbolTree : ISymbolContext {
 
 
 
-	internal SymbolTree(ProgramSymbol root, ImmutableArray<Diagnostic> diagnostics) {
+	internal SymbolTree(SyntaxTree syntaxTree, ProgramSymbol root, ImmutableArray<Diagnostic> diagnostics) {
+		SyntaxTree = syntaxTree;
 		Root = root;
 		Diagnostics = diagnostics;
 		parentMap = new(Root);
