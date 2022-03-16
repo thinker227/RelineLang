@@ -71,25 +71,25 @@ internal sealed class ExpressionBinder {
 	}
 
 	private UnaryExpressionSymbol BindUnary(UnaryExpressionSyntax syntax) {
-		var symbol = CreateSymbol<UnaryExpressionSymbol>(syntax);
+		var symbol = GetSymbol<UnaryExpressionSymbol>(syntax);
 		symbol.OperatorType = BindUnaryOperator(syntax.OperatorToken.Type);
 		symbol.Expression = BindExpression(syntax.Expression);
 		return symbol;
 	}
 	private BinaryExpressionSymbol BindBinary(BinaryExpressionSyntax syntax) {
-		var symbol = CreateSymbol<BinaryExpressionSymbol>(syntax);
+		var symbol = GetSymbol<BinaryExpressionSymbol>(syntax);
 		symbol.OperatorType = BindBinaryOperator(syntax.OperatorToken.Type);
 		symbol.Left = BindExpression(syntax.Left);
 		symbol.Right = BindExpression(syntax.Right);
 		return symbol;
 	}
 	private KeywordExpressionSymbol BindKeyword(KeywordExpressionSyntax syntax) {
-		var symbol = CreateSymbol<KeywordExpressionSymbol>(syntax);
+		var symbol = GetSymbol<KeywordExpressionSymbol>(syntax);
 		symbol.KeywordType = BindKeywordType(syntax.Keyword.Type);
 		return symbol;
 	}
 	private LiteralExpressionSymbol BindLiteral(LiteralExpressionSyntax syntax) {
-		var symbol = CreateSymbol<LiteralExpressionSymbol>(syntax);
+		var symbol = GetSymbol<LiteralExpressionSymbol>(syntax);
 		symbol.Literal = BindLiteralValue(syntax.Literal.Literal ?? 0);
 		return symbol;
 	}
@@ -106,7 +106,7 @@ internal sealed class ExpressionBinder {
 		if (LabelsAsConstant) {
 			var labelSymbol = binder.LabelBinder.GetSymbol(syntax.Identifier.Text);
 			if (labelSymbol is not null) {
-				var labelIdentifierSymbol = CreateSymbol<IdentifierExpressionSymbol>(syntax);
+				var labelIdentifierSymbol = GetSymbol<IdentifierExpressionSymbol>(syntax);
 				labelIdentifierSymbol.Identifier = labelSymbol;
 				return labelIdentifierSymbol;
 			}
@@ -127,7 +127,7 @@ internal sealed class ExpressionBinder {
 				return BadExpression(syntax, CompilerDiagnostics.uninvokedFunction);
 		}
 
-		var symbol = CreateSymbol<IdentifierExpressionSymbol>(syntax);
+		var symbol = GetSymbol<IdentifierExpressionSymbol>(syntax);
 		symbol.Identifier = identifierSymbol;
 
 		switch (identifierSymbol) {
@@ -170,7 +170,7 @@ internal sealed class ExpressionBinder {
 				return BadExpression(syntax, CompilerDiagnostics.invokeNonFunction, identifier);
 		}
 
-		var symbol = CreateSymbol<FunctionInvocationExpressionSymbol>(syntax);
+		var symbol = GetSymbol<FunctionInvocationExpressionSymbol>(syntax);
 		var function = (IFunctionSymbol)identifierSymbol;
 		symbol.Function = function;
 		foreach (var arg in arguments)
@@ -212,7 +212,7 @@ internal sealed class ExpressionBinder {
 				return BadExpression(syntax, CompilerDiagnostics.nonFunctionPointer);
 		}
 
-		var symbol = CreateSymbol<FunctionPointerExpressionSymbol>(syntax);
+		var symbol = GetSymbol<FunctionPointerExpressionSymbol>(syntax);
 		var function = (FunctionSymbol)identifierSymbol;
 		symbol.Function = function;
 		function.References.Add(function);
@@ -252,14 +252,14 @@ internal sealed class ExpressionBinder {
 	};
 
 	private BadExpressionSymbol BadExpression(ISyntaxNode syntax, DiagnosticDescription description, params object?[] formatArgs) {
-		var symbol = CreateSymbol<BadExpressionSymbol>(syntax);
+		var symbol = GetSymbol<BadExpressionSymbol>(syntax);
 		AddDiagnostic(symbol, description, formatArgs);
 		return symbol;
 	}
 	private BadExpressionSymbol BadExpression(ISyntaxNode syntax) =>
-		CreateSymbol<BadExpressionSymbol>(syntax);
-	private TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() =>
-		binder.CreateSymbol<TSymbol>(syntax);
+		GetSymbol<BadExpressionSymbol>(syntax);
+	private TSymbol GetSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() =>
+		binder.GetSymbol<TSymbol>(syntax);
 	private void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) =>
 		binder.AddDiagnostic(symbol, description, formatArgs);
 	private void AddDiagnostic(ISyntaxNode node, DiagnosticDescription description, params object?[] formatArgs) =>

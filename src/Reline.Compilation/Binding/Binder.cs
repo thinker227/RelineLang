@@ -102,7 +102,7 @@ public sealed partial class Binder : IBindingContext {
 	/// </summary>
 	/// <typeparam name="TSymbol">The type of the symbol to create.</typeparam>
 	/// <param name="syntax">The syntax of the symbol.</param>
-	internal TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() {
+	internal TSymbol GetSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() {
 		if (syntaxSymbolBinder.TryGetSymbol(syntax, out var bound))
 			return (TSymbol)bound;
 
@@ -111,7 +111,7 @@ public sealed partial class Binder : IBindingContext {
 		return symbol;
 	}
 	TSymbol IBindingContext.GetSymbol<TSymbol>(ISyntaxNode syntax) =>
-		CreateSymbol<TSymbol>(syntax);
+		GetSymbol<TSymbol>(syntax);
 
 	/// <summary>
 	/// Adds a diagnostic to an <see cref="ISymbol"/>.

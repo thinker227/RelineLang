@@ -25,7 +25,7 @@ public partial class Binder {
 	/// </summary>
 	private ExpressionStatementSymbol BindExpressionStatement(ExpressionStatementSyntax syntax) {
 		var expression = BindExpression(syntax.Expression);
-		var symbol = CreateSymbol<ExpressionStatementSymbol>(syntax);
+		var symbol = GetSymbol<ExpressionStatementSymbol>(syntax);
 		symbol.Expression = expression;
 		return symbol;
 	}
@@ -41,7 +41,7 @@ public partial class Binder {
 
 		// If the variable is null and is missing then
 		// it has already been reported as an error
-		var symbol = CreateSymbol<AssignmentStatementSymbol>(syntax);
+		var symbol = GetSymbol<AssignmentStatementSymbol>(syntax);
 		symbol.Variable = variable;
 		symbol.Initializer = initializer;
 		variable?.References.Add(symbol);
@@ -57,17 +57,17 @@ public partial class Binder {
 
 		switch (syntax) {
 			case MoveStatementSyntax:
-				var move = CreateSymbol<MoveStatementSymbol>(syntax);
+				var move = GetSymbol<MoveStatementSymbol>(syntax);
 				move.Source = source;
 				move.Target = target;
 				return move;
 			case SwapStatementSyntax:
-				var swap = CreateSymbol<SwapStatementSymbol>(syntax);
+				var swap = GetSymbol<SwapStatementSymbol>(syntax);
 				swap.Source = source;
 				swap.Target = target;
 				return swap;
 			case CopyStatementSyntax:
-				var copy = CreateSymbol<CopyStatementSymbol>(syntax);
+				var copy = GetSymbol<CopyStatementSymbol>(syntax);
 				copy.Source = source;
 				copy.Target = target;
 				return copy;
@@ -79,7 +79,7 @@ public partial class Binder {
 	/// Binds a <see cref="FunctionDeclarationStatementSyntax"/> into a <see cref="FunctionDeclarationStatementSymbol"/>.
 	/// </summary>
 	private FunctionDeclarationStatementSymbol BindFunctionDeclarationStatement(FunctionDeclarationStatementSyntax syntax) =>
-		CreateSymbol<FunctionDeclarationStatementSymbol>(syntax);
+		GetSymbol<FunctionDeclarationStatementSymbol>(syntax);
 	/// <summary>
 	/// Binds a <see cref="ReturnStatementSyntax"/>
 	/// into a <see cref="ReturnStatementSymbol"/>.
@@ -94,7 +94,7 @@ public partial class Binder {
 			AddDiagnostic(syntax, CompilerDiagnostics.returnOutsideFunction);
 		}
 
-		var symbol = CreateSymbol<ReturnStatementSymbol>(syntax);
+		var symbol = GetSymbol<ReturnStatementSymbol>(syntax);
 		symbol.Expression = expression;
 		symbol.Function = function;
 		return symbol;

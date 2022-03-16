@@ -24,7 +24,7 @@ public partial class Binder {
 		var labelSyntax = lineSyntax.Label;
 		if (labelSyntax is null) return;
 
-		var label = CreateSymbol<LabelSymbol>(labelSyntax);
+		var label = GetSymbol<LabelSymbol>(labelSyntax);
 		var line = BindLinePartialFromLabel(lineSyntax, label);
 		label.Identifier = labelSyntax.Identifier.Text;
 		label.Line = line;
@@ -65,8 +65,8 @@ public partial class Binder {
 	private void BindVariableFromLine(LineSyntax lineSyntax) {
 		if (lineSyntax.Statement is not AssignmentStatementSyntax syntax) return;
 
-		var assignmentSymbol = CreateSymbol<AssignmentStatementSymbol>(syntax);
-		CreateSymbol<LineSymbol>(lineSyntax).Statement = assignmentSymbol;
+		var assignmentSymbol = GetSymbol<AssignmentStatementSymbol>(syntax);
+		GetSymbol<LineSymbol>(lineSyntax).Statement = assignmentSymbol;
 
 		if (syntax.Identifier.IsMissing) return;
 
@@ -97,8 +97,8 @@ public partial class Binder {
 	private void BindFunctionFromLine(LineSyntax lineSyntax) {
 		if (lineSyntax.Statement is not FunctionDeclarationStatementSyntax syntax) return;
 
-		var declaration = CreateSymbol<FunctionDeclarationStatementSymbol>(syntax);
-		CreateSymbol<LineSymbol>(lineSyntax).Statement = declaration;
+		var declaration = GetSymbol<FunctionDeclarationStatementSymbol>(syntax);
+		GetSymbol<LineSymbol>(lineSyntax).Statement = declaration;
 
 			// Bind identifier
 		// If the identifier is missing, don't bind the function.

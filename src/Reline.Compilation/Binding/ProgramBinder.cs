@@ -15,7 +15,7 @@ public partial class Binder {
 	/// </remarks>
 	private ProgramSymbol BindProgramPartialFromTree() {
 		var syntax = SyntaxTree.Root;
-		var symbol = CreateSymbol<ProgramSymbol>(syntax);
+		var symbol = GetSymbol<ProgramSymbol>(syntax);
 		symbol.StartLine = 1;
 		symbol.EndLine = syntax.Lines.Length;
 		BindLinesPartial(symbol);
@@ -49,7 +49,7 @@ public partial class Binder {
 	/// Only binds <see cref="LineSymbol.LineNumber"/>.
 	/// </remarks>
 	private LineSymbol BindLinePartial(LineSyntax syntax) {
-		var symbol = CreateSymbol<LineSymbol>(syntax);
+		var symbol = GetSymbol<LineSymbol>(syntax);
 		symbol.LineNumber = syntax.LineNumber;
 		return symbol;
 	}
