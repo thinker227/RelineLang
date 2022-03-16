@@ -1,10 +1,16 @@
-﻿namespace Reline.Compilation.Symbols;
+﻿using Reline.Compilation.Syntax;
+
+namespace Reline.Compilation.Symbols;
 
 /// <summary>
-/// A context containing symbol.
+/// A context for representing a symbol tree.
 /// </summary>
 public interface ISymbolContext {
 
+	/// <summary>
+	/// The <see cref="Syntax.SyntaxTree"/> which 
+	/// </summary>
+	SyntaxTree SyntaxTree { get; }
 	/// <summary>
 	/// The root node of the context.
 	/// </summary>
