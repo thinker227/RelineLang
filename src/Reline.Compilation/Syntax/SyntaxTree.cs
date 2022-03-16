@@ -1,4 +1,5 @@
 ﻿using Reline.Compilation.Syntax.Nodes;
+using Reline.Compilation.Parsing;
 using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Syntax;
@@ -31,6 +32,14 @@ public sealed class SyntaxTree {
 	}
 
 
+
+	/// <summary>
+	/// Parses a source string into a <see cref="SyntaxTree"/>.
+	/// </summary>
+	/// <param name="source">The source string to parse.</param>
+	/// <returns>A new <see cref="SyntaxTree"/>.</returns>
+	public static SyntaxTree ParseString(string source) =>
+		Parser.ParseString(source);
 
 	/// <summary>
 	/// Gets the parent node of a specified <see cref="ISyntaxNode"/>.

@@ -8,7 +8,7 @@ namespace Reline.Compilation.Binding;
 /// <summary>
 /// Binds syntax nodes into symbols.
 /// </summary>
-public sealed partial class Binder : IBindingContext {
+internal sealed partial class Binder : IBindingContext {
 
 	private readonly List<Diagnostic> diagnostics;
 	private readonly SyntaxSymbolBinder syntaxSymbolBinder;

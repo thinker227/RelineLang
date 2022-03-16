@@ -1,3 +1,4 @@
+using Reline.Compilation.Binding;
 using Reline.Compilation.Diagnostics;
 using Reline.Compilation.Syntax;
 
@@ -36,6 +37,14 @@ public sealed class SymbolTree : ISymbolContext {
 	}
 
 
+
+	/// <summary>
+	/// Binds a <see cref="Syntax.SyntaxTree"/> into a <see cref="SymbolTree"/>.
+	/// </summary>
+	/// <param name="syntaxTree">The <see cref="Syntax.SyntaxTree"/> to bind.</param>
+	/// <returns>A new <see cref="SymbolTree"/>.</returns>
+	public static SymbolTree BindTree(SyntaxTree syntaxTree) =>
+		Binder.BindTree(syntaxTree);
 
 	/// <summary>
 	/// Gets the parent node of a specified <see cref="ISymbol"/>.

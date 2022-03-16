@@ -5,7 +5,7 @@ using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Binding;
 
-public partial class Binder {
+internal partial class Binder {
 
 	/// <summary>
 	/// Binds an <see cref="IExpressionSyntax"/>
