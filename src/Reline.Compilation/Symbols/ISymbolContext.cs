@@ -8,7 +8,7 @@ namespace Reline.Compilation.Symbols;
 public interface ISymbolContext {
 
 	/// <summary>
-	/// The <see cref="Syntax.SyntaxTree"/> which 
+	/// The <see cref="Syntax.SyntaxTree"/> which created the context.
 	/// </summary>
 	SyntaxTree SyntaxTree { get; }
 	/// <summary>
