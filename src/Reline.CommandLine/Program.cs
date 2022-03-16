@@ -1,14 +1,14 @@
 ﻿using System;
 using System.IO;
-using Reline.Compilation.Parsing;
-using Reline.Compilation.Binding;
+using Reline.Compilation.Syntax;
+using Reline.Compilation.Symbols;
 
 if (args.Length == 0) return;
 string path = args[0];
 if (!File.Exists(path)) return;
 string text = File.ReadAllText(path);
 
-var parseResult = Parser.ParseString(text);
-var bindResult = Binder.BindTree(parseResult);
+var parseResult = SyntaxTree.ParseString(text);
+var bindResult = SymbolTree.BindTree(parseResult);
 
 Console.ReadLine();
