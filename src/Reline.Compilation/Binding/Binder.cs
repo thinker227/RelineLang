@@ -83,9 +83,7 @@ internal sealed partial class Binder : IBindingContext {
 	private SymbolTree BindTree() {
 		programRoot = BindProgramPartialFromTree();
 		symbolParentMap = new(ProgramRoot);
-		BindLabelsFromTree();
-		BindVariablesFromTree();
-		BindFunctionsFromTree();
+		BindDeclarations();
 		BindProgram(ProgramRoot);
 		
 		var diagnostics = this.diagnostics.ToImmutableArray();

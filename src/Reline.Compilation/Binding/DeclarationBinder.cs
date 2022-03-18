@@ -8,6 +8,15 @@ namespace Reline.Compilation.Binding;
 internal partial class Binder {
 
 	/// <summary>
+	/// Binds labels, variables and functions from the syntax tree.
+	/// </summary>
+	private void BindDeclarations() {
+		BindLabelsFromTree();
+		BindVariablesFromTree();
+		BindFunctionsFromTree();
+	}
+
+	/// <summary>
 	/// Binds all labels from the tree.
 	/// </summary>
 	/// <remarks>
@@ -89,14 +98,19 @@ internal partial class Binder {
 	/// Binds all functions and parameters from the tree.
 	/// </summary>
 	private void BindFunctionsFromTree() {
-		foreach (var line in SyntaxTree.Root.Lines) BindFunctionFromLine(line);
+		var funcLines = SyntaxTree.Root.Lines
+			.Where(l => l.Statement is FunctionDeclarationStatementSyntax)
+			.Select(l => (l, (FunctionDeclarationStatementSyntax)l.Statement!))
+			.ToArray();
+
+		foreach (var (line, func) in funcLines) {
+			BindFunction(func, line);
+		}
 	}
 	/// <summary>
 	/// Binds a function and its parameters.
 	/// </summary>
-	private void BindFunctionFromLine(LineSyntax lineSyntax) {
-		if (lineSyntax.Statement is not FunctionDeclarationStatementSyntax syntax) return;
-
+	private void BindFunction(FunctionDeclarationStatementSyntax syntax, LineSyntax lineSyntax) {
 		var declaration = GetSymbol<FunctionDeclarationStatementSymbol>(syntax);
 		GetSymbol<LineSymbol>(lineSyntax).Statement = declaration;
 
