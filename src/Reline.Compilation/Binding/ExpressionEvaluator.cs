@@ -10,12 +10,15 @@ namespace Reline.Compilation.Binding;
 internal sealed class ExpressionEvaluator : IExpressionVisitor<BoundValue> {
 
 	private readonly ISymbolContext context;
+	private readonly IDiagnosticContext? diagnostics;
 
 
 
-	public ExpressionEvaluator(ISymbolContext context) {
+	internal ExpressionEvaluator(ISymbolContext context, IDiagnosticContext? diagnostics) {
 		this.context = context;
+		this.diagnostics = diagnostics;
 	}
+	public ExpressionEvaluator(ISymbolContext context) : this(context, null) { }
 
 
 
@@ -107,8 +110,7 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<BoundValue> {
 	public BoundValue VisitBad(BadExpressionSymbol symbol) =>
 		new();
 
-	private void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) {
-		if (context is IBindingContext bctx) bctx.AddDiagnostic(symbol, description, formatArgs);
-	}
+	private void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) =>
+		diagnostics?.AddDiagnostic(symbol, description, formatArgs);
 
 }

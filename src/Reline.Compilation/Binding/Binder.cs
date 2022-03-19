@@ -61,7 +61,7 @@ internal sealed partial class Binder : IBindingContext {
 		LabelBinder = new();
 		VariableBinder = new();
 		FunctionBinder = new();
-		ExpressionEvaluator = new(this);
+		ExpressionEvaluator = new(this, this);
 	}
 
 
