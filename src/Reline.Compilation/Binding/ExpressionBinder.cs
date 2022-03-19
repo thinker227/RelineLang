@@ -13,12 +13,16 @@ internal partial class Binder {
 	/// </summary>
 	/// <param name="syntax">The syntax to bind.</param>
 	/// <param name="flags">The <see cref="ExpressionBindingFlags"/>
-	/// to use when binding the expression.</param>
+	/// to use to determine what is permitted in the expression.</param>
+	/// <param name="context">The <see cref="IBindingContext"/> to
+	/// use as the context. Defaults to <see langword="this"/>.</param>
 	private IExpressionSymbol BindExpression(
 		IExpressionSyntax syntax,
-		ExpressionBindingFlags flags = ExpressionBindingFlags.None
+		ExpressionBindingFlags flags = ExpressionBindingFlags.None,
+		IBindingContext? context = null
 	) {
-		ExpressionBinder binder = new(flags, this);
+		context ??= this;
+		ExpressionBinder binder = new(flags, context);
 		var expression = binder.BindExpression(syntax);
 		return expression;
 	}
