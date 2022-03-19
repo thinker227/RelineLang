@@ -11,10 +11,53 @@ internal partial class Binder {
 	/// Binds labels, variables and functions from the syntax tree.
 	/// </summary>
 	private void BindDeclarations() {
-		BindLabelsFromTree();
-		BindVariablesFromTree();
-		BindFunctionsFromTree();
+		var (labels, variables, functions) = DeclarationBinder.BindDeclarations(this);
+
+		LabelBinder.RegisterRange(labels);
+		VariableBinder.RegisterRange(variables);
+		FunctionBinder.RegisterRange(functions);
 	}
+
+}
+
+internal sealed class DeclarationBinder {
+
+	private readonly IBindingContext context;
+	private readonly IdentifierBinder<LabelSymbol> labelBinder;
+	private readonly IdentifierBinder<IVariableSymbol> variableBinder;
+	private readonly IdentifierBinder<FunctionSymbol> functionBinder;
+	private readonly ExpressionEvaluator evaluator;
+
+
+
+	private DeclarationBinder(IBindingContext context) {
+		this.context = context;
+		labelBinder = new();
+		variableBinder = new();
+		functionBinder = new();
+		evaluator = new(context, context);
+	}
+
+
+
+	public static DeclarationBindResult BindDeclarations(IBindingContext context) {
+		DeclarationBinder binder = new(context);
+		binder.BindLabels();
+		binder.BindVariables();
+		binder.BindFunctions();
+
+		return new(
+			binder.labelBinder,
+			binder.variableBinder,
+			binder.functionBinder
+		);
+	}
+
+	private IIdentifiableSymbol? GetIdentifier(string identifier) =>
+		labelBinder.GetSymbol(identifier) ??
+		variableBinder.GetSymbol(identifier) ??
+		functionBinder.GetSymbol(identifier) ??
+		(IIdentifiableSymbol?)null; 
 
 	/// <summary>
 	/// Binds all labels from the tree.
@@ -22,19 +65,20 @@ internal partial class Binder {
 	/// <remarks>
 	/// This does not resolve <see cref="LabelSymbol.Line"/>.
 	/// </remarks>
-	private void BindLabelsFromTree() {
-		foreach (var lineSyntax in SyntaxTree.Root.Lines) BindLabelFromLine(lineSyntax);
+	public void BindLabels() {
+		foreach (var lineSyntax in context.SyntaxTree.Root.Lines) {
+			if (lineSyntax.Label is null) continue;
+			var label = BindLabel(lineSyntax.Label, lineSyntax);
+			if (label is not null) labelBinder.RegisterSymbol(label); 
+		}
 	}
 	/// <summary>
 	/// Binds the <see cref="LabelSyntax"/> of a <see cref="LineSyntax"/>
 	/// into a <see cref="LabelSymbol"/>.
 	/// </summary>
-	private void BindLabelFromLine(LineSyntax lineSyntax) {
-		var labelSyntax = lineSyntax.Label;
-		if (labelSyntax is null) return;
-
-		var label = GetSymbol<LabelSymbol>(labelSyntax);
-		var line = BindLinePartialFromLabel(lineSyntax, label);
+	private LabelSymbol? BindLabel(LabelSyntax labelSyntax, LineSyntax lineSyntax) {
+		var label = context.GetSymbol<LabelSymbol>(labelSyntax);
+		var line = context.GetSymbol<LineSymbol>(lineSyntax);
 		label.Identifier = labelSyntax.Identifier.Text;
 		label.Line = line;
 		line.Label = label;
@@ -42,77 +86,71 @@ internal partial class Binder {
 		string identifier = label.Identifier;
 		var existingIdentifier = GetIdentifier(identifier);
 		if (existingIdentifier is not null) {
-			AddDiagnostic(labelSyntax.Identifier, CompilerDiagnostics.identifierAlreadyDefined, identifier);
-			return;
+			context.AddDiagnostic(labelSyntax.Identifier, CompilerDiagnostics.identifierAlreadyDefined, identifier);
+			return null;
 		}
 
-		LabelBinder.RegisterSymbol(label);
-		ProgramRoot.Labels.Add(label);
-	}
-	/// <summary>
-	/// Partially binds a <see cref="LabelSyntax"/> into a <see cref="LineSymbol"/>
-	/// from a <see cref="LabelSymbol"/>.
-	/// </summary>
-	/// <remarks>
-	/// Only binds <see cref="LineSymbol.LineNumber"/> and <see cref="LineSymbol.Label"/>.
-	/// </remarks>
-	private LineSymbol BindLinePartialFromLabel(LineSyntax syntax, LabelSymbol label) {
-		var symbol = BindLinePartial(syntax);
-		symbol.Label = label;
-		return symbol;
+		return label;
 	}
 
 	/// <summary>
 	/// Binds all variables from assignments.
 	/// </summary>
-	private void BindVariablesFromTree() {
-		foreach (var line in SyntaxTree.Root.Lines) BindVariableFromLine(line);
+	public void BindVariables() {
+		foreach (var line in context.SyntaxTree.Root.Lines) {
+			if (line.Statement is not AssignmentStatementSyntax assignment) continue;
+			var variable = BindVariableFromLine(assignment, line);
+			if (variable is not null) variableBinder.RegisterSymbol(variable);
+		}
 	}
 	/// <summary>
 	/// Binds an <see cref="AssignmentStatementSyntax"/> into a <see cref="VariableSymbol"/>.
 	/// </summary>
-	private void BindVariableFromLine(LineSyntax lineSyntax) {
-		if (lineSyntax.Statement is not AssignmentStatementSyntax syntax) return;
+	private VariableSymbol? BindVariableFromLine(AssignmentStatementSyntax syntax, LineSyntax lineSyntax) {
+		var assignmentSymbol = context.GetSymbol<AssignmentStatementSymbol>(syntax);
+		context.GetSymbol<LineSymbol>(lineSyntax).Statement = assignmentSymbol;
 
-		var assignmentSymbol = GetSymbol<AssignmentStatementSymbol>(syntax);
-		GetSymbol<LineSymbol>(lineSyntax).Statement = assignmentSymbol;
-
-		if (syntax.Identifier.IsMissing) return;
+		if (syntax.Identifier.IsMissing) return null;
 
 		string identifier = syntax.Identifier.Text;
-		VariableSymbol symbol = new() {
-			Identifier = syntax.Identifier.Text
-		};
 		var existingIdentifier = GetIdentifier(identifier);
 		if (existingIdentifier is not (null or VariableSymbol)) {
-			AddDiagnostic(syntax.Identifier, CompilerDiagnostics.identifierAlreadyDefined, identifier);
-			return;
+			context.AddDiagnostic(syntax.Identifier, CompilerDiagnostics.identifierAlreadyDefined, identifier);
+			return null;
 		}
 
+		VariableSymbol symbol = new() {
+			Identifier = identifier
+		};
 		assignmentSymbol.Variable = symbol;
-		VariableBinder.RegisterSymbol(symbol);
-		ProgramRoot.Variables.Add(symbol);
+		return symbol;
 	}
 
 	/// <summary>
 	/// Binds all functions and parameters from the tree.
 	/// </summary>
-	private void BindFunctionsFromTree() {
-		var funcLines = SyntaxTree.Root.Lines
+	public void BindFunctions() {
+		var funcLines = context.SyntaxTree.Root.Lines
 			.Where(l => l.Statement is FunctionDeclarationStatementSyntax)
 			.Select(l => (l, (FunctionDeclarationStatementSyntax)l.Statement!))
 			.ToArray();
 
 		foreach (var (line, func) in funcLines) {
-			BindFunction(func, line);
+
+		}
+		foreach (var (line, func) in funcLines) {
+			var function = BindFunction(func, line);
+			if (function is null) continue;
+			functionBinder.RegisterSymbol(function);
+			foreach (var param in function.Parameters) variableBinder.RegisterSymbol(param);
 		}
 	}
 	/// <summary>
 	/// Binds a function and its parameters.
 	/// </summary>
-	private void BindFunction(FunctionDeclarationStatementSyntax syntax, LineSyntax lineSyntax) {
-		var declaration = GetSymbol<FunctionDeclarationStatementSymbol>(syntax);
-		GetSymbol<LineSymbol>(lineSyntax).Statement = declaration;
+	private FunctionSymbol? BindFunction(FunctionDeclarationStatementSyntax syntax, LineSyntax lineSyntax) {
+		var declaration = context.GetSymbol<FunctionDeclarationStatementSymbol>(syntax);
+		context.GetSymbol<LineSymbol>(lineSyntax).Statement = declaration;
 
 			// Bind identifier
 		// If the identifier is missing, don't bind the function.
@@ -125,11 +163,7 @@ internal partial class Binder {
 			function.Identifier = identifier;
 			var existingIdentifier = GetIdentifier(identifier);
 			if (existingIdentifier is not null)
-				AddDiagnostic(syntax.Identifier, CompilerDiagnostics.identifierAlreadyDefined, identifier);
-			else {
-				FunctionBinder.RegisterSymbol(function);
-				ProgramRoot.Functions.Add(function);
-			}
+				context.AddDiagnostic(syntax.Identifier, CompilerDiagnostics.identifierAlreadyDefined, identifier);
 
 			function.Declaration = declaration;
 			declaration.Function = function;
@@ -137,16 +171,17 @@ internal partial class Binder {
 
 			// Body expression
 		// Bind body expression immediately in order to bind parameters to the proper range.
-		var expression = BindExpression(syntax.Body, ExpressionBindingFlags.ConstantsLabels);
+		var expression = ExpressionBinder.BindExpression(syntax.Body, context, ExpressionBindingFlags.ConstantsLabels);
 		declaration.RangeExpression = expression;
-		var range = ExpressionEvaluator.EvaluateExpression(expression);
+		var range = evaluator.EvaluateExpression(expression);
+
 		RangeValue rangeValue;
 		if (range.Type != BoundValueType.Range) {
 			// Reporting a type error when the error is due to an error in a subexpression looks ugly.
 			if (range.Type != BoundValueType.None)
-				AddDiagnostic(expression, CompilerDiagnostics.expectedType, "range");
+				context.AddDiagnostic(expression, CompilerDiagnostics.expectedType, "range");
 			// If the range cannot be resolved, set the range to just the line of the declaration.
-			int lineNumber = SyntaxTree.GetAncestor<LineSyntax>(syntax)!.LineNumber;
+			int lineNumber = context.SyntaxTree.GetAncestor<LineSyntax>(syntax)!.LineNumber;
 			rangeValue = new(lineNumber, lineNumber);
 		}
 		else rangeValue = range.GetAs<RangeValue>();
@@ -156,13 +191,15 @@ internal partial class Binder {
 		if (syntax.ParameterList is not null) {
 			foreach (var p in syntax.ParameterList.Parameters) BindParameter(p, rangeValue, function);
 		}
+
+		return function;
 	}
 	/// <summary>
 	/// Binds a <see cref="ParameterSymbol"/> from a
 	/// <see cref="SyntaxToken"/> and <see cref="FunctionSymbol"/>.
 	/// </summary>
-	private void BindParameter(SyntaxToken syntax, RangeValue range, FunctionSymbol? function) {
-		if (syntax.IsMissing) return;
+	private ParameterSymbol? BindParameter(SyntaxToken syntax, RangeValue range, FunctionSymbol? function) {
+		if (syntax.IsMissing) return null;
 
 		string identifier = syntax.Text;
 		ParameterSymbol symbol = new() {
@@ -173,13 +210,26 @@ internal partial class Binder {
 
 		var existingIdentifier = GetIdentifier(identifier);
 		if (existingIdentifier is not null) {
-			AddDiagnostic(syntax, CompilerDiagnostics.identifierAlreadyDefined, identifier);
-			return;
+			context.AddDiagnostic(syntax, CompilerDiagnostics.identifierAlreadyDefined, identifier);
+			return null;
 		}
 
 		function?.Parameters.Add(symbol);
-		VariableBinder.RegisterSymbol(symbol);
-		ProgramRoot.Variables.Add(symbol);
+		return symbol;
 	}
+
+
+
+	/// <summary>
+	/// Contains the result of a <see cref="DeclarationBinder"/>.
+	/// </summary>
+	/// <param name="Labels">The bound labels.</param>
+	/// <param name="Variables">The bound variables.</param>
+	/// <param name="Functions">The bound functions.</param>
+	public readonly record struct DeclarationBindResult(
+		IEnumerable<LabelSymbol> Labels,
+		IEnumerable<IVariableSymbol> Variables,
+		IEnumerable<FunctionSymbol> Functions
+	);
 
 }

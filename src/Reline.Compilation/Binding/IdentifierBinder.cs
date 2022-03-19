@@ -28,6 +28,13 @@ internal class IdentifierBinder<TSymbol> : IReadOnlyCollection<TSymbol> where TS
 	/// <param name="symbol">The symbol to register.</param>
 	public virtual void RegisterSymbol(TSymbol symbol) =>
 		symbols.TryAdd(symbol.Identifier, symbol);
+	/// <summary>
+	/// Registers a range of symbols in the binder.
+	/// </summary>
+	/// <param name="symbols">The symbols to register.</param>
+	public void RegisterRange(IEnumerable<TSymbol> symbols) {
+		foreach (var symbol in symbols) RegisterSymbol(symbol);
+	}
 
 	/// <summary>
 	/// Gets a symbol with the specified identifier from the binder
