@@ -164,7 +164,7 @@ internal sealed class ExpressionBinder {
 
 		switch (identifierSymbol) {
 			case null:
-				AddDiagnostic(syntax.Identifier, CompilerDiagnostics.undeclaredFunction, identifier);
+				context.AddDiagnostic(syntax.Identifier, CompilerDiagnostics.undeclaredFunction, identifier);
 				return BadExpression(syntax);
 
 			case not IFunctionSymbol:
@@ -254,19 +254,13 @@ internal sealed class ExpressionBinder {
 
 	private BadExpressionSymbol BadExpression(ISyntaxNode syntax, DiagnosticDescription description, params object?[] formatArgs) {
 		var symbol = GetSymbol<BadExpressionSymbol>(syntax);
-		AddDiagnostic(symbol, description, formatArgs);
+		context.AddDiagnostic(symbol, description, formatArgs);
 		return symbol;
 	}
 	private BadExpressionSymbol BadExpression(ISyntaxNode syntax) =>
 		GetSymbol<BadExpressionSymbol>(syntax);
 	private TSymbol GetSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() =>
 		context.GetSymbol<TSymbol>(syntax);
-	private void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) =>
-		context.AddDiagnostic(symbol.Syntax?.GetTextSpan(), description, formatArgs);
-	private void AddDiagnostic(ISyntaxNode node, DiagnosticDescription description, params object?[] formatArgs) =>
-		context.AddDiagnostic(node.GetTextSpan(), description, formatArgs);
-	private void AddDiagnostic(SyntaxToken token, DiagnosticDescription description, params object?[] formatArgs) =>
-		context.AddDiagnostic(token.Span, description, formatArgs);
 
 }
 

@@ -109,30 +109,6 @@ internal sealed partial class Binder : IBindingContext {
 	}
 
 	/// <summary>
-	/// Adds a diagnostic to an <see cref="ISymbol"/>.
-	/// </summary>
-	/// <param name="symbol">The <see cref="ISymbol"/> to add the diagnostic to.</param>
-	/// <param name="description">The description of the diagnostic.</param>
-	/// <param name="formatArgs">The arguments to format the description with.</param>
-	public void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) =>
-		AddDiagnostic(symbol.Syntax?.GetTextSpan(), description, formatArgs);
-	/// <summary>
-	/// Adds a diagnostic to an <see cref="ISyntaxNode"/>.
-	/// </summary>
-	/// <param name="syntax">The <see cref="ISyntaxNode"/> to add the diagnostic to.</param>
-	/// <param name="description">The description of the diagnostic.</param>
-	/// <param name="formatArgs">The arguments to format the description with.</param>
-	public void AddDiagnostic(ISyntaxNode syntax, DiagnosticDescription description, params object?[] formatArgs) =>
-		AddDiagnostic(syntax.GetTextSpan(), description, formatArgs);
-	/// <summary>
-	/// Adds a diagnostic to a <see cref="SyntaxToken"/>.
-	/// </summary>
-	/// <param name="token">The <see cref="SyntaxToken"/> to add the diagnostic to.</param>
-	/// <param name="description">The description of the diagnostic.</param>
-	/// <param name="formatArgs">The arguments to format the description with.</param>
-	public void AddDiagnostic(SyntaxToken token, DiagnosticDescription description, params object?[] formatArgs) =>
-		AddDiagnostic(token.Span, description, formatArgs);
-	/// <summary>
 	/// Adds a diagnostic.
 	/// </summary>
 	/// <param name="location">The location of the diagnostic.</param>

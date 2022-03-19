@@ -108,7 +108,7 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<BoundValue> {
 		new();
 
 	private void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) {
-		if (context is Binder binder) binder.AddDiagnostic(symbol, description, formatArgs);
+		if (context is IBindingContext bctx) bctx.AddDiagnostic(symbol, description, formatArgs);
 	}
 
 }
