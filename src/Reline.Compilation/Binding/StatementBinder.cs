@@ -91,7 +91,7 @@ internal partial class Binder {
 		var function = FunctionBinder.GetDefinedFunctions()
 			.FirstOrDefault(f => f.Range.Contains(line));
 		if (function is null) {
-			AddDiagnostic(syntax, CompilerDiagnostics.returnOutsideFunction);
+			this.AddDiagnostic(syntax, CompilerDiagnostics.returnOutsideFunction);
 		}
 
 		var symbol = GetSymbol<ReturnStatementSymbol>(syntax);
