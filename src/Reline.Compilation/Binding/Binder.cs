@@ -168,4 +168,17 @@ internal sealed partial class Binder : IBindingContext {
 		(symbolParentMap ?? throw new InvalidOperationException("Parent map uninitialized."))
 		.GetParent(symbol);
 
+	/// <summary>
+	/// Binds a <see cref="IExpressionSyntax"/> into a <see cref="IExpressionSymbol"/>
+	/// using the current <see cref="Binder"/> as the context.
+	/// </summary>
+	/// <param name="syntax">The syntax to bind.</param>
+	/// <param name="flags">The <see cref="ExpressionBindingFlags"/>
+	/// to use to determine what is permitted in the expression.</param>
+	/// <returns></returns>
+	public IExpressionSymbol BindExpression(
+		IExpressionSyntax syntax,
+		ExpressionBindingFlags flags = ExpressionBindingFlags.None
+	) => ExpressionBinder.BindExpression(syntax, this, flags);
+
 }

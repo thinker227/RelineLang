@@ -5,30 +5,6 @@ using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Binding;
 
-internal partial class Binder {
-
-	/// <summary>
-	/// Binds an <see cref="IExpressionSyntax"/>
-	/// into an <see cref="IExpressionSymbol"/>.
-	/// </summary>
-	/// <param name="syntax">The syntax to bind.</param>
-	/// <param name="flags">The <see cref="ExpressionBindingFlags"/>
-	/// to use to determine what is permitted in the expression.</param>
-	/// <param name="context">The <see cref="IBindingContext"/> to
-	/// use as the context. Defaults to <see langword="this"/>.</param>
-	private IExpressionSymbol BindExpression(
-		IExpressionSyntax syntax,
-		ExpressionBindingFlags flags = ExpressionBindingFlags.None,
-		IBindingContext? context = null
-	) {
-		context ??= this;
-		ExpressionBinder binder = new(flags, context);
-		var expression = binder.BindExpression(syntax);
-		return expression;
-	}
-
-}
-
 /// <summary>
 /// Binds expressions using specified <see cref="ExpressionBindingFlags"/>.
 /// </summary>
@@ -45,7 +21,7 @@ internal sealed class ExpressionBinder {
 
 
 
-	public ExpressionBinder(ExpressionBindingFlags flags, IBindingContext context) {
+	private ExpressionBinder(ExpressionBindingFlags flags, IBindingContext context) {
 		this.flags = flags;
 		this.context = context;
 	}
@@ -56,7 +32,28 @@ internal sealed class ExpressionBinder {
 	/// Binds an <see cref="IExpressionSyntax"/>
 	/// into an <see cref="IExpressionSymbol"/>.
 	/// </summary>
-	public IExpressionSymbol BindExpression(IExpressionSyntax syntax) {
+	/// <param name="syntax">The syntax to bind.</param>
+	/// <param name="flags">The <see cref="ExpressionBindingFlags"/>
+	/// to use to determine what is permitted in the expression.</param>
+	/// <param name="context">The <see cref="IBindingContext"/> to use
+	/// as the context for getting and creaing symbols and diagnostics.</param>
+	/// <returns>A new <see cref="IExpressionSymbol"/> bound from
+	/// <paramref name="syntax"/>.</returns>
+	public static IExpressionSymbol BindExpression(
+		IExpressionSyntax syntax,
+		IBindingContext context,
+		ExpressionBindingFlags flags = ExpressionBindingFlags.None
+	) {
+		ExpressionBinder expressionBinder = new(flags, context);
+		var expression = expressionBinder.BindExpression(syntax);
+		return expression;
+	}
+
+	/// <summary>
+	/// Binds an <see cref="IExpressionSyntax"/>
+	/// into an <see cref="IExpressionSymbol"/>.
+	/// </summary>
+	private IExpressionSymbol BindExpression(IExpressionSyntax syntax) {
 		var symbol = syntax switch {
 			UnaryExpressionSyntax s => BindUnary(s),
 			BinaryExpressionSyntax s => BindBinary(s),
