@@ -7,7 +7,7 @@ namespace Reline.Compilation.Binding;
 /// <summary>
 /// A context for binding symbols.
 /// </summary>
-internal interface IBindingContext : ISymbolContext, IDiagnosticContext {
+internal interface IBindingContext : ISemanticContext, IDiagnosticContext {
 
 	/// <summary>
 	/// Gets or creates a symbol from a specified <see cref="ISyntaxNode"/>.

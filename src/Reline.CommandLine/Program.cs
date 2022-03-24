@@ -9,6 +9,6 @@ if (!File.Exists(path)) return;
 string text = File.ReadAllText(path);
 
 var parseResult = SyntaxTree.ParseString(text);
-var bindResult = SymbolTree.BindTree(parseResult);
+var bindResult = SemanticModel.BindTree(parseResult);
 
 Console.ReadLine();

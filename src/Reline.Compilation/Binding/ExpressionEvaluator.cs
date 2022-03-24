@@ -9,16 +9,16 @@ namespace Reline.Compilation.Binding;
 /// </summary>
 internal sealed class ExpressionEvaluator : IExpressionVisitor<BoundValue> {
 
-	private readonly ISymbolContext context;
+	private readonly ISemanticContext context;
 	private readonly IDiagnosticContext? diagnostics;
 
 
 
-	internal ExpressionEvaluator(ISymbolContext context, IDiagnosticContext? diagnostics) {
+	internal ExpressionEvaluator(ISemanticContext context, IDiagnosticContext? diagnostics) {
 		this.context = context;
 		this.diagnostics = diagnostics;
 	}
-	public ExpressionEvaluator(ISymbolContext context) : this(context, null) { }
+	public ExpressionEvaluator(ISemanticContext context) : this(context, null) { }
 
 
 

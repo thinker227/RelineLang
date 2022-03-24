@@ -26,7 +26,7 @@ internal sealed partial class Binder : IBindingContext {
 	public ProgramSymbol ProgramRoot =>
 		programRoot ??
 		throw new InvalidOperationException("Program root uninitialized.");
-	ProgramSymbol ISymbolContext.Root => ProgramRoot;
+	ProgramSymbol ISemanticContext.Root => ProgramRoot;
 	/// <summary>
 	/// The internal <see cref="LabelSymbol"/> binder.
 	/// </summary>
@@ -67,20 +67,20 @@ internal sealed partial class Binder : IBindingContext {
 
 
 	/// <summary>
-	/// Binds a <see cref="Parsing.SyntaxTree"/> into a <see cref="SymbolTree"/>.
+	/// Binds a <see cref="Parsing.SyntaxTree"/> into a <see cref="SemanticModel"/>.
 	/// </summary>
 	/// <param name="tree">The syntax tree to bind.</param>
 	/// <returns>An <see cref="IOperationResult{T}"/>
-	/// containing the bound <see cref="SymbolTree"/>.</returns>
-	public static SymbolTree BindTree(SyntaxTree tree) {
+	/// containing the bound <see cref="SemanticModel"/>.</returns>
+	public static SemanticModel BindTree(SyntaxTree tree) {
 		Binder binder = new(tree);
 		var result = binder.BindTree();
 		return result;
 	}
 	/// <summary>
-	/// Binds a <see cref="Parsing.SyntaxTree"/> into a <see cref="SymbolTree"/>.
+	/// Binds a <see cref="Parsing.SyntaxTree"/> into a <see cref="SemanticModel"/>.
 	/// </summary>
-	private SymbolTree BindTree() {
+	private SemanticModel BindTree() {
 		programRoot = BindProgramPartialFromTree();
 		symbolParentMap = new(ProgramRoot);
 

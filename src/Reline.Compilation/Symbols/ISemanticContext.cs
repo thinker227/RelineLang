@@ -3,9 +3,9 @@
 namespace Reline.Compilation.Symbols;
 
 /// <summary>
-/// A context for representing a symbol tree.
+/// A context for semantic information.
 /// </summary>
-public interface ISymbolContext {
+public interface ISemanticContext {
 
 	/// <summary>
 	/// The <see cref="Syntax.SyntaxTree"/> which created the context.
