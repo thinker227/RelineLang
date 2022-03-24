@@ -5,21 +5,6 @@ using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Binding;
 
-internal partial class Binder {
-
-	/// <summary>
-	/// Binds labels, variables and functions from the syntax tree.
-	/// </summary>
-	private void BindDeclarations() {
-		var (labels, variables, functions) = DeclarationBinder.BindDeclarations(this);
-
-		LabelBinder.RegisterRange(labels);
-		VariableBinder.RegisterRange(variables);
-		FunctionBinder.RegisterRange(functions);
-	}
-
-}
-
 internal sealed class DeclarationBinder {
 
 	private readonly IBindingContext context;
