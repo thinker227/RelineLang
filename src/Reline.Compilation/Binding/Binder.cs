@@ -44,6 +44,10 @@ internal sealed partial class Binder : IBindingContext {
 	/// </summary>
 	public ExpressionEvaluator ExpressionEvaluator { get; }
 	/// <summary>
+	/// The <see cref="SymbolFactory"/> used to create symbols.
+	/// </summary>
+	public SymbolFactory Factory { get; }
+	/// <summary>
 	/// Whether any errors have been generated.
 	/// </summary>
 	public bool HasError => hasError;
@@ -62,6 +66,7 @@ internal sealed partial class Binder : IBindingContext {
 		VariableBinder = new();
 		FunctionBinder = new();
 		ExpressionEvaluator = new(this, this);
+		Factory = new(this);
 	}
 
 

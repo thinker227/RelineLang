@@ -15,9 +15,7 @@ internal partial class Binder {
 	/// </remarks>
 	private ProgramSymbol BindProgramPartialFromTree() {
 		var syntax = SyntaxTree.Root;
-		var symbol = GetSymbol<ProgramSymbol>(syntax);
-		symbol.StartLine = 1;
-		symbol.EndLine = syntax.Lines.Length;
+		var symbol = Factory.CreateProgram(syntax);
 		BindLinesPartial(symbol);
 		return symbol;
 	}
@@ -39,7 +37,7 @@ internal partial class Binder {
 		var lines = ((ProgramSyntax)program.Syntax!).Lines;
 		foreach (var lineSyntax in lines) {
 			var line = BindLinePartial(lineSyntax);
-			program.Lines[line.LineNumber] = line;
+			program.Lines[line.LineNumber - 1] = line;
 		}
 	}
 	/// <summary>
