@@ -25,17 +25,40 @@ public sealed class SemanticModel : ISemanticContext {
 	/// </summary>
 	public ProgramSymbol Root { get; }
 	/// <summary>
+	/// The declared labels in the program.
+	/// </summary>
+	public ImmutableArray<LabelSymbol> Labels { get; }
+	/// <summary>
+	/// The declared variables in the program.
+	/// </summary>
+	public ImmutableArray<IVariableSymbol> Variables { get; }
+	/// <summary>
+	/// The functions in the program, both native and declared.
+	/// </summary>
+	public ImmutableArray<IFunctionSymbol> Functions { get; }
+	/// <summary>
 	/// The diagnostics generated during binding.
 	/// </summary>
 	public ImmutableArray<Diagnostic> Diagnostics { get; }
 
 
 
-	internal SemanticModel(SyntaxTree syntaxTree, ProgramSymbol root, ImmutableArray<Diagnostic> diagnostics) {
+	// Where are required properties when you need them?
+	internal SemanticModel(
+		SyntaxTree syntaxTree,
+		ProgramSymbol root,
+		ImmutableArray<Diagnostic> diagnostics,
+		ImmutableArray<LabelSymbol> labels,
+		ImmutableArray<IVariableSymbol> variables,
+		ImmutableArray<IFunctionSymbol> functions
+	) {
+		parentMap = new(root);
 		SyntaxTree = syntaxTree;
 		Root = root;
+		Labels = labels;
+		Variables = variables;
+		Functions = functions;
 		Diagnostics = diagnostics;
-		parentMap = new(Root);
 	}
 
 

@@ -92,7 +92,14 @@ internal sealed partial class Binder : IBindingContext {
 		BindProgram(ProgramRoot);
 		
 		var diagnostics = this.diagnostics.ToImmutableArray();
-		return new(SyntaxTree, ProgramRoot, diagnostics);
+		return new(
+			SyntaxTree,
+			ProgramRoot,
+			diagnostics,
+			LabelBinder.ToImmutableArray(),
+			VariableBinder.ToImmutableArray(),
+			FunctionBinder.ToImmutableArray()
+		);
 	}
 
 	/// <summary>
