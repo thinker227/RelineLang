@@ -21,8 +21,15 @@ public interface IManipulationStatementSymbol : IStatementSymbol {
 /// </summary>
 public abstract class ManipulationStatementSymbol : SymbolNode, IManipulationStatementSymbol {
 
-	public IExpressionSymbol Source { get; set; } = null!;
-	public IExpressionSymbol Target { get; set; } = null!;
+	public IExpressionSymbol Source { get; }
+	public IExpressionSymbol Target { get; }
+
+
+
+	internal ManipulationStatementSymbol(IExpressionSymbol source, IExpressionSymbol target) {
+		Source = source;
+		Target = target;
+	}
 
 
 

@@ -25,8 +25,7 @@ internal partial class Binder {
 	/// </summary>
 	private ExpressionStatementSymbol BindExpressionStatement(ExpressionStatementSyntax syntax) {
 		var expression = BindExpression(syntax.Expression);
-		var symbol = GetSymbol<ExpressionStatementSymbol>(syntax);
-		symbol.Expression = expression;
+		var symbol = Factory.CreateExpressionStatement(syntax, expression);
 		return symbol;
 	}
 	/// <summary>
@@ -41,9 +40,7 @@ internal partial class Binder {
 
 		// If the variable is null and is missing then
 		// it has already been reported as an error
-		var symbol = GetSymbol<AssignmentStatementSymbol>(syntax);
-		symbol.Variable = variable;
-		symbol.Initializer = initializer;
+		var symbol = Factory.CreateAssignmentStatement(syntax, variable, initializer);
 		variable?.References.Add(symbol);
 		return symbol;
 	}
@@ -55,25 +52,12 @@ internal partial class Binder {
 		var source = BindExpression(syntax.Source);
 		var target = BindExpression(syntax.Target);
 
-		switch (syntax) {
-			case MoveStatementSyntax:
-				var move = GetSymbol<MoveStatementSymbol>(syntax);
-				move.Source = source;
-				move.Target = target;
-				return move;
-			case SwapStatementSyntax:
-				var swap = GetSymbol<SwapStatementSymbol>(syntax);
-				swap.Source = source;
-				swap.Target = target;
-				return swap;
-			case CopyStatementSyntax:
-				var copy = GetSymbol<CopyStatementSymbol>(syntax);
-				copy.Source = source;
-				copy.Target = target;
-				return copy;
-		}
-
-		throw new NotSupportedException("Manipulation statement type {syntax.GetType().Name} is not supported.");
+		return syntax switch {
+			MoveStatementSyntax ms => Factory.CreateMoveStatement(ms, source, target),
+			SwapStatementSyntax ss => Factory.CreateSwapStatement(ss, source, target),
+			CopyStatementSyntax cs => Factory.CreateCopyStatement(cs, source, target),
+			_ => throw new NotSupportedException($"Manipulation statement type {syntax.GetType().Name} is not supported."),
+		};
 	}
 	/// <summary>
 	/// Binds a <see cref="FunctionDeclarationStatementSyntax"/> into a <see cref="FunctionDeclarationStatementSymbol"/>.
@@ -94,9 +78,7 @@ internal partial class Binder {
 			this.AddDiagnostic(syntax, CompilerDiagnostics.returnOutsideFunction);
 		}
 
-		var symbol = GetSymbol<ReturnStatementSymbol>(syntax);
-		symbol.Expression = expression;
-		symbol.Function = function;
+		var symbol = Factory.CreateReturnStatement(syntax, expression, function);
 		return symbol;
 	}
 

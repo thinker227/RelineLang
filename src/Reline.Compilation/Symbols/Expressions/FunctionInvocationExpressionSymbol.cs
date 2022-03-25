@@ -4,15 +4,22 @@
 /// Represents a function invocation expression.
 /// </summary>
 public sealed class FunctionInvocationExpressionSymbol : SymbolNode, IExpressionSymbol {
-
+	
 	/// <summary>
 	/// The function being invoked.
 	/// </summary>
-	public IFunctionSymbol Function { get; set; } = null!;
+	public IFunctionSymbol Function { get; }
 	/// <summary>
 	/// The arguments passed to the function invocation.
 	/// </summary>
-	public ICollection<IExpressionSymbol> Arguments { get; } = new List<IExpressionSymbol>();
+	public IReadOnlyCollection<IExpressionSymbol> Arguments { get; }
+
+
+
+	internal FunctionInvocationExpressionSymbol(IFunctionSymbol function, IReadOnlyCollection<IExpressionSymbol> arguments) {
+		Function = function;
+		Arguments = arguments;
+	}
 
 
 

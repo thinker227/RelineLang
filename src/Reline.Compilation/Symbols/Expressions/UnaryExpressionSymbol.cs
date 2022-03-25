@@ -10,11 +10,18 @@ public sealed class UnaryExpressionSymbol : SymbolNode, IExpressionSymbol {
 	/// <summary>
 	/// The operand of the expression.
 	/// </summary>
-	public IExpressionSymbol Expression { get; set; } = null!;
+	public IExpressionSymbol Expression { get; }
 	/// <summary>
 	/// The operator of the expression.
 	/// </summary>
-	public UnaryOperatorType OperatorType { get; set; }
+	public UnaryOperatorType OperatorType { get; }
+
+
+
+	internal UnaryExpressionSymbol(IExpressionSymbol expression, UnaryOperatorType unaryOperator) {
+		Expression = expression;
+		OperatorType = unaryOperator;
+	}
 
 
 

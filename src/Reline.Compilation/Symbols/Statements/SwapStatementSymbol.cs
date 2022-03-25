@@ -5,4 +5,7 @@
 /// </summary>
 public sealed class SwapStatementSymbol : ManipulationStatementSymbol {
 
+	public SwapStatementSymbol(IExpressionSymbol source, IExpressionSymbol target)
+		: base(source, target) { }
+
 }

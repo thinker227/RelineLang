@@ -10,7 +10,13 @@ public sealed class KeywordExpressionSymbol : SymbolNode, IExpressionSymbol {
 	/// <summary>
 	/// The keyword of the expression.
 	/// </summary>
-	public KeywordExpressionType KeywordType { get; set; }
+	public KeywordExpressionType KeywordType { get; }
+
+
+
+	internal KeywordExpressionSymbol(KeywordExpressionType keywordType) {
+		KeywordType = keywordType;
+	}
 
 
 

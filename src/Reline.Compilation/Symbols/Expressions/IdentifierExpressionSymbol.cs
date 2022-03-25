@@ -8,7 +8,13 @@ public sealed class IdentifierExpressionSymbol : SymbolNode, IExpressionSymbol {
 	/// <summary>
 	/// The identifier of the expression.
 	/// </summary>
-	public IIdentifiableSymbol Identifier { get; set; } = null!;
+	public IIdentifiableSymbol Identifier { get; }
+
+
+
+	internal IdentifierExpressionSymbol(IIdentifiableSymbol identifier) {
+		Identifier = identifier;
+	}
 
 
 

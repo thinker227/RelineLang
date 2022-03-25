@@ -12,6 +12,7 @@ internal sealed class ExpressionBinder {
 
 	private readonly ExpressionBindingFlags flags;
 	private readonly IBindingContext context;
+	private readonly SymbolFactory factory;
 
 	private bool NoVariables => flags.HasFlag(ExpressionBindingFlags.NoVariables);
 	private bool NoFunctions => flags.HasFlag(ExpressionBindingFlags.NoFunctions);
@@ -24,6 +25,7 @@ internal sealed class ExpressionBinder {
 	private ExpressionBinder(ExpressionBindingFlags flags, IBindingContext context) {
 		this.flags = flags;
 		this.context = context;
+		factory = new(context);
 	}
 
 
@@ -72,26 +74,26 @@ internal sealed class ExpressionBinder {
 	}
 
 	private UnaryExpressionSymbol BindUnary(UnaryExpressionSyntax syntax) {
-		var symbol = GetSymbol<UnaryExpressionSymbol>(syntax);
-		symbol.OperatorType = BindUnaryOperator(syntax.OperatorToken.Type);
-		symbol.Expression = BindExpression(syntax.Expression);
+		var operatorType = BindUnaryOperator(syntax.OperatorToken.Type);
+		var expression = BindExpression(syntax.Expression);
+		var symbol = factory.CreateUnaryExpression(syntax, expression, operatorType);
 		return symbol;
 	}
 	private BinaryExpressionSymbol BindBinary(BinaryExpressionSyntax syntax) {
-		var symbol = GetSymbol<BinaryExpressionSymbol>(syntax);
-		symbol.OperatorType = BindBinaryOperator(syntax.OperatorToken.Type);
-		symbol.Left = BindExpression(syntax.Left);
-		symbol.Right = BindExpression(syntax.Right);
+		var operatorType = BindBinaryOperator(syntax.OperatorToken.Type);
+		var left = BindExpression(syntax.Left);
+		var right = BindExpression(syntax.Right);
+		var symbol = factory.CreateBinaryExpression(syntax, left, operatorType, right);
 		return symbol;
 	}
 	private KeywordExpressionSymbol BindKeyword(KeywordExpressionSyntax syntax) {
-		var symbol = GetSymbol<KeywordExpressionSymbol>(syntax);
-		symbol.KeywordType = BindKeywordType(syntax.Keyword.Type);
+		var keywordType = BindKeywordType(syntax.Keyword.Type);
+		var symbol = factory.CreateKeywordExpression(syntax, keywordType);
 		return symbol;
 	}
 	private LiteralExpressionSymbol BindLiteral(LiteralExpressionSyntax syntax) {
-		var symbol = GetSymbol<LiteralExpressionSymbol>(syntax);
-		symbol.Literal = BindLiteralValue(syntax.Literal.Literal ?? 0);
+		var literal = BindLiteralValue(syntax.Literal.Literal ?? 0);
+		var symbol = factory.CreateLiteralExpression(syntax, literal);
 		return symbol;
 	}
 	private IExpressionSymbol BindGrouping(GroupingExpressionSyntax syntax) =>
@@ -107,8 +109,7 @@ internal sealed class ExpressionBinder {
 		if (LabelsAsConstant) {
 			var labelSymbol = context.GetIdentifier(syntax.Identifier.Text);
 			if (labelSymbol is LabelSymbol) {
-				var labelIdentifierSymbol = GetSymbol<IdentifierExpressionSymbol>(syntax);
-				labelIdentifierSymbol.Identifier = labelSymbol;
+				var labelIdentifierSymbol = factory.CreateIdentifierExpression(syntax, labelSymbol);
 				return labelIdentifierSymbol;
 			}
 		}
@@ -128,8 +129,7 @@ internal sealed class ExpressionBinder {
 				return BadExpression(syntax, CompilerDiagnostics.uninvokedFunction);
 		}
 
-		var symbol = GetSymbol<IdentifierExpressionSymbol>(syntax);
-		symbol.Identifier = identifierSymbol;
+		var symbol = factory.CreateIdentifierExpression(syntax, identifierSymbol);
 
 		switch (identifierSymbol) {
 			case LabelSymbol label:
@@ -171,11 +171,8 @@ internal sealed class ExpressionBinder {
 				return BadExpression(syntax, CompilerDiagnostics.invokeNonFunction, identifier);
 		}
 
-		var symbol = GetSymbol<FunctionInvocationExpressionSymbol>(syntax);
 		var function = (IFunctionSymbol)identifierSymbol;
-		symbol.Function = function;
-		foreach (var arg in arguments)
-			symbol.Arguments.Add(arg);
+		var symbol = factory.CreateFunctionInvocationExpression(syntax, function, arguments);
 		// This is kind of bad
 		if (function is IDefinedIdentifiableSymbol defined) {
 			foreach (var arg in arguments) defined.References.Add(arg);
@@ -213,9 +210,8 @@ internal sealed class ExpressionBinder {
 				return BadExpression(syntax, CompilerDiagnostics.nonFunctionPointer);
 		}
 
-		var symbol = GetSymbol<FunctionPointerExpressionSymbol>(syntax);
 		var function = (FunctionSymbol)identifierSymbol;
-		symbol.Function = function;
+		var symbol = factory.CreateFunctionPointerExpression(syntax, function);
 		function.References.Add(function);
 		return symbol;
 	}

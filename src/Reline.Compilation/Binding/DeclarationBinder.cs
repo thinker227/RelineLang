@@ -12,6 +12,7 @@ internal sealed class DeclarationBinder {
 	private readonly IdentifierBinder<IVariableSymbol> variableBinder;
 	private readonly IdentifierBinder<FunctionSymbol> functionBinder;
 	private readonly ExpressionEvaluator evaluator;
+	private readonly SymbolFactory factory;
 
 
 
@@ -21,6 +22,7 @@ internal sealed class DeclarationBinder {
 		variableBinder = new();
 		functionBinder = new();
 		evaluator = new(context, context);
+		factory = new(context);
 	}
 
 
@@ -62,18 +64,18 @@ internal sealed class DeclarationBinder {
 	/// into a <see cref="LabelSymbol"/>.
 	/// </summary>
 	private LabelSymbol? BindLabel(LabelSyntax labelSyntax, LineSyntax lineSyntax) {
-		var label = context.GetSymbol<LabelSymbol>(labelSyntax);
-		var line = context.GetSymbol<LineSymbol>(lineSyntax);
-		label.Identifier = labelSyntax.Identifier.Text;
-		label.Line = line;
-		line.Label = label;
+		if (labelSyntax.Identifier.IsMissing) return null;
 
-		string identifier = label.Identifier;
+		string identifier = labelSyntax.Identifier.Text;
 		var existingIdentifier = GetIdentifier(identifier);
 		if (existingIdentifier is not null) {
 			context.AddDiagnostic(labelSyntax.Identifier, CompilerDiagnostics.identifierAlreadyDefined, identifier);
 			return null;
 		}
+
+		var line = context.GetSymbol<LineSymbol>(lineSyntax);
+		var label = factory.CreateLabel(labelSyntax, identifier, line);
+		line.Label = label;
 
 		return label;
 	}
@@ -92,8 +94,8 @@ internal sealed class DeclarationBinder {
 	/// Binds an <see cref="AssignmentStatementSyntax"/> into a <see cref="VariableSymbol"/>.
 	/// </summary>
 	private VariableSymbol? BindVariableFromLine(AssignmentStatementSyntax syntax, LineSyntax lineSyntax) {
-		var assignmentSymbol = context.GetSymbol<AssignmentStatementSymbol>(syntax);
-		context.GetSymbol<LineSymbol>(lineSyntax).Statement = assignmentSymbol;
+		//var assignmentSymbol = context.GetSymbol<AssignmentStatementSymbol>(syntax);
+		//context.GetSymbol<LineSymbol>(lineSyntax).Statement = assignmentSymbol;
 
 		if (syntax.Identifier.IsMissing) return null;
 
@@ -107,7 +109,7 @@ internal sealed class DeclarationBinder {
 		VariableSymbol symbol = new() {
 			Identifier = identifier
 		};
-		assignmentSymbol.Variable = symbol;
+		//assignmentSymbol.Variable = symbol;
 		return symbol;
 	}
 
