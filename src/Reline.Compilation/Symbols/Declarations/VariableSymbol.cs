@@ -33,6 +33,9 @@ public sealed class VariableSymbol : SymbolNode, IVariableSymbol {
 	public override int GetHashCode() =>
 		Identifier.GetHashCode();
 
+	public override string ToString() =>
+		Identifier;
+
 }
 
 /// <summary>
@@ -70,5 +73,8 @@ public sealed class ParameterSymbol : SymbolNode, IVariableSymbol {
 		Equals(variable);
 	public override int GetHashCode() =>
 		HashCode.Combine(Identifier, Range);
+
+	public override string ToString() =>
+		Identifier;
 
 }

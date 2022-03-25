@@ -32,4 +32,7 @@ public sealed class LabelSymbol : SymbolNode, IDefinedIdentifiableSymbol {
 		yield return Line;
 	}
 
+	public override string ToString() =>
+		Identifier;
+
 }

@@ -58,6 +58,9 @@ public sealed class FunctionSymbol : SymbolNode, IFunctionSymbol, IDefinedIdenti
 		foreach (var param in Parameters) yield return param;
 	}
 
+	public override string ToString() =>
+		Identifier;
+
 }
 
 /// <summary>
@@ -87,5 +90,8 @@ public sealed class NativeFunctionSymbol : SymbolNode, IFunctionSymbol {
 
 	public override IEnumerable<ISymbol> GetChildren() =>
 		Enumerable.Empty<ISymbol>();
+
+	public override string ToString() =>
+		Identifier;
 
 }
