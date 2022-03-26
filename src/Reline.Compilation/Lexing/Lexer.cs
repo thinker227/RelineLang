@@ -83,7 +83,7 @@ internal sealed class Lexer {
 
 		viewer.Advance();
 		var diagnostic = CompilerDiagnostics.unexpectedCharacter
-			.ToDiagnostic(CurrentSpan, current, lexemeStartPosition);
+			.ToDiagnostic(CurrentSpan, current);
 		diagnostics.Add(diagnostic);
 		return CreateToken(SyntaxType.Unknown);
 	}
