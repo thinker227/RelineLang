@@ -57,7 +57,7 @@ internal sealed class Lexer {
 			else addToken(token);
 		}
 
-		addToken(new(SyntaxType.EndOfFile, TextSpan.Empty, "", null));
+		addToken(new(SyntaxType.EndOfFile, TextSpan.FromEmpty(source.Length), "", null));
 
 		return tokens.ToImmutableArray();
 	}
