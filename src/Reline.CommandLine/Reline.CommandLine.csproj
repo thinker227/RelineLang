@@ -6,6 +6,17 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+	<PackageOutputPath>./nupkg</PackageOutputPath>
+	<PackageId>Reline.CommandLine</PackageId>
+	<PackageProjectUrl>https://www.github.com/thinker227/RelineLang</PackageProjectUrl>
+	<PackageTags>reline compiler cli tool</PackageTags>
+	<PackageVersion>1.0.0-dev</PackageVersion>
+	<PackageType>CLI tool</PackageType>
+	<PackAsTool>true</PackAsTool>
+	<ToolCommandName>reline</ToolCommandName>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Reline.Compilation\Reline.Compilation.csproj" />
   </ItemGroup>

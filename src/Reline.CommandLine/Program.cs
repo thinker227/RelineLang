@@ -7,6 +7,8 @@ using Reline.Compilation.Parsing;
 using Reline.Compilation.Binding;
 using Humanizer;
 
+const string version = "v1.0.0-dev";
+Console.WriteLine($"--- Reline {version} ---");
 
 if (args.Length == 0) {
 	Console.ForegroundColor = ConsoleColor.Red;
