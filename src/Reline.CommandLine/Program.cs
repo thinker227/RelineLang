@@ -7,10 +7,28 @@ using Reline.Compilation.Parsing;
 using Reline.Compilation.Binding;
 using Humanizer;
 
-if (args.Length == 0) return 1;
-string path = args[0];
-if (!File.Exists(path)) return 1;
+
+if (args.Length == 0) {
+	Console.ForegroundColor = ConsoleColor.Red;
+	Console.WriteLine("No path was provided");
+	Console.ResetColor();
+	return 1;
+}
+FileInfo file = new(args[0]);
+string path = file.FullName;
+if (!file.Exists) {
+	Console.ForegroundColor = ConsoleColor.Red;
+	Console.WriteLine($"File '{path}' does not exist");
+	Console.ResetColor();
+	return 1;
+}
+if (file.Extension != ".rl") {
+	Console.ForegroundColor = ConsoleColor.Yellow;
+	Console.WriteLine("File does not have extension '.rl'");
+	Console.ResetColor();
+}
 string text = File.ReadAllText(path);
+Console.WriteLine($"Compiling file '{path}'\n");
 
 var textMap = TextMap.Create(text);
 
@@ -42,7 +60,6 @@ foreach (var diagnostic in diagnostics) {
 		string start = text.Substring(new TextSpan(line.TextSpan.Start, l.Start));
 		string mid = text.Substring(l);
 		string end = text.Substring(new TextSpan(l.End, line.TextSpan.End));
-
 		Console.ForegroundColor = ConsoleColor.White;
 		Console.Write(start.ReplaceLineEndings(""));
 		Console.ForegroundColor = color;
@@ -54,4 +71,23 @@ foreach (var diagnostic in diagnostics) {
 	Console.WriteLine();
 }
 
-return diagnostics.Where(d => d.Level == DiagnosticLevel.Error).Any() ? 1 : 0;
+int warnings = diagnostics.Where(d => d.Level == DiagnosticLevel.Warning).Count();
+int errors = diagnostics.Where(d => d.Level == DiagnosticLevel.Error).Count();
+bool success = errors == 0;
+string warningsString = warnings == 1 ? "warning" : "warnings";
+string errorsString = errors == 1 ? "error" : "errors";
+
+if (success) {
+	Console.ForegroundColor = ConsoleColor.Green;
+	Console.WriteLine("Compilation succeeded");
+	Console.ResetColor();
+} else {
+	Console.ForegroundColor = ConsoleColor.Red;
+	Console.WriteLine("Compilation failed");
+	Console.ResetColor();
+}
+Console.WriteLine($"  {warnings} {warningsString}");
+Console.WriteLine($"  {errors} {errorsString}");
+Console.WriteLine();
+
+return errors == 0 ? 0 : 1;
