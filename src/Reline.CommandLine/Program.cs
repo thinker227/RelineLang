@@ -7,9 +7,9 @@ using Reline.Compilation.Parsing;
 using Reline.Compilation.Binding;
 using Humanizer;
 
-if (args.Length == 0) return;
+if (args.Length == 0) return 1;
 string path = args[0];
-if (!File.Exists(path)) return;
+if (!File.Exists(path)) return 1;
 string text = File.ReadAllText(path);
 
 var textMap = TextMap.Create(text);
@@ -53,3 +53,5 @@ foreach (var diagnostic in diagnostics) {
 	Console.ResetColor();
 	Console.WriteLine();
 }
+
+return diagnostics.Where(d => d.Level == DiagnosticLevel.Error).Any() ? 1 : 0;
