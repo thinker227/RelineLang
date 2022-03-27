@@ -131,16 +131,8 @@ internal sealed class ExpressionBinder {
 
 		var symbol = factory.CreateIdentifierExpression(syntax, identifierSymbol);
 
-		switch (identifierSymbol) {
-			case LabelSymbol label:
-				label.References.Add(symbol);
-				break;
-			case VariableSymbol variable:
-				variable.References.Add(symbol);
-				break;
-			case ParameterSymbol parameter:
-				parameter.References.Add(symbol);
-				break;
+		if (identifierSymbol is IDefinedIdentifiableSymbol defined) {
+			defined.References.Add(symbol);
 		}
 
 		return symbol;
