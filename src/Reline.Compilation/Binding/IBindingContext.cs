@@ -7,7 +7,7 @@ namespace Reline.Compilation.Binding;
 /// <summary>
 /// A context for binding symbols.
 /// </summary>
-internal interface IBindingContext : ISemanticContext, ISymbolCreationContext, IIdentifierContext, IDiagnosticContext { }
+internal interface IBindingContext : ISemanticContext, ILineContext, ISymbolCreationContext, IIdentifierContext, IDiagnosticContext { }
 
 /// <summary>
 /// A context for binding and getting identifiers.
@@ -53,9 +53,13 @@ internal interface ISymbolCreationContext {
 
 }
 
+/// <summary>
+/// A context for getting information about line spans.
+/// </summary>
 internal interface ILineContext {
 
-
+	int StartLine { get; }
+	int EndLine { get; }
 
 }
 
