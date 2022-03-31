@@ -8,11 +8,11 @@ namespace Reline.Compilation.Binding;
 /// </summary>
 internal sealed class SymbolFactory {
 
-	private readonly ISymbolCreationContext context;
+	private readonly IBindingContext context;
 
 
 
-	public SymbolFactory(ISymbolCreationContext context) {
+	public SymbolFactory(IBindingContext context) {
 		this.context = context;
 	}
 

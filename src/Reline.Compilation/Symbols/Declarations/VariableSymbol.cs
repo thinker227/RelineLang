@@ -41,7 +41,7 @@ public sealed class VariableSymbol : SymbolNode, IVariableSymbol {
 /// <summary>
 /// Represents a parameter.
 /// </summary>
-public sealed class ParameterSymbol : SymbolNode, IVariableSymbol, IScopedIdentifiableSymbol {
+public sealed class ParameterSymbol : SymbolNode, IVariableSymbol {
 
 	/// <summary>
 	/// The parameter identifier.
@@ -53,7 +53,6 @@ public sealed class ParameterSymbol : SymbolNode, IVariableSymbol, IScopedIdenti
 	/// The range the parameter is valid within.
 	/// </summary>
 	public RangeValue Range { get; set; }
-	RangeValue IScopedIdentifiableSymbol.Scope => Range;
 	/// <summary>
 	/// The function the parameter is a parameter to.
 	/// May be <see langword="null"/> if the function is invalid.

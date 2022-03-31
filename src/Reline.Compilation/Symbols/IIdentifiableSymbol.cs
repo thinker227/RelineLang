@@ -23,15 +23,3 @@ public interface IDefinedIdentifiableSymbol : IIdentifiableSymbol {
 	ICollection<ISymbol> References { get; }
 
 }
-
-/// <summary>
-/// Represents an identifiable symbol which belongs to a scope.
-/// </summary>
-public interface IScopedIdentifiableSymbol : IDefinedIdentifiableSymbol {
-
-	/// <summary>
-	/// The scope the identifier exists within.
-	/// </summary>
-	RangeValue Scope { get; }
-
-}
