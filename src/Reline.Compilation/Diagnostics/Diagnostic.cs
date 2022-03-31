@@ -5,10 +5,6 @@
 /// </summary>
 public readonly record struct Diagnostic {
 
-	private readonly DiagnosticDescription description;
-	
-	
-
 	/// <summary>
 	/// The span in the source text of the diagnostic,
 	/// or <see langword="null"/> if the diagnostic does not have a specific location.
@@ -21,18 +17,22 @@ public readonly record struct Diagnostic {
 	/// <summary>
 	/// The severity level of the diagnostic.
 	/// </summary>
-	public DiagnosticLevel Level => description.Level;
+	public DiagnosticLevel Level => InternalDescription.Level;
 	/// <summary>
 	/// The unique error code of the diagnostic type.
 	/// </summary>
-	public string ErrorCode => description.ErrorCode;
+	public string ErrorCode => InternalDescription.ErrorCode;
+	/// <summary>
+	/// The <see cref="DiagnosticDescription"/> this diagnostic was created from.
+	/// </summary>
+	public DiagnosticDescription InternalDescription { get; }
 
 
 
 	private Diagnostic(DiagnosticDescription description, TextSpan? location, string formattedDescription) {
-		this.description = description;
 		Location = location;
 		Description = formattedDescription;
+		InternalDescription = description;
 	}
 
 
@@ -55,10 +55,10 @@ public readonly record struct Diagnostic {
 	public override string ToString() =>
 		$"{ErrorCode}: {Description}";
 	public bool Equals(Diagnostic other) =>
-		description.Equals(other.Description) &&
+		InternalDescription.Equals(other.InternalDescription) &&
 		(Location?.Equals(other.Location) ?? other.Location is null) &&
 		Description == other.Description;
 	public override int GetHashCode() =>
-		HashCode.Combine(description, Location, Description);
+		HashCode.Combine(InternalDescription, Location, Description);
 
 }
