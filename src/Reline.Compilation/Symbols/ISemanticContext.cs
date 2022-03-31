@@ -1,7 +1,16 @@
-﻿namespace Reline.Compilation.Symbols;
+﻿using Reline.Compilation.Syntax;
 
-public interface ISymbolContext {
+namespace Reline.Compilation.Symbols;
 
+/// <summary>
+/// A context for semantic information.
+/// </summary>
+public interface ISemanticContext {
+
+	/// <summary>
+	/// The <see cref="Syntax.SyntaxTree"/> which created the context.
+	/// </summary>
+	SyntaxTree SyntaxTree { get; }
 	/// <summary>
 	/// The root node of the context.
 	/// </summary>

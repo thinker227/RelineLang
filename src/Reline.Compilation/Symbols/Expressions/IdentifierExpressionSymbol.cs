@@ -8,15 +8,20 @@ public sealed class IdentifierExpressionSymbol : SymbolNode, IExpressionSymbol {
 	/// <summary>
 	/// The identifier of the expression.
 	/// </summary>
-	public IIdentifiableSymbol Identifier { get; set; } = null!;
+	public IIdentifiableSymbol Identifier { get; }
+
+
+
+	internal IdentifierExpressionSymbol(IIdentifiableSymbol identifier) {
+		Identifier = identifier;
+	}
 
 
 
 	public T Accept<T>(IExpressionVisitor<T> visitor) =>
 		visitor.VisitVariable(this);
 
-	public override IEnumerable<ISymbol> GetChildren() {
-		yield return Identifier;
-	}
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Enumerable.Empty<ISymbol>();
 
 }

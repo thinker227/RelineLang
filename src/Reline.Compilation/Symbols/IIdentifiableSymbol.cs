@@ -11,3 +11,15 @@ public interface IIdentifiableSymbol : ISymbol {
 	string Identifier { get; }
 
 }
+
+/// <summary>
+/// Represents an identifiable symbol which is defined in source code.
+/// </summary>
+public interface IDefinedIdentifiableSymbol : IIdentifiableSymbol {
+
+	/// <summary>
+	/// The references to the symbol.
+	/// </summary>
+	ICollection<ISymbol> References { get; }
+
+}

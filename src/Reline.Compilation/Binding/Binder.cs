@@ -8,87 +8,103 @@ namespace Reline.Compilation.Binding;
 /// <summary>
 /// Binds syntax nodes into symbols.
 /// </summary>
-public sealed partial class Binder {
+internal sealed partial class Binder : IBindingContext {
 
-	private readonly BinderDiagnosticMap diagnostics;
+	private readonly List<Diagnostic> diagnostics;
 	private readonly SyntaxSymbolBinder syntaxSymbolBinder;
-	private ProgramSymbol programRoot;
+	private ParentMap<ISymbol>? symbolParentMap;
+	private ProgramSymbol? programRoot;
 	private bool hasError;
 
 	/// <summary>
 	/// The <see cref="Parsing.SyntaxTree"/> being bound.
 	/// </summary>
-	internal SyntaxTree SyntaxTree { get; }
+	public SyntaxTree SyntaxTree { get; }
 	/// <summary>
 	/// The <see cref="ProgramSymbol"/> which is the root of the symbol tree.
 	/// </summary>
-	internal ProgramSymbol ProgramRoot => programRoot;
+	public ProgramSymbol ProgramRoot =>
+		programRoot ??
+		throw new InvalidOperationException("Program root uninitialized.");
+	ProgramSymbol ISemanticContext.Root => ProgramRoot;
 	/// <summary>
 	/// The internal <see cref="LabelSymbol"/> binder.
 	/// </summary>
-	internal IdentifierBinder<LabelSymbol> LabelBinder { get; }
+	public IdentifierBinder<LabelSymbol> LabelBinder { get; }
 	/// <summary>
 	/// The internal <see cref="IVariableSymbol"/> binder.
 	/// </summary>
-	internal IdentifierBinder<IVariableSymbol> VariableBinder { get; }
+	public IdentifierBinder<IVariableSymbol> VariableBinder { get; }
 	/// <summary>
 	/// The internal <see cref="FunctionSymbol"/> binder.
 	/// </summary>
-	internal IdentifierBinder<FunctionSymbol> FunctionBinder { get; }
+	public FunctionBinder FunctionBinder { get; }
 	/// <summary>
 	/// The <see cref="Binding.ExpressionEvaluator"/> for the binder.
 	/// </summary>
-	internal ExpressionEvaluator ExpressionEvaluator { get; }
+	public ExpressionEvaluator ExpressionEvaluator { get; }
 	/// <summary>
-	/// The current <see cref="LineSymbol"/> being bound.
+	/// The <see cref="SymbolFactory"/> used to create symbols.
 	/// </summary>
-	internal LineSymbol? CurrentLine { get; set; }
+	public SymbolFactory Factory { get; }
 	/// <summary>
 	/// Whether any errors have been generated.
 	/// </summary>
-	internal bool HasError => hasError;
+	public bool HasError => hasError;
 
 
 
 	private Binder(SyntaxTree tree) {
 		diagnostics = new();
 		syntaxSymbolBinder = new();
+		symbolParentMap = null;
 		hasError = false;
-		programRoot = null!;
+		programRoot = null;
 
 		SyntaxTree = tree;
 		LabelBinder = new();
 		VariableBinder = new();
 		FunctionBinder = new();
-		ExpressionEvaluator = new(this);
-		CurrentLine = null;
+		ExpressionEvaluator = new(this, this);
+		Factory = new(this);
 	}
 
 
 
 	/// <summary>
-	/// Binds a <see cref="Parsing.SyntaxTree"/> into a <see cref="SymbolTree"/>.
+	/// Binds a <see cref="Parsing.SyntaxTree"/> into a <see cref="SemanticModel"/>.
 	/// </summary>
 	/// <param name="tree">The syntax tree to bind.</param>
 	/// <returns>An <see cref="IOperationResult{T}"/>
-	/// containing the bound <see cref="SymbolTree"/>.</returns>
-	public static SymbolTree BindTree(SyntaxTree tree) {
+	/// containing the bound <see cref="SemanticModel"/>.</returns>
+	public static SemanticModel BindTree(SyntaxTree tree) {
 		Binder binder = new(tree);
 		var result = binder.BindTree();
 		return result;
 	}
 	/// <summary>
-	/// Binds a <see cref="Parsing.SyntaxTree"/> into a <see cref="SymbolTree"/>.
+	/// Binds a <see cref="Parsing.SyntaxTree"/> into a <see cref="SemanticModel"/>.
 	/// </summary>
-	private SymbolTree BindTree() {
+	private SemanticModel BindTree() {
 		programRoot = BindProgramPartialFromTree();
-		BindLabelsFromTree();
-		BindVariablesFromAssignments();
-		BindFunctionsFromTree();
-		BindProgram(ProgramRoot);
+		symbolParentMap = new(ProgramRoot);
 
+		var declarations = DeclarationBinder.BindDeclarations(this);
+		LabelBinder.RegisterRange(declarations.Labels);
+		VariableBinder.RegisterRange(declarations.Variables);
+		FunctionBinder.RegisterRange(declarations.Functions);
+
+		BindProgram(ProgramRoot);
+		
 		var diagnostics = this.diagnostics.ToImmutableArray();
-		return new(ProgramRoot, diagnostics);
+		return new(
+			SyntaxTree,
+			ProgramRoot,
+			diagnostics,
+			LabelBinder.ToImmutableArray(),
+			VariableBinder.ToImmutableArray(),
+			FunctionBinder.ToImmutableArray()
+		);
 	}
 
 	/// <summary>
@@ -100,25 +116,26 @@ public sealed partial class Binder {
 	/// </summary>
 	/// <typeparam name="TSymbol">The type of the symbol to create.</typeparam>
 	/// <param name="syntax">The syntax of the symbol.</param>
-	internal TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() {
+	public TSymbol GetSymbol<TSyntax, TSymbol>(TSyntax syntax, Func<TSyntax, TSymbol> factory) where TSyntax : ISyntaxNode where TSymbol : ISymbol {
 		if (syntaxSymbolBinder.TryGetSymbol(syntax, out var bound))
 			return (TSymbol)bound;
 
-		TSymbol symbol = new() { Syntax = syntax };
+		var symbol = factory(syntax);
 		syntaxSymbolBinder.Bind(syntax, symbol);
 		return symbol;
 	}
+	private TSymbol GetSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() =>
+		BindingContextExtensions.GetSymbol<TSymbol>(this, syntax);
+
 	/// <summary>
-	/// Adds a diagnostic to a symbol.
+	/// Adds a diagnostic.
 	/// </summary>
-	/// <param name="symbol">The to add the diagnostic to.</param>
-	/// <param name="level">The <see cref="DiagnosticLevel"/> of the diagnostic.</param>
+	/// <param name="location">The location of the diagnostic.</param>
 	/// <param name="description">The description of the diagnostic.</param>
-	internal void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) {
-		var textSpan = symbol.Syntax?.GetTextSpan() ?? TextSpan.Empty;
-		var diagnostic = description
-			.ToDiagnostic(textSpan, formatArgs);
-		diagnostics.AddDiagnostic(symbol, diagnostic);
+	/// <param name="formatArgs">The arguments to format the description with.</param>
+	public void AddDiagnostic(TextSpan? location, DiagnosticDescription description, params object?[] formatArgs) {
+		var diagnostic = Diagnostic.Create(description, location, formatArgs);
+		diagnostics.Add(diagnostic);
 
 		if (description.Level == DiagnosticLevel.Error) hasError = true;
 	}
@@ -129,17 +146,34 @@ public sealed partial class Binder {
 	/// <param name="identifier">The identifier to get the symbol of.</param>
 	/// <returns>A <see cref="IIdentifiableSymbol"/> corresponding to
 	/// <paramref name="identifier"/>, or <see langword="null"/> if none was found.</returns>
-	internal IIdentifiableSymbol? GetIdentifier(string identifier) {
-		var label = LabelBinder.GetSymbol(identifier);
-		if (label is not null) return label;
+	public IIdentifiableSymbol? GetIdentifier(string identifier) =>
+		LabelBinder.GetSymbol(identifier) ??
+		VariableBinder.GetSymbol(identifier) ??
+		FunctionBinder.GetSymbol(identifier) ??
+		(IIdentifiableSymbol?)null;
 
-		var variable = VariableBinder.GetSymbol(identifier);
-		if (variable is not null) return variable;
+	/// <summary>
+	/// Gets the parent node of a specified <see cref="ISymbol"/>.
+	/// </summary>
+	/// <param name="symbol">The <see cref="ISymbol"/>
+	/// to get the parent of.</param>
+	/// <returns>The parent of <paramref name="symbol"/>, or <see langword="null"/>
+	/// if the node is the root of the context.</returns>
+	public ISymbol? GetParent(ISymbol symbol) =>
+		(symbolParentMap ?? throw new InvalidOperationException("Parent map uninitialized."))
+		.GetParent(symbol);
 
-		var function = FunctionBinder.GetSymbol(identifier);
-		if (function is not null) return function;
-
-		return null;
-	}
+	/// <summary>
+	/// Binds a <see cref="IExpressionSyntax"/> into a <see cref="IExpressionSymbol"/>
+	/// using the current <see cref="Binder"/> as the context.
+	/// </summary>
+	/// <param name="syntax">The syntax to bind.</param>
+	/// <param name="flags">The <see cref="ExpressionBindingFlags"/>
+	/// to use to determine what is permitted in the expression.</param>
+	/// <returns></returns>
+	public IExpressionSymbol BindExpression(
+		IExpressionSyntax syntax,
+		ExpressionBindingFlags flags = ExpressionBindingFlags.None
+	) => ExpressionBinder.BindExpression(syntax, this, flags);
 
 }

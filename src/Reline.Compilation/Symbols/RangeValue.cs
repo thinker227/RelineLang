@@ -32,6 +32,15 @@ public readonly struct RangeValue : IEquatable<RangeValue> {
 
 
 
+	/// <summary>
+	/// Returns whether a specified value is within the bounds of the range.
+	/// </summary>
+	/// <param name="value">The value to check.</param>
+	/// <returns>Whether <paramref name="value"/> is between
+	/// <see cref="Start"/> (inclusive) and <see cref="End"/> (inclusive).</returns>
+	public bool Contains(int value) =>
+		value >= Start && value <= End;
+
 	public bool Equals(RangeValue other) =>
 		Start == other.Start && End == other.End;
 	public override bool Equals(object? obj) =>

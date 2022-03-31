@@ -8,7 +8,18 @@ public sealed class ReturnStatementSymbol : SymbolNode, IStatementSymbol {
 	/// <summary>
 	/// The expression being returned.
 	/// </summary>
-	public IExpressionSymbol Expression { get; set; } = null!;
+	public IExpressionSymbol Expression { get; }
+	/// <summary>
+	/// The function being returned from.
+	/// </summary>
+	public FunctionSymbol? Function { get; }
+
+
+
+	internal ReturnStatementSymbol(IExpressionSymbol expression, FunctionSymbol? function) {
+		Expression = expression;
+		Function = function;
+	}
 
 
 

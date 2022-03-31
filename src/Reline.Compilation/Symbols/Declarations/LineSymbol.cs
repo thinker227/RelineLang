@@ -21,7 +21,6 @@ public sealed class LineSymbol : SymbolNode {
 
 
 	public override IEnumerable<ISymbol> GetChildren() {
-		if (Label is not null) yield return Label;
 		if (Statement is not null) yield return Statement;
 	}
 

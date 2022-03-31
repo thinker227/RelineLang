@@ -1,9 +1,10 @@
 ﻿using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Symbols;
+using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Binding;
 
-public partial class Binder {
+internal partial class Binder {
 
 	/// <summary>
 	/// Binds an <see cref="IStatementSyntax"/> into an <see cref="IStatementSymbol"/>.
@@ -24,8 +25,7 @@ public partial class Binder {
 	/// </summary>
 	private ExpressionStatementSymbol BindExpressionStatement(ExpressionStatementSyntax syntax) {
 		var expression = BindExpression(syntax.Expression);
-		var symbol = CreateSymbol<ExpressionStatementSymbol>(syntax);
-		symbol.Expression = expression;
+		var symbol = Factory.CreateExpressionStatement(syntax, expression);
 		return symbol;
 	}
 	/// <summary>
@@ -40,9 +40,7 @@ public partial class Binder {
 
 		// If the variable is null and is missing then
 		// it has already been reported as an error
-		var symbol = CreateSymbol<AssignmentStatementSymbol>(syntax);
-		symbol.Variable = variable;
-		symbol.Initializer = initializer;
+		var symbol = Factory.CreateAssignmentStatement(syntax, variable, initializer);
 		variable?.References.Add(symbol);
 		return symbol;
 	}
@@ -54,36 +52,18 @@ public partial class Binder {
 		var source = BindExpression(syntax.Source);
 		var target = BindExpression(syntax.Target);
 
-		switch (syntax) {
-			case MoveStatementSyntax:
-				var move = CreateSymbol<MoveStatementSymbol>(syntax);
-				move.Source = source;
-				move.Target = target;
-				return move;
-			case SwapStatementSyntax:
-				var swap = CreateSymbol<SwapStatementSymbol>(syntax);
-				swap.Source = source;
-				swap.Target = target;
-				return swap;
-			case CopyStatementSyntax:
-				var copy = CreateSymbol<CopyStatementSymbol>(syntax);
-				copy.Source = source;
-				copy.Target = target;
-				return copy;
-		}
-
-		throw new NotSupportedException("Manipulation statement type {syntax.GetType().Name} is not supported.");
+		return syntax switch {
+			MoveStatementSyntax ms => Factory.CreateMoveStatement(ms, source, target),
+			SwapStatementSyntax ss => Factory.CreateSwapStatement(ss, source, target),
+			CopyStatementSyntax cs => Factory.CreateCopyStatement(cs, source, target),
+			_ => throw new NotSupportedException($"Manipulation statement type {syntax.GetType().Name} is not supported."),
+		};
 	}
 	/// <summary>
 	/// Binds a <see cref="FunctionDeclarationStatementSyntax"/> into a <see cref="FunctionDeclarationStatementSymbol"/>.
 	/// </summary>
-	private FunctionDeclarationStatementSymbol BindFunctionDeclarationStatement(FunctionDeclarationStatementSyntax syntax) {
-		var symbol = CreateSymbol<FunctionDeclarationStatementSymbol>(syntax);
-		// Functions have already been bound from function declarations so function will never be null.
-		var function = FunctionBinder.GetSymbol(syntax.Identifier.Text)!;
-		symbol.Function = function;
-		return symbol;
-	}
+	private FunctionDeclarationStatementSymbol BindFunctionDeclarationStatement(FunctionDeclarationStatementSyntax syntax) =>
+		GetSymbol<FunctionDeclarationStatementSymbol>(syntax);
 	/// <summary>
 	/// Binds a <see cref="ReturnStatementSyntax"/>
 	/// into a <see cref="ReturnStatementSymbol"/>.
@@ -91,10 +71,14 @@ public partial class Binder {
 	private ReturnStatementSymbol BindReturnStatement(ReturnStatementSyntax syntax) {
 		var expression = BindExpression(syntax.Expression);
 
-		// Report error if return statement is not within a function
+		int line = SyntaxTree.GetAncestor<LineSyntax>(syntax)!.LineNumber;
+		var function = FunctionBinder.GetDefinedFunctions()
+			.FirstOrDefault(f => f.Range.Contains(line));
+		if (function is null) {
+			this.AddDiagnostic(syntax, CompilerDiagnostics.returnOutsideFunction);
+		}
 
-		var symbol = CreateSymbol<ReturnStatementSymbol>(syntax);
-		symbol.Expression = expression;
+		var symbol = Factory.CreateReturnStatement(syntax, expression, function);
 		return symbol;
 	}
 
