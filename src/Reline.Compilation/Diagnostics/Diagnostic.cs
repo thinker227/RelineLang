@@ -5,10 +5,10 @@
 /// </summary>
 public readonly record struct Diagnostic {
 
-	/// <summary>
-	/// The <see cref="DiagnosticDescription"/> of the diagnostic.
-	/// </summary>
-	public DiagnosticDescription Description { get; }
+	private readonly DiagnosticDescription description;
+	
+	
+
 	/// <summary>
 	/// The span in the source text of the diagnostic,
 	/// or <see langword="null"/> if the diagnostic does not have a specific location.
@@ -17,14 +17,22 @@ public readonly record struct Diagnostic {
 	/// <summary>
 	/// The formatted description of the diagnostic.
 	/// </summary>
-	public string FormattedDescription { get; } = "No description";
+	public string Description { get; } = "No description";
+	/// <summary>
+	/// The severity level of the diagnostic.
+	/// </summary>
+	public DiagnosticLevel Level => description.Level;
+	/// <summary>
+	/// The unique error code of the diagnostic type.
+	/// </summary>
+	public string ErrorCode => description.ErrorCode;
 
 
 
 	private Diagnostic(DiagnosticDescription description, TextSpan? location, string formattedDescription) {
-		Description = description;
+		this.description = description;
 		Location = location;
-		FormattedDescription = formattedDescription;
+		Description = formattedDescription;
 	}
 
 
@@ -41,9 +49,16 @@ public readonly record struct Diagnostic {
 		return new Diagnostic(description, location, formattedDescription);
 	}
 
-	public override string ToString() {
-		string locationString = Location is not null ? $"({Location}) " : "";
-		return $"{locationString}{Description.ErrorCode}: {FormattedDescription}";
-	}
+	/// <summary>
+	/// Formats the diagnostic as a string.
+	/// </summary>
+	public override string ToString() =>
+		$"{ErrorCode}: {Description}";
+	public bool Equals(Diagnostic other) =>
+		description.Equals(other.Description) &&
+		(Location?.Equals(other.Location) ?? other.Location is null) &&
+		Description == other.Description;
+	public override int GetHashCode() =>
+		HashCode.Combine(description, Location, Description);
 
 }

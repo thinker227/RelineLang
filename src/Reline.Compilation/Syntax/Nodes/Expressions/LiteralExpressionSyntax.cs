@@ -5,5 +5,6 @@ public sealed record class LiteralExpressionSyntax(
 ) : SyntaxNode, IExpressionSyntax {
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitLiteralExpression(this);
+	public override TextSpan GetTextSpan() => Literal.Span;
 
 }

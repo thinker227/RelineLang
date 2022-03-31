@@ -5,5 +5,6 @@ public sealed record class IdentifierExpressionSyntax(
 ) : SyntaxNode, IExpressionSyntax {
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitIdentifierExpression(this);
+	public override TextSpan GetTextSpan() => Identifier.Span;
 
 }

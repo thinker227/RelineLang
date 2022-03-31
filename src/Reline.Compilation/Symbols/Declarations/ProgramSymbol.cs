@@ -20,7 +20,7 @@ public sealed class ProgramSymbol : SymbolNode {
 	/// <summary>
 	/// The full range of the program.
 	/// </summary>
-	public RangeLiteral FullRange => new(StartLine, EndLine);
+	public RangeValue FullRange => new(StartLine, EndLine);
 	/// <summary>
 	/// The declared labels in the program.
 	/// </summary>
@@ -33,5 +33,10 @@ public sealed class ProgramSymbol : SymbolNode {
 	/// The declared functions in the program.
 	/// </summary>
 	public IList<FunctionSymbol> Functions { get; } = new List<FunctionSymbol>();
+
+
+	// Labels, variables and functions are references and not children
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Lines; 
 
 }

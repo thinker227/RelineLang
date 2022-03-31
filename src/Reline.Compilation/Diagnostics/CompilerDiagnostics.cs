@@ -9,7 +9,7 @@ internal static class CompilerDiagnostics {
 	/// </summary>
 	public static readonly DiagnosticDescription unexpectedCharacter = new() {
 		ErrorCode = "RL0001",
-		Description = "Unexpected character '{0}' at position {1} in source",
+		Description = "Unexpected character '{0}'",
 		Level = DiagnosticLevel.Error
 	};
 	/// <summary>

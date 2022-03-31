@@ -25,6 +25,9 @@ public sealed class VariableSymbol : SymbolNode, IVariableSymbol {
 
 
 
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Enumerable.Empty<ISymbol>();
+
 	public bool Equals(IVariableSymbol? other) =>
 		other is VariableSymbol &&
 		Identifier == other.Identifier;
@@ -49,13 +52,16 @@ public sealed class ParameterSymbol : SymbolNode, IVariableSymbol {
 	/// <summary>
 	/// The range the parameter is valid within.
 	/// </summary>
-	public RangeLiteral Range { get; set; }
+	public RangeValue Range { get; set; }
 	/// <summary>
 	/// The function the parameter is a parameter to.
 	/// </summary>
 	public FunctionSymbol Function { get; set; } = null!;
 
 
+
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Enumerable.Empty<ISymbol>();
 
 	public bool Equals(IVariableSymbol? other) =>
 		other is ParameterSymbol parameter &&

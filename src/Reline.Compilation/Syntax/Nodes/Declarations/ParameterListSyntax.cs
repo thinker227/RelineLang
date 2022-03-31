@@ -7,5 +7,7 @@ public sealed record class ParameterListSyntax(
 ) : SyntaxNode {
 
 	public override T Accept<T>(ISyntaxVisitor<T> visitor) => visitor.VisitParameterList(this);
+	public override TextSpan GetTextSpan() =>
+		TextSpan.FromBounds(OpenBracketToken.Span, CloseBracketToken.Span);
 
 }

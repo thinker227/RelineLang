@@ -1,9 +1,9 @@
 ﻿namespace Reline.Compilation.Symbols;
 
 /// <summary>
-/// Represents a range literal.
+/// Represents a range value.
 /// </summary>
-public readonly struct RangeLiteral : IEquatable<RangeLiteral> {
+public readonly struct RangeValue : IEquatable<RangeValue> {
 
 	/// <summary>
 	/// The start location of the range, inclusive.
@@ -21,21 +21,21 @@ public readonly struct RangeLiteral : IEquatable<RangeLiteral> {
 
 
 	/// <summary>
-	/// Initializes a new <see cref="RangeLiteral"/> instance.
+	/// Initializes a new <see cref="RangeValue"/> instance.
 	/// </summary>
 	/// <param name="start">The start location of the range, inclusive.</param>
 	/// <param name="end">The end location of the range, inclusive.</param>
-	public RangeLiteral(int start, int end) {
+	public RangeValue(int start, int end) {
 		Start = start;
 		End = end;
 	}
 
 
 
-	public bool Equals(RangeLiteral other) =>
+	public bool Equals(RangeValue other) =>
 		Start == other.Start && End == other.End;
 	public override bool Equals(object? obj) =>
-		obj is RangeLiteral other && Equals(other);
+		obj is RangeValue other && Equals(other);
 	public override int GetHashCode() =>
 		HashCode.Combine(Start, End);
 	public override string ToString() =>
@@ -43,9 +43,9 @@ public readonly struct RangeLiteral : IEquatable<RangeLiteral> {
 
 
 
-	public static bool operator ==(RangeLiteral a, RangeLiteral b) =>
+	public static bool operator ==(RangeValue a, RangeValue b) =>
 		a.Equals(b);
-	public static bool operator !=(RangeLiteral a, RangeLiteral b) =>
+	public static bool operator !=(RangeValue a, RangeValue b) =>
 		!a.Equals(b);
 
 }

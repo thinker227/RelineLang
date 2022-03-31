@@ -9,4 +9,6 @@ public abstract class SymbolNode : ISymbol {
 
 	public ISyntaxNode? Syntax { get; init; }
 
+	public abstract IEnumerable<ISymbol> GetChildren();
+
 }

@@ -10,7 +10,13 @@ public sealed class IdentifierExpressionSymbol : SymbolNode, IExpressionSymbol {
 	/// </summary>
 	public IIdentifiableSymbol Identifier { get; set; } = null!;
 
+
+
 	public T Accept<T>(IExpressionVisitor<T> visitor) =>
 		visitor.VisitVariable(this);
+
+	public override IEnumerable<ISymbol> GetChildren() {
+		yield return Identifier;
+	}
 
 }

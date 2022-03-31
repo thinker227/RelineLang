@@ -20,7 +20,7 @@ public sealed class FunctionSymbol : SymbolNode, IIdentifiableSymbol {
 	/// <summary>
 	/// The range of the function.
 	/// </summary>
-	public RangeLiteral Range { get; set; }
+	public RangeValue Range { get; set; }
 	/// <summary>
 	/// The lines of the body of the function.
 	/// </summary>
@@ -33,5 +33,15 @@ public sealed class FunctionSymbol : SymbolNode, IIdentifiableSymbol {
 	/// The references to the function.
 	/// </summary>
 	public IList<ISymbol> References { get; } = new List<ISymbol>();
+
+
+
+	public override IEnumerable<ISymbol> GetChildren() {
+		// The declaration and references are
+		// more or less parents rather than children
+		yield return RangeExpression;
+		foreach (var line in Body) yield return line;
+		foreach (var param in Parameters) yield return param;
+	}
 
 }

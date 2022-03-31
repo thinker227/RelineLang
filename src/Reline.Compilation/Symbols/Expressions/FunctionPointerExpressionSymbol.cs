@@ -10,6 +10,12 @@ public sealed class FunctionPointerExpressionSymbol : SymbolNode, IExpressionSym
 	/// </summary>
 	public FunctionSymbol Function { get; set; } = null!;
 
+
+
 	public T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitFunctionPointer(this);
+
+	public override IEnumerable<ISymbol> GetChildren() {
+		yield return Function;
+	}
 
 }

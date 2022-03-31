@@ -14,7 +14,14 @@ public sealed class FunctionInvocationExpressionSymbol : SymbolNode, IExpression
 	/// </summary>
 	public ICollection<IExpressionSymbol> Arguments { get; } = new List<IExpressionSymbol>();
 
+
+
 	public T Accept<T>(IExpressionVisitor<T> visitor) =>
 		visitor.VisitFunctionInvocation(this);
+
+	public override IEnumerable<ISymbol> GetChildren() {
+		yield return Function;
+		foreach (var arg in Arguments) yield return arg;
+	}
 
 }

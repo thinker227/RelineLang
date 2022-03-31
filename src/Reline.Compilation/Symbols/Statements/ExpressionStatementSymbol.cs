@@ -10,4 +10,10 @@ public sealed class ExpressionStatementSymbol : SymbolNode, IStatementSymbol {
 	/// </summary>
 	public IExpressionSymbol Expression { get; set; } = null!;
 
+
+
+	public override IEnumerable<ISymbol> GetChildren() {
+		yield return Expression;
+	}
+
 }

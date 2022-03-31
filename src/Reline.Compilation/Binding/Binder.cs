@@ -1,5 +1,5 @@
 ﻿using Reline.Compilation.Diagnostics;
-using Reline.Compilation.Parsing;
+using Reline.Compilation.Syntax;
 using Reline.Compilation.Syntax.Nodes;
 using Reline.Compilation.Symbols;
 
@@ -73,8 +73,8 @@ public sealed partial class Binder {
 	/// <returns>An <see cref="IOperationResult{T}"/>
 	/// containing the bound <see cref="SymbolTree"/>.</returns>
 	public static SymbolTree BindTree(SyntaxTree tree) {
-		Binder symbolCompiler = new(tree);
-		var result = symbolCompiler.BindTree();
+		Binder binder = new(tree);
+		var result = binder.BindTree();
 		return result;
 	}
 	/// <summary>
