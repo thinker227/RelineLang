@@ -18,11 +18,11 @@ public class DiagnosticEqualityComparer : IEqualityComparer<Diagnostic> {
 		(Comparison.HasFlag(DiagnosticComparison.IgnoreLocation) ||
 		x.Location == y.Location) &&
 
-		(Comparison.HasFlag(DiagnosticComparison.IgnoreDescription) ||
-		x.Description == y.Description) &&
+		(Comparison.HasFlag(DiagnosticComparison.IgnoreInternalDescription) ||
+		x.InternalDescription == y.InternalDescription) &&
 
 		(Comparison.HasFlag(DiagnosticComparison.IgnoreFormatting) ||
-		x.FormattedDescription == y.FormattedDescription);
+		x.Description == y.Description);
 
 	public int GetHashCode(Diagnostic obj) => throw new NotSupportedException();
 
@@ -31,6 +31,6 @@ public class DiagnosticEqualityComparer : IEqualityComparer<Diagnostic> {
 [Flags]
 public enum DiagnosticComparison {
 	IgnoreLocation = 1,
-	IgnoreDescription = 2,
+	IgnoreInternalDescription = 2,
 	IgnoreFormatting = 4,
 }
