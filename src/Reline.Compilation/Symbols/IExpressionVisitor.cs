@@ -13,5 +13,6 @@ public interface IExpressionVisitor<out T> {
 	T VisitFunctionInvocation(FunctionInvocationExpressionSymbol symbol);
 	T VisitFunctionPointer(FunctionPointerExpressionSymbol symbol);
 	T VisitVariable(IdentifierExpressionSymbol symbol);
+	T VisitBad(BadExpressionSymbol symbol);
 
 }

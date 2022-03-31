@@ -8,31 +8,28 @@ public sealed class ProgramSymbol : SymbolNode {
 	/// <summary>
 	/// The lines of the program.
 	/// </summary>
-	public LineList Lines { get; } = new();
+	public LineSymbol[] Lines { get; }
 	/// <summary>
 	/// The line number of first line of the program.
 	/// </summary>
-	public int StartLine { get; set; }
+	public int StartLine { get; }
 	/// <summary>
 	/// The line number of the last line of the program.
 	/// </summary>
-	public int EndLine { get; set; }
+	public int EndLine { get; }
 	/// <summary>
 	/// The full range of the program.
 	/// </summary>
 	public RangeValue FullRange => new(StartLine, EndLine);
-	/// <summary>
-	/// The declared labels in the program.
-	/// </summary>
-	public IList<LabelSymbol> Labels { get; } = new List<LabelSymbol>();
-	/// <summary>
-	/// The declared variables in the program.
-	/// </summary>
-	public IList<IVariableSymbol> Variables { get; } = new List<IVariableSymbol>();
-	/// <summary>
-	/// The declared functions in the program.
-	/// </summary>
-	public IList<FunctionSymbol> Functions { get; } = new List<FunctionSymbol>();
+
+
+
+	internal ProgramSymbol(int startLine, int endLine) {
+		StartLine = startLine;
+		EndLine = endLine;
+		Lines = new LineSymbol[FullRange.Length];
+	}
+
 
 
 	// Labels, variables and functions are references and not children

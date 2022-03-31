@@ -10,15 +10,23 @@ public sealed class BinaryExpressionSymbol : SymbolNode, IExpressionSymbol {
 	/// <summary>
 	/// The left operand of the expression.
 	/// </summary>
-	public IExpressionSymbol Left { get; set; } = null!;
+	public IExpressionSymbol Left { get; }
 	/// <summary>
 	/// The right operand of the expression.
 	/// </summary>
-	public IExpressionSymbol Right { get; set; } = null!;
+	public IExpressionSymbol Right { get; }
 	/// <summary>
 	/// The operator of the expression.
 	/// </summary>
-	public BinaryOperatorType OperatorType { get; set; }
+	public BinaryOperatorType OperatorType { get; }
+
+
+
+	internal BinaryExpressionSymbol(IExpressionSymbol left, BinaryOperatorType operatorType, IExpressionSymbol right) {
+		Left = left;
+		OperatorType = operatorType;
+		Right = right;
+	}
 
 
 

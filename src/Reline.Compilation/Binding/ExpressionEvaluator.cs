@@ -1,5 +1,6 @@
 ﻿using Reline.Compilation.Diagnostics;
 using Reline.Compilation.Symbols;
+using Reline.Compilation.Syntax.Nodes;
 
 namespace Reline.Compilation.Binding;
 
@@ -8,13 +9,16 @@ namespace Reline.Compilation.Binding;
 /// </summary>
 internal sealed class ExpressionEvaluator : IExpressionVisitor<BoundValue> {
 
-	private readonly Binder binder;
+	private readonly ISemanticContext context;
+	private readonly IDiagnosticContext? diagnostics;
 
 
 
-	public ExpressionEvaluator(Binder binder) {
-		this.binder = binder;
+	internal ExpressionEvaluator(ISemanticContext context, IDiagnosticContext? diagnostics) {
+		this.context = context;
+		this.diagnostics = diagnostics;
 	}
+	public ExpressionEvaluator(ISemanticContext context) : this(context, null) { }
 
 
 
@@ -74,15 +78,12 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<BoundValue> {
 		return new();
 	}
 	public BoundValue VisitKeyword(KeywordExpressionSymbol symbol) => symbol.KeywordType switch {
-		// This is not a good way to evaluate 'here' expressions
-		// because the expression being evaluated may not always
-		// be on the current line, ex. when evaluating expression
-		// during analysis or refactoring when the binder is not
-		// doing anything. For this, a proper method to get an
-		// ancestor symbol of a specified type would be required.
-		KeywordExpressionType.Here => binder.CurrentLine!.LineNumber,
-		KeywordExpressionType.Start => binder.ProgramRoot.StartLine,
-		KeywordExpressionType.End => binder.ProgramRoot.EndLine,
+		KeywordExpressionType.Here =>
+			context.GetAncestor<LineSymbol>(symbol)!.LineNumber,
+		KeywordExpressionType.Start =>
+			context.Root.StartLine,
+		KeywordExpressionType.End =>
+			context.Root.EndLine,
 		_ => new(),
 	};
 	public BoundValue VisitLiteral(LiteralExpressionSymbol symbol) =>
@@ -106,8 +107,10 @@ internal sealed class ExpressionEvaluator : IExpressionVisitor<BoundValue> {
 
 		return new();
 	}
+	public BoundValue VisitBad(BadExpressionSymbol symbol) =>
+		new();
 
 	private void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) =>
-		binder.AddDiagnostic(symbol, description, formatArgs);
+		diagnostics?.AddDiagnostic(symbol, description, formatArgs);
 
 }

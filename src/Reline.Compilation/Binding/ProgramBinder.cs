@@ -3,7 +3,7 @@ using Reline.Compilation.Syntax.Nodes;
 
 namespace Reline.Compilation.Binding;
 
-public partial class Binder {
+internal partial class Binder {
 
 	/// <summary>
 	/// Partially binds a <see cref="ProgramSyntax"/>
@@ -15,9 +15,7 @@ public partial class Binder {
 	/// </remarks>
 	private ProgramSymbol BindProgramPartialFromTree() {
 		var syntax = SyntaxTree.Root;
-		var symbol = CreateSymbol<ProgramSymbol>(syntax);
-		symbol.StartLine = 1;
-		symbol.EndLine = syntax.Lines.Length;
+		var symbol = Factory.CreateProgram(syntax);
 		BindLinesPartial(symbol);
 		return symbol;
 	}
@@ -39,7 +37,7 @@ public partial class Binder {
 		var lines = ((ProgramSyntax)program.Syntax!).Lines;
 		foreach (var lineSyntax in lines) {
 			var line = BindLinePartial(lineSyntax);
-			program.Lines[line.LineNumber] = line;
+			program.Lines[line.LineNumber - 1] = line;
 		}
 	}
 	/// <summary>
@@ -49,7 +47,7 @@ public partial class Binder {
 	/// Only binds <see cref="LineSymbol.LineNumber"/>.
 	/// </remarks>
 	private LineSymbol BindLinePartial(LineSyntax syntax) {
-		var symbol = CreateSymbol<LineSymbol>(syntax);
+		var symbol = GetSymbol<LineSymbol>(syntax);
 		symbol.LineNumber = syntax.LineNumber;
 		return symbol;
 	}
@@ -57,7 +55,6 @@ public partial class Binder {
 	/// Fully binds a <see cref="LineSymbol"/>.
 	/// </summary>
 	private void BindLine(LineSymbol symbol) {
-		CurrentLine = symbol;
 		var statement = ((LineSyntax)symbol.Syntax!).Statement;
 		if (statement is not null)
 			symbol.Statement = BindStatement(statement);

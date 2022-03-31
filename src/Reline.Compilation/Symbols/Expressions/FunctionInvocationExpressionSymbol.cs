@@ -4,24 +4,29 @@
 /// Represents a function invocation expression.
 /// </summary>
 public sealed class FunctionInvocationExpressionSymbol : SymbolNode, IExpressionSymbol {
-
+	
 	/// <summary>
 	/// The function being invoked.
 	/// </summary>
-	public FunctionSymbol Function { get; set; } = null!;
+	public IFunctionSymbol Function { get; }
 	/// <summary>
 	/// The arguments passed to the function invocation.
 	/// </summary>
-	public ICollection<IExpressionSymbol> Arguments { get; } = new List<IExpressionSymbol>();
+	public IReadOnlyCollection<IExpressionSymbol> Arguments { get; }
+
+
+
+	internal FunctionInvocationExpressionSymbol(IFunctionSymbol function, IReadOnlyCollection<IExpressionSymbol> arguments) {
+		Function = function;
+		Arguments = arguments;
+	}
 
 
 
 	public T Accept<T>(IExpressionVisitor<T> visitor) =>
 		visitor.VisitFunctionInvocation(this);
 
-	public override IEnumerable<ISymbol> GetChildren() {
-		yield return Function;
-		foreach (var arg in Arguments) yield return arg;
-	}
+	public override IEnumerable<ISymbol> GetChildren() =>
+		Arguments;
 
 }

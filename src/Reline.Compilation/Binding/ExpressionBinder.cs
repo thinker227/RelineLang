@@ -5,33 +5,14 @@ using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Binding;
 
-public partial class Binder {
-
-	/// <summary>
-	/// Binds an <see cref="IExpressionSyntax"/>
-	/// into an <see cref="IExpressionSymbol"/>.
-	/// </summary>
-	/// <param name="syntax">The syntax to bind.</param>
-	/// <param name="flags">The <see cref="ExpressionBindingFlags"/>
-	/// to use when binding the expression.</param>
-	private IExpressionSymbol BindExpression(
-		IExpressionSyntax syntax,
-		ExpressionBindingFlags flags = ExpressionBindingFlags.None
-	) {
-		ExpressionBinder binder = new(flags, this);
-		var expression = binder.BindExpression(syntax);
-		return expression;
-	}
-
-}
-
 /// <summary>
 /// Binds expressions using specified <see cref="ExpressionBindingFlags"/>.
 /// </summary>
 internal sealed class ExpressionBinder {
 
 	private readonly ExpressionBindingFlags flags;
-	private readonly Binder binder;
+	private readonly IBindingContext context;
+	private readonly SymbolFactory factory;
 
 	private bool NoVariables => flags.HasFlag(ExpressionBindingFlags.NoVariables);
 	private bool NoFunctions => flags.HasFlag(ExpressionBindingFlags.NoFunctions);
@@ -41,9 +22,10 @@ internal sealed class ExpressionBinder {
 
 
 
-	public ExpressionBinder(ExpressionBindingFlags flags, Binder binder) {
+	private ExpressionBinder(ExpressionBindingFlags flags, IBindingContext context) {
 		this.flags = flags;
-		this.binder = binder;
+		this.context = context;
+		factory = new(context);
 	}
 
 
@@ -52,7 +34,28 @@ internal sealed class ExpressionBinder {
 	/// Binds an <see cref="IExpressionSyntax"/>
 	/// into an <see cref="IExpressionSymbol"/>.
 	/// </summary>
-	public IExpressionSymbol BindExpression(IExpressionSyntax syntax) {
+	/// <param name="syntax">The syntax to bind.</param>
+	/// <param name="flags">The <see cref="ExpressionBindingFlags"/>
+	/// to use to determine what is permitted in the expression.</param>
+	/// <param name="context">The <see cref="IBindingContext"/> to use
+	/// as the context for getting and creaing symbols and diagnostics.</param>
+	/// <returns>A new <see cref="IExpressionSymbol"/> bound from
+	/// <paramref name="syntax"/>.</returns>
+	public static IExpressionSymbol BindExpression(
+		IExpressionSyntax syntax,
+		IBindingContext context,
+		ExpressionBindingFlags flags = ExpressionBindingFlags.None
+	) {
+		ExpressionBinder expressionBinder = new(flags, context);
+		var expression = expressionBinder.BindExpression(syntax);
+		return expression;
+	}
+
+	/// <summary>
+	/// Binds an <see cref="IExpressionSyntax"/>
+	/// into an <see cref="IExpressionSymbol"/>.
+	/// </summary>
+	private IExpressionSymbol BindExpression(IExpressionSyntax syntax) {
 		var symbol = syntax switch {
 			UnaryExpressionSyntax s => BindUnary(s),
 			BinaryExpressionSyntax s => BindBinary(s),
@@ -71,26 +74,26 @@ internal sealed class ExpressionBinder {
 	}
 
 	private UnaryExpressionSymbol BindUnary(UnaryExpressionSyntax syntax) {
-		var symbol = CreateSymbol<UnaryExpressionSymbol>(syntax);
-		symbol.OperatorType = BindUnaryOperator(syntax.OperatorToken.Type);
-		symbol.Expression = BindExpression(syntax.Expression);
+		var operatorType = BindUnaryOperator(syntax.OperatorToken.Type);
+		var expression = BindExpression(syntax.Expression);
+		var symbol = factory.CreateUnaryExpression(syntax, expression, operatorType);
 		return symbol;
 	}
 	private BinaryExpressionSymbol BindBinary(BinaryExpressionSyntax syntax) {
-		var symbol = CreateSymbol<BinaryExpressionSymbol>(syntax);
-		symbol.OperatorType = BindBinaryOperator(syntax.OperatorToken.Type);
-		symbol.Left = BindExpression(syntax.Left);
-		symbol.Right = BindExpression(syntax.Right);
+		var operatorType = BindBinaryOperator(syntax.OperatorToken.Type);
+		var left = BindExpression(syntax.Left);
+		var right = BindExpression(syntax.Right);
+		var symbol = factory.CreateBinaryExpression(syntax, left, operatorType, right);
 		return symbol;
 	}
 	private KeywordExpressionSymbol BindKeyword(KeywordExpressionSyntax syntax) {
-		var symbol = CreateSymbol<KeywordExpressionSymbol>(syntax);
-		symbol.KeywordType = BindKeywordType(syntax.Keyword.Type);
+		var keywordType = BindKeywordType(syntax.Keyword.Type);
+		var symbol = factory.CreateKeywordExpression(syntax, keywordType);
 		return symbol;
 	}
 	private LiteralExpressionSymbol BindLiteral(LiteralExpressionSyntax syntax) {
-		var symbol = CreateSymbol<LiteralExpressionSymbol>(syntax);
-		symbol.Literal = BindLiteralValue(syntax.Literal.Literal ?? 0);
+		var literal = BindLiteralValue(syntax.Literal.Literal ?? 0);
+		var symbol = factory.CreateLiteralExpression(syntax, literal);
 		return symbol;
 	}
 	private IExpressionSymbol BindGrouping(GroupingExpressionSyntax syntax) =>
@@ -104,10 +107,9 @@ internal sealed class ExpressionBinder {
 
 		// Try bind labels immediately if labels are treated as constant
 		if (LabelsAsConstant) {
-			var labelSymbol = binder.LabelBinder.GetSymbol(syntax.Identifier.Text);
-			if (labelSymbol is not null) {
-				var labelIdentifierSymbol = CreateSymbol<IdentifierExpressionSymbol>(syntax);
-				labelIdentifierSymbol.Identifier = labelSymbol;
+			var labelSymbol = context.GetIdentifier(syntax.Identifier.Text);
+			if (labelSymbol is LabelSymbol) {
+				var labelIdentifierSymbol = factory.CreateIdentifierExpression(syntax, labelSymbol);
 				return labelIdentifierSymbol;
 			}
 		}
@@ -117,7 +119,7 @@ internal sealed class ExpressionBinder {
 			return BadExpression(syntax, CompilerDiagnostics.disallowedNonConstants);
 		}
 
-		var identifierSymbol = binder.GetIdentifier(identifier);
+		var identifierSymbol = context.GetIdentifier(identifier);
 
 		switch (identifierSymbol) {
 			case null:
@@ -127,19 +129,10 @@ internal sealed class ExpressionBinder {
 				return BadExpression(syntax, CompilerDiagnostics.uninvokedFunction);
 		}
 
-		var symbol = CreateSymbol<IdentifierExpressionSymbol>(syntax);
-		symbol.Identifier = identifierSymbol;
+		var symbol = factory.CreateIdentifierExpression(syntax, identifierSymbol);
 
-		switch (identifierSymbol) {
-			case LabelSymbol label:
-				label.References.Add(symbol);
-				break;
-			case VariableSymbol variable:
-				variable.References.Add(symbol);
-				break;
-			case ParameterSymbol parameter:
-				parameter.References.Add(symbol);
-				break;
+		if (identifierSymbol is IDefinedIdentifiableSymbol defined) {
+			defined.References.Add(symbol);
 		}
 
 		return symbol;
@@ -155,7 +148,7 @@ internal sealed class ExpressionBinder {
 		}
 
 		string identifier = syntax.Identifier.Text;
-		var identifierSymbol = binder.GetIdentifier(identifier);
+		var identifierSymbol = context.GetIdentifier(identifier);
 
 		List<IExpressionSymbol> arguments = new();
 		foreach (var argument in syntax.Arguments)
@@ -163,17 +156,19 @@ internal sealed class ExpressionBinder {
 
 		switch (identifierSymbol) {
 			case null:
-				return BadExpression(syntax, CompilerDiagnostics.undeclaredFunction, identifier);
+				context.AddDiagnostic(syntax.Identifier, CompilerDiagnostics.undeclaredFunction, identifier);
+				return BadExpression(syntax);
 
-			case not FunctionSymbol:
+			case not IFunctionSymbol:
 				return BadExpression(syntax, CompilerDiagnostics.invokeNonFunction, identifier);
 		}
 
-		var symbol = CreateSymbol<FunctionInvocationExpressionSymbol>(syntax);
-		var function = (FunctionSymbol)identifierSymbol;
-		symbol.Function = function;
+		var function = (IFunctionSymbol)identifierSymbol;
+		var symbol = factory.CreateFunctionInvocationExpression(syntax, function, arguments);
 		// This is kind of bad
-		foreach (var arg in arguments) function.References.Add(arg);
+		if (function is IDefinedIdentifiableSymbol defined) {
+			foreach (var arg in arguments) defined.References.Add(arg);
+		}
 		return symbol;
 	}
 	private IExpressionSymbol BindFunctionPointer(FunctionPointerExpressionSyntax syntax) {
@@ -194,19 +189,21 @@ internal sealed class ExpressionBinder {
 		}
 
 		string identifier = syntax.Identifier.Text;
-		var identifierSymbol = binder.GetIdentifier(identifier);
+		var identifierSymbol = context.GetIdentifier(identifier);
 
 		switch (identifierSymbol) {
 			case null:
 				return BadExpression(syntax, CompilerDiagnostics.undeclaredFunction, identifier);
 
+			case NativeFunctionSymbol:
+				return BadExpression(syntax, CompilerDiagnostics.nativeFunctionPointer, identifier);
+
 			case not FunctionSymbol:
 				return BadExpression(syntax, CompilerDiagnostics.nonFunctionPointer);
 		}
 
-		var symbol = CreateSymbol<FunctionPointerExpressionSymbol>(syntax);
 		var function = (FunctionSymbol)identifierSymbol;
-		symbol.Function = function;
+		var symbol = factory.CreateFunctionPointerExpression(syntax, function);
 		function.References.Add(function);
 		return symbol;
 	}
@@ -244,16 +241,14 @@ internal sealed class ExpressionBinder {
 	};
 
 	private BadExpressionSymbol BadExpression(ISyntaxNode syntax, DiagnosticDescription description, params object?[] formatArgs) {
-		var symbol = CreateSymbol<BadExpressionSymbol>(syntax);
-		AddDiagnostic(symbol, description, formatArgs);
+		var symbol = GetSymbol<BadExpressionSymbol>(syntax);
+		context.AddDiagnostic(symbol, description, formatArgs);
 		return symbol;
 	}
 	private BadExpressionSymbol BadExpression(ISyntaxNode syntax) =>
-		CreateSymbol<BadExpressionSymbol>(syntax);
-	private TSymbol CreateSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() =>
-		binder.CreateSymbol<TSymbol>(syntax);
-	private void AddDiagnostic(ISymbol symbol, DiagnosticDescription description, params object?[] formatArgs) =>
-		binder.AddDiagnostic(symbol, description, formatArgs);
+		GetSymbol<BadExpressionSymbol>(syntax);
+	private TSymbol GetSymbol<TSymbol>(ISyntaxNode syntax) where TSymbol : SymbolNode, new() =>
+		context.GetSymbol<TSymbol>(syntax);
 
 }
 

@@ -5,4 +5,6 @@
 /// </summary>
 public sealed class MoveStatementSymbol : ManipulationStatementSymbol {
 
+	internal MoveStatementSymbol(IExpressionSymbol source, IExpressionSymbol target)
+		: base(source, target) { }
 }

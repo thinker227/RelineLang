@@ -1,4 +1,5 @@
 ﻿using Reline.Compilation.Syntax.Nodes;
+using Reline.Compilation.Parsing;
 using Reline.Compilation.Diagnostics;
 
 namespace Reline.Compilation.Syntax;
@@ -33,6 +34,14 @@ public sealed class SyntaxTree {
 
 
 	/// <summary>
+	/// Parses a source string into a <see cref="SyntaxTree"/>.
+	/// </summary>
+	/// <param name="source">The source string to parse.</param>
+	/// <returns>A new <see cref="SyntaxTree"/>.</returns>
+	public static SyntaxTree ParseString(string source) =>
+		Parser.ParseString(source);
+
+	/// <summary>
 	/// Gets the parent node of a specified <see cref="ISyntaxNode"/>.
 	/// </summary>
 	/// <param name="node">The <see cref="ISyntaxNode"/>
@@ -48,10 +57,10 @@ public sealed class SyntaxTree {
 	/// <param name="node">The <see cref="ISyntaxNode"/> to get the ancestor of.</param>
 	/// <returns>An <see cref="ISyntaxNode"/> of type <typeparamref name="TAncestor"/>,
 	/// or <see langword="null"/> if none was found.</returns>
-	public TAncestor? GetAncestor<TAncestor>(ISyntaxNode node) where TAncestor : ISyntaxNode => node switch {
+	public TAncestor? GetAncestor<TAncestor>(ISyntaxNode? node) where TAncestor : ISyntaxNode => node switch {
 		null => default,
 		TAncestor a => a,
-		_ => GetAncestor<TAncestor>(node)
+		_ => GetAncestor<TAncestor>(GetParent(node))
 	};
 
 	/// <summary>

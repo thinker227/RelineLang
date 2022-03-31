@@ -8,7 +8,13 @@ public sealed class LiteralExpressionSymbol : SymbolNode, IExpressionSymbol {
 	/// <summary>
 	/// The literal value of the expression.
 	/// </summary>
-	public BoundValue Literal { get; set; }
+	public BoundValue Literal { get; }
+
+
+
+	internal LiteralExpressionSymbol(BoundValue literal) {
+		Literal = literal;
+	}
 
 
 

@@ -6,7 +6,7 @@ using Humanizer;
 
 namespace Reline.Compilation.Parsing;
 
-public sealed class Parser {
+internal sealed class Parser {
 
 	private readonly TokenViewer viewer;
 	private readonly ParserDiagnosticMap diagnostics;

@@ -82,6 +82,29 @@ public readonly struct TextSpan : IEquatable<TextSpan> {
 	public static TextSpan FromBounds(TextSpan start, TextSpan end) =>
 		new(start.Start, end.End);
 
+	/// <summary>
+	/// Returns whether two <see cref="TextSpan"/> instances overlap.
+	/// </summary>
+	/// <param name="a">The first span to check.</param>
+	/// <param name="b">The second span to check.</param>
+	/// <returns>Whether the bounds of <paramref name="a"/> and
+	/// <paramref name="b"/> overlap.</returns>
+	public static bool Overlap(TextSpan a, TextSpan b) =>
+		a.Contains(b.Start) || a.Contains(b.End - 1) ||
+		b.Contains(a.Start) || b.Contains(a.End - 1);
+	public static TextSpan Union(TextSpan a, TextSpan b) =>
+		Overlap(a, b)
+		? new(Math.Max(a.Start, b.Start), Math.Min(a.End, b.End))
+		: Empty;
+	/// <summary>
+	/// Returns whether a given position is within the text span.
+	/// </summary>
+	/// <param name="pos">The position to check.</param>
+	/// <returns>Whether <paramref name="pos"/> is
+	/// within the bounds of the text span.</returns>
+	public bool Contains(int pos) =>
+		pos >= Start && pos < End;
+
 	public bool Equals(TextSpan other) =>
 		Start == other.Start && End == other.End;
 	public override bool Equals(object? obj) =>
@@ -91,6 +114,10 @@ public readonly struct TextSpan : IEquatable<TextSpan> {
 		HashCode.Combine(Start, End);
 	public override string ToString() =>
 		$"{Start}..{End}";
+	public void Deconstruct(out int start, out int end) {
+		start = Start;
+		end = End;
+	}
 
 
 
