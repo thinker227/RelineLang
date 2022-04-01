@@ -6,7 +6,7 @@ namespace Reline.Tests;
 /// Base for testing trees.
 /// </summary>
 /// <typeparam name="TNode">The type of node the class tests.</typeparam>
-public abstract class TreeTestBase<TNode> : TestBase where TNode : INode<TNode> {
+public abstract class TreeTestBase<TNode> where TNode : INode<TNode> {
 
 	private IEnumerator<TNode>? nodeEnumerator;
 

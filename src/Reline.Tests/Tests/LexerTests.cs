@@ -4,7 +4,7 @@ using Reline.Compilation.Diagnostics;
 
 namespace Reline.Tests;
 
-public class LexerTests : TestBase {
+public class LexerTests {
 
 	[Fact]
 	public void LexesRegularTokens() {
