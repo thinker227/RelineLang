@@ -6,13 +6,11 @@ on:
   workflow_dispatch:
   push:
     paths:
-    - '**.cs'
-    - '**.csproj'
+    - 'src/**'
   pull_request:
     branches: [ main ]
     paths:
-    - '**.cs'
-    - '**.csproj'
+    - 'src/**'
 
 env:
   DOTNET_VERSION: '6.0.200' # The .NET SDK version to use
