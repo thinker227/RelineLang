@@ -8,7 +8,7 @@ public class BinderTests : BinderTestBase {
 	public void ExpressionStatementFunctionInvocation() {
 		string source =
 @"Write (""Hello world!"")";
-		SetTree(source);
+		var tree = SetTree(source);
 
 		Node<ProgramSymbol>();
 		{
@@ -24,13 +24,15 @@ public class BinderTests : BinderTestBase {
 			}
 		}
 		End();
+
+		Assert.Empty(tree.Diagnostics);
 	}
 
 	[Fact]
 	public void SimpleLabelsAndVariables() {
 		string source =
 @"a: b = 0";
-		SetTree(source);
+		var tree = SetTree(source);
 
 		Node<ProgramSymbol>();
 		{
@@ -47,6 +49,8 @@ public class BinderTests : BinderTestBase {
 			}
 		}
 		End();
+
+		Assert.Empty(tree.Diagnostics);
 	}
 
 }
