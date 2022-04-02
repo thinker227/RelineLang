@@ -11,15 +11,15 @@ public class ParserTests : ParserTestBase {
 @"
 
 ";
-		SetTree(source);
+		var (r, _) = Parse(source);
 
-		Node<ProgramSyntax>();
+		r.Node<ProgramSyntax>();
 		{
-			Node<LineSyntax>();
-			Node<LineSyntax>();
-			Node<LineSyntax>();
+			r.Node<LineSyntax>();
+			r.Node<LineSyntax>();
+			r.Node<LineSyntax>();
 		}
-		End();
+		r.End();
 	}
 
 	[Fact]
@@ -28,206 +28,206 @@ public class ParserTests : ParserTestBase {
 @"function Foo 2..3 (a b c)
 
 ";
-		SetTree(source);
+		var (r, _) = Parse(source);
 
-		Node<ProgramSyntax>();
+		r.Node<ProgramSyntax>();
 		{
 			// function Foo 2..3 (a b c)
-			Node<LineSyntax>();
+			r.Node<LineSyntax>();
 			{
 				// function
-				Node<FunctionDeclarationStatementSyntax>()
+				r.Node<FunctionDeclarationStatementSyntax>()
 					.IdentifierIs("Foo");
 				// 2..3
 				{
 					// ..
-					Node<BinaryExpressionSyntax>()
+					r.Node<BinaryExpressionSyntax>()
 						.OperatorTypeIs(SyntaxType.DotDotToken);
 					// 2
-					Node<LiteralExpressionSyntax>()
+					r.Node<LiteralExpressionSyntax>()
 						.ValueEquals(2);
 					// 3
-					Node<LiteralExpressionSyntax>()
+					r.Node<LiteralExpressionSyntax>()
 						.ValueEquals(3);
 				}
 				// (a b c)
-				Node<ParameterListSyntax>()
+				r.Node<ParameterListSyntax>()
 					.ParametersAre(new[] { "a", "b", "c" });
 			}
-			Node<LineSyntax>();
-			Node<LineSyntax>();
+			r.Node<LineSyntax>();
+			r.Node<LineSyntax>();
 		}
-		End();
+		r.End();
 	}
 
 	[Fact]
 	public void ParsesSingleParameterFunctionInvocations() {
 		string source = @"Write (""Hello world!"")";
-		SetTree(source);
+		var (r, _) = Parse(source);
 
-		Node<ProgramSyntax>();
+		r.Node<ProgramSyntax>();
 		{
 			// Write ("Hello world!")
-			Node<LineSyntax>();
+			r.Node<LineSyntax>();
 			{
-				Node<ExpressionStatementSyntax>();
+				r.Node<ExpressionStatementSyntax>();
 				{
 					// Write ("Hello world!")
-					Node<FunctionInvocationExpressionSyntax>()
+					r.Node<FunctionInvocationExpressionSyntax>()
 						.IdentifierIs("Write");
 					// ("Hello world!")
 					{
-						Node<LiteralExpressionSyntax>()
+						r.Node<LiteralExpressionSyntax>()
 							.ValueEquals("Hello world!");
 					}
 				}
 			}
 		}
-		End();
+		r.End();
 	}
 	[Fact]
 	public void ParsesMultipleParameterFunctionInvocations() {
 		string source = @"Clamp (foo 1 2)";
-		SetTree(source);
+		var (r, _) = Parse(source);
 
-		Node<ProgramSyntax>();
+		r.Node<ProgramSyntax>();
 		{
 			// Clamp (foo 1 2)
-			Node<LineSyntax>();
+			r.Node<LineSyntax>();
 			{
-				Node<ExpressionStatementSyntax>();
+				r.Node<ExpressionStatementSyntax>();
 				{
 					// Clamp (foo 1 2) 
-					Node<FunctionInvocationExpressionSyntax>()
+					r.Node<FunctionInvocationExpressionSyntax>()
 						.IdentifierIs("Clamp");
 					// (foo 1 2)
 					{
 						// foo
-						Node<IdentifierExpressionSyntax>()
+						r.Node<IdentifierExpressionSyntax>()
 							.IdentifierIs("foo");
 						// 1
-						Node<LiteralExpressionSyntax>()
+						r.Node<LiteralExpressionSyntax>()
 							.ValueEquals(1);
 						// 2
-						Node<LiteralExpressionSyntax>()
+						r.Node<LiteralExpressionSyntax>()
 							.ValueEquals(2);
 					}
 				}
 			}
 		}
-		End();
+		r.End();
 	}
 	[Fact]
 	public void ParsesMultipleExpressionParametersFunctionInvocations() {
 		string source = @"Bar (1+2 (3+4)*3)";
-		SetTree(source);
+		var (r, _) = Parse(source);
 
-		Node<ProgramSyntax>();
+		r.Node<ProgramSyntax>();
 		{
 			// Bar (1+2 (3+4)*3)
-			Node<LineSyntax>();
+			r.Node<LineSyntax>();
 			{
-				Node<ExpressionStatementSyntax>();
+				r.Node<ExpressionStatementSyntax>();
 				{
 					// Bar (1+2 (3+4)*3)
-					Node<FunctionInvocationExpressionSyntax>()
+					r.Node<FunctionInvocationExpressionSyntax>()
 						.IdentifierIs("Bar");
 					// (1+2 (3+4)*3)
 					{
 						// 1+2
 						{
 							// +
-							Node<BinaryExpressionSyntax>()
+							r.Node<BinaryExpressionSyntax>()
 								.OperatorTypeIs(SyntaxType.PlusToken);
 							// 1
-							Node<LiteralExpressionSyntax>()
+							r.Node<LiteralExpressionSyntax>()
 								.ValueEquals(1);
 							// 2
-							Node<LiteralExpressionSyntax>()
+							r.Node<LiteralExpressionSyntax>()
 								.ValueEquals(2);
 						}
 						// (3+4)*3
 						{
 							// *
-							Node<BinaryExpressionSyntax>()
+							r.Node<BinaryExpressionSyntax>()
 								.OperatorTypeIs(SyntaxType.StarToken);
 							// (3+4)
 							{
-								Node<GroupingExpressionSyntax>();
+								r.Node<GroupingExpressionSyntax>();
 								// 3+4
 								{
 									// +
-									Node<BinaryExpressionSyntax>()
+									r.Node<BinaryExpressionSyntax>()
 										.OperatorTypeIs(SyntaxType.PlusToken);
 									// 3
-									Node<LiteralExpressionSyntax>()
+									r.Node<LiteralExpressionSyntax>()
 										.ValueEquals(3);
 									// 4
-									Node<LiteralExpressionSyntax>()
+									r.Node<LiteralExpressionSyntax>()
 										.ValueEquals(4);
 								}
 							}
 							// 3
-							Node<LiteralExpressionSyntax>()
+							r.Node<LiteralExpressionSyntax>()
 								.ValueEquals(3);
 						}
 					}
 				}
 			}
 		}
-		End();
+		r.End();
 	}
 	[Fact]
 	public void ParsesIdentifierParametersFunctionInvocations() {
 		string source = @"Baz (a B (1/2) (c) d)";
-		SetTree(source);
+		var (r, _) = Parse(source);
 
-		Node<ProgramSyntax>();
+		r.Node<ProgramSyntax>();
 		{
 			// Baz (a B (1/2) (c) d)
-			Node<LineSyntax>();
+			r.Node<LineSyntax>();
 			{
-				Node<ExpressionStatementSyntax>();
+				r.Node<ExpressionStatementSyntax>();
 				{
 					// Baz (a B (1/2) (c) d)
-					Node<FunctionInvocationExpressionSyntax>()
+					r.Node<FunctionInvocationExpressionSyntax>()
 						.IdentifierIs("Baz");
 					// (a B (1/2) (c) d)
 					{
 						// a
-						Node<IdentifierExpressionSyntax>()
+						r.Node<IdentifierExpressionSyntax>()
 							.IdentifierIs("a");
 						// B (1/2)
 						{
 							// B (1/2)
-							Node<FunctionInvocationExpressionSyntax>()
+							r.Node<FunctionInvocationExpressionSyntax>()
 								.IdentifierIs("B");
 							// (1/2)
 							{
-								Node<BinaryExpressionSyntax>()
+								r.Node<BinaryExpressionSyntax>()
 									.OperatorTypeIs(SyntaxType.SlashToken);
-								Node<LiteralExpressionSyntax>()
+								r.Node<LiteralExpressionSyntax>()
 									.ValueEquals(1);
-								Node<LiteralExpressionSyntax>()
+								r.Node<LiteralExpressionSyntax>()
 									.ValueEquals(2);
 							}
 						}
 						// (c)
 						{
-							Node<GroupingExpressionSyntax>();
+							r.Node<GroupingExpressionSyntax>();
 							{
-								Node<IdentifierExpressionSyntax>()
+								r.Node<IdentifierExpressionSyntax>()
 									.IdentifierIs("c");
 							}
 						}
 						// d
-						Node<IdentifierExpressionSyntax>()
+						r.Node<IdentifierExpressionSyntax>()
 							.IdentifierIs("d");
 					}
 				}
 			}
 		}
-		End();
+		r.End();
 	}
 
 	[Fact]
@@ -235,128 +235,128 @@ public class ParserTests : ParserTestBase {
 		string source =
 @"1 + 2 * 3 - 4 .. 5 / 6 % 7
 ""a"" < ""b""";
-		SetTree(source);
+		var (r, _) = Parse(source);
 
-		Node<ProgramSyntax>();
+		r.Node<ProgramSyntax>();
 		{
 			// 1 + 2 * 3 - 4 .. 5 / 6 % 7
-			Node<LineSyntax>();
+			r.Node<LineSyntax>();
 			{
-				Node<ExpressionStatementSyntax>();
+				r.Node<ExpressionStatementSyntax>();
 				{
 					// ..
-					Node<BinaryExpressionSyntax>()
+					r.Node<BinaryExpressionSyntax>()
 						.OperatorTypeIs(SyntaxType.DotDotToken);
 					// 1 + 2 * 3 - 4
 					{
 						// -
-						Node<BinaryExpressionSyntax>()
+						r.Node<BinaryExpressionSyntax>()
 							.OperatorTypeIs(SyntaxType.MinusToken);
 						// 1 + 2 * 3
 						{
 							// +
-							Node<BinaryExpressionSyntax>()
+							r.Node<BinaryExpressionSyntax>()
 								.OperatorTypeIs(SyntaxType.PlusToken);
 							{
 								// 1
-								Node<LiteralExpressionSyntax>()
+								r.Node<LiteralExpressionSyntax>()
 									.ValueEquals(1);
 								// 2 * 3
 								{
 									// *
-									Node<BinaryExpressionSyntax>()
+									r.Node<BinaryExpressionSyntax>()
 										.OperatorTypeIs(SyntaxType.StarToken);
 									// 2
-									Node<LiteralExpressionSyntax>()
+									r.Node<LiteralExpressionSyntax>()
 										.ValueEquals(2);
 									// 3
-									Node<LiteralExpressionSyntax>()
+									r.Node<LiteralExpressionSyntax>()
 										.ValueEquals(3);
 								}
 							}
 						}
 						// 4
-						Node<LiteralExpressionSyntax>()
+						r.Node<LiteralExpressionSyntax>()
 							.ValueEquals(4);
 					}
 					// 5 / 6 % 7
 					{
 						// %
-						Node<BinaryExpressionSyntax>()
+						r.Node<BinaryExpressionSyntax>()
 							.OperatorTypeIs(SyntaxType.PercentToken);
 						// 5 / 6
 						{
 							// /
-							Node<BinaryExpressionSyntax>()
+							r.Node<BinaryExpressionSyntax>()
 								.OperatorTypeIs(SyntaxType.SlashToken);
 							// 5
-							Node<LiteralExpressionSyntax>()
+							r.Node<LiteralExpressionSyntax>()
 								.ValueEquals(5);
 							// 6
-							Node<LiteralExpressionSyntax>()
+							r.Node<LiteralExpressionSyntax>()
 								.ValueEquals(6);
 						}
 						// 7
-						Node<LiteralExpressionSyntax>()
+						r.Node<LiteralExpressionSyntax>()
 							.ValueEquals(7);
 					}
 				}
 			}
 			// "a" < "b"
-			Node<LineSyntax>();
+			r.Node<LineSyntax>();
 			{
-				Node<ExpressionStatementSyntax>();
+				r.Node<ExpressionStatementSyntax>();
 				{
 					// <
-					Node<BinaryExpressionSyntax>()
+					r.Node<BinaryExpressionSyntax>()
 						.OperatorTypeIs(SyntaxType.LesserThanToken);
 					// "a"
-					Node<LiteralExpressionSyntax>()
+					r.Node<LiteralExpressionSyntax>()
 						.ValueEquals("a");
 					// "b"
-					Node<LiteralExpressionSyntax>()
+					r.Node<LiteralExpressionSyntax>()
 						.ValueEquals("b");
 				}
 			}
 		}
-		End();
+		r.End();
 	}
 	[Fact]
 	public void ParsesUnaryOperators() {
 		string source =
 @"+1 + -2";
-		SetTree(source);
+		var (r, _) = Parse(source);
 
-		Node<ProgramSyntax>();
+		r.Node<ProgramSyntax>();
 		{
 			// +1 + -2
-			Node<LineSyntax>();
+			r.Node<LineSyntax>();
 			{
-				Node<ExpressionStatementSyntax>();
+				r.Node<ExpressionStatementSyntax>();
 				{
 					// +
-					Node<BinaryExpressionSyntax>()
+					r.Node<BinaryExpressionSyntax>()
 						.OperatorTypeIs(SyntaxType.PlusToken);
 					{
 						// +
-						Node<UnaryExpressionSyntax>()
+						r.Node<UnaryExpressionSyntax>()
 							.OperatorTypeIs(SyntaxType.PlusToken);
 						// 1
-						Node<LiteralExpressionSyntax>()
+						r.Node<LiteralExpressionSyntax>()
 							.ValueEquals(1);
 					}
 					{
 						// -
-						Node<UnaryExpressionSyntax>()
+						r.Node<UnaryExpressionSyntax>()
 							.OperatorTypeIs(SyntaxType.MinusToken);
 						// 2
-						Node<LiteralExpressionSyntax>()
+						r.Node<LiteralExpressionSyntax>()
 							.ValueEquals(2);
 					}
 				}
 			}
 		}
-		End();
+		r.End();
 	}
 
 }

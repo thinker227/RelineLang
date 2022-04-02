@@ -1,31 +1,26 @@
 ﻿using System.Linq;
-using Reline.Compilation.Parsing;
-using Reline.Compilation.Binding;
+using Reline.Compilation.Syntax;
 using Reline.Compilation.Symbols;
 
 namespace Reline.Tests;
 
-public abstract class BinderTestBase : TreeTestBase<ISymbol> {
-
-	private IEnumerable<ISymbol>? enumerable;
+public abstract class BinderTestBase {
 
 	/// <summary>
-	/// Sets the tree to traverse from a source string.
+	/// Gets a <see cref="NodeTestRunner{TNode}"/> and <see cref="SemanticModel"/>
+	/// compiled from a source string.
 	/// </summary>
-	/// <param name="source">The source stirng to generate the tree from.</param>
-	protected SemanticModel SetTree(string source) {
-		var syntaxTree = AssertAsync.CompletesIn(2000, () => Parser.ParseString(source));
-		var semanticTree = AssertAsync.CompletesIn(2000, () => Binder.BindTree(syntaxTree));
-		var symbols = semanticTree.Root.GetDescendants();
-		enumerable = symbols
-			.Prepend(semanticTree.Root)
-			.Select(s => (ISymbol)s);
-		return semanticTree;
+	/// <param name="source">The source text.</param>
+	/// <returns>A <see cref="NodeTestRunner{TNode}"/> of <see cref="ISymbol"/> and
+	/// a <see cref="SemanticModel"/> created from <paramref name="source"/>.</returns>
+	protected static (NodeTestRunner<ISymbol>, SemanticModel) Compile(string source) {
+		var syntaxTree = AssertAsync.CompletesIn(2000, () => SyntaxTree.ParseString(source));
+		var tree = AssertAsync.CompletesIn(2000, () => SemanticModel.BindTree(syntaxTree));
+		var nodes = tree.Root.GetDescendants()
+			.Prepend(tree.Root)
+			.Select(n => (ISymbol)n);
+		NodeTestRunner<ISymbol> runner = new(nodes);
+		return (runner, tree);
 	}
-
-	protected override IEnumerable<ISymbol>? GetEnumerable() =>
-		enumerable;
-	protected override void Reset() =>
-		enumerable = null;
 
 }

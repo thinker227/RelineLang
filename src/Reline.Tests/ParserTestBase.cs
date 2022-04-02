@@ -1,28 +1,25 @@
 ﻿using System.Linq;
-using Reline.Compilation.Parsing;
+using Reline.Compilation.Syntax;
 using Reline.Compilation.Syntax.Nodes;
 
 namespace Reline.Tests;
 
-public abstract class ParserTestBase : TreeTestBase<ISyntaxNode> {
-
-	private IEnumerable<ISyntaxNode>? enumerable;
+public abstract class ParserTestBase {
 
 	/// <summary>
-	/// Sets the tree to traverse from a source string.
+	/// Gets a <see cref="NodeTestRunner{TNode}"/> and <see cref="SyntaxTree"/>
+	/// parsed from a source string.
 	/// </summary>
-	/// <param name="source">The source stirng to generate the tree from.</param>
-	protected void SetTree(string source) {
-		var tree = AssertAsync.CompletesIn(2000, () => Parser.ParseString(source));
-		var nodes = tree.Root.GetDescendants();
-		enumerable = nodes
-			.Prepend(tree.Root) // Test for ProgramSyntax
+	/// <param name="source">The source text.</param>
+	/// <returns>A <see cref="NodeTestRunner{TNode}"/> of <see cref="ISyntaxNode"/> and
+	/// a <see cref="SyntaxTree"/> created from <paramref name="source"/>.</returns>
+	protected static (NodeTestRunner<ISyntaxNode>, SyntaxTree) Parse(string source) {
+		var tree = AssertAsync.CompletesIn(2000, () => SyntaxTree.ParseString(source));
+		var nodes = tree.Root.GetDescendants()
+			.Prepend(tree.Root)
 			.Select(n => (ISyntaxNode)n);
+		NodeTestRunner<ISyntaxNode> runner = new(nodes);
+		return (runner, tree);
 	}
-
-	protected override IEnumerable<ISyntaxNode>? GetEnumerable() =>
-		enumerable;
-	protected override void Reset() =>
-		enumerable = null;
 
 }
