@@ -4,10 +4,11 @@ namespace Reline.Tests;
 
 public class BinderTests : BinderTestBase {
 
+	[Fact]
 	public void LineNumbers() {
-		int lines = 500;
+		const int lines = 200;
 
-		string source = new string('\n', lines - 1);
+		string source = new('\n', lines - 1);
 		var tree = SetTree(source);
 
 		Node<ProgramSymbol>();
@@ -18,6 +19,8 @@ public class BinderTests : BinderTestBase {
 			}
 		}
 		End();
+
+		Assert.Empty(tree.Diagnostics);
 	}
 
 	[Fact]
