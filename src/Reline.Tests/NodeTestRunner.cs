@@ -37,5 +37,24 @@ public sealed class NodeTestRunner<TNode> where TNode : INode<TNode> {
 	/// </summary>
 	public void End() =>
 		Assert.False(nodeEnumerator.MoveNext(), "The tree contained more nodes.");
+	/// <summary>
+	/// Skips to the next node of a specified type.
+	/// </summary>
+	/// <typeparam name="T">The type of the node to skip to.</typeparam>
+	/// <returns>The next node of type <typeparamref name="T"/>.</returns>
+	public T SkipTo<T>() where T : TNode {
+		TNode current;
+		do {
+			Assert.True(nodeEnumerator.MoveNext(), "The tree contained no more nodes.");
+			current = nodeEnumerator.Current;
+		} while (current is not T);
+		return (T)current;
+	}
+	/// <summary>
+	/// Skips to the end.
+	/// </summary>
+	public void SkipToEnd() {
+		while (nodeEnumerator.MoveNext());
+	}
 
 }
