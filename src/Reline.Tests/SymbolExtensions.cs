@@ -44,18 +44,4 @@ public static class SymbolExtensions {
 		return symbol;
 	}
 
-	public static T Do<T>(this T obj, Action action) {
-		action();
-		return obj;
-	}
-	public static T IsType<T>(this object? obj) {
-		Assert.NotNull(obj);
-		Assert.IsType<T>(obj);
-		return (T)obj!;
-	}
-	public static T Is<T>(this T obj, T other) {
-		Assert.Equal(obj, other);
-		return obj;
-	}
-
 }

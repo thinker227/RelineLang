@@ -94,12 +94,12 @@ d";
 				.HasLineNumber(1)
 				.LabelIs(l => l
 					.IdentifierIs("a")
-					.Do(() => a = l));
+					.Do(x => a = x));
 			{
 				r.Node<AssignmentStatementSymbol>()
 					.VariableIs(v => v
 						.IdentifierIs("b")
-						.Do(() => b = v));
+						.Do(x => b = x));
 				{
 					r.Node<LiteralExpressionSymbol>()
 						.HasValue(2);
@@ -109,12 +109,12 @@ d";
 				.HasLineNumber(2)
 				.LabelIs(l => l
 					.IdentifierIs("c")
-					.Do(() => c = l));
+					.Do(x => c = x));
 			{
 				r.Node<AssignmentStatementSymbol>()
 					.VariableIs(v => v
 						.IdentifierIs("d")
-						.Do(() => d = v));
+						.Do(x => d = x));
 				{
 					r.Node<LiteralExpressionSymbol>()
 						.HasValue("uwu");
@@ -128,7 +128,7 @@ d";
 				{
 					r.Node<IdentifierExpressionSymbol>()
 						.IdentifierIs(i => i
-							.Is(a));
+							.IsEqualTo(a));
 				}
 			}
 			r.Node<LineSymbol>()
@@ -138,7 +138,7 @@ d";
 				{
 					r.Node<IdentifierExpressionSymbol>()
 						.IdentifierIs(i => i
-							.Is(b));
+							.IsEqualTo(b));
 				}
 			}
 			r.Node<LineSymbol>()
@@ -148,7 +148,7 @@ d";
 				{
 					r.Node<IdentifierExpressionSymbol>()
 						.IdentifierIs(i => i
-							.Is(c));
+							.IsEqualTo(c));
 				}
 			}
 			r.Node<LineSymbol>()
@@ -158,7 +158,7 @@ d";
 				{
 					r.Node<IdentifierExpressionSymbol>()
 						.IdentifierIs(i => i
-							.Is(d));
+							.IsEqualTo(d));
 				}
 			}
 		}
