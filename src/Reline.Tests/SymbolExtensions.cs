@@ -31,6 +31,11 @@ public static class SymbolExtensions {
 		action(pointer.Function!);
 		return pointer;
 	}
+	public static ParameterSymbol FunctionIs(this ParameterSymbol parameter, Action<FunctionSymbol> action) {
+		Assert.NotNull(parameter.Function);
+		action(parameter.Function!);
+		return parameter;
+	}
 	public static IdentifierExpressionSymbol IdentifierIs(this IdentifierExpressionSymbol identifier, Action<IIdentifiableSymbol> action) {
 		Assert.NotNull(identifier.Identifier);
 		action(identifier.Identifier!);
