@@ -54,6 +54,11 @@ public static class SymbolExtensions {
 		Assert.Equal(arity, function.Arity);
 		return function;
 	}
+	public static FunctionSymbol ParametersAre(this FunctionSymbol function, Action<EnumerableAssert<ParameterSymbol>> action) {
+		var assert = function.Parameters.AssertEnumerable();
+		action(assert);
+		return function;
+	}
 	public static FunctionSymbol ParametersAre(this FunctionSymbol function, int count) {
 		Assert.Equal(count, function.Parameters.Count);
 		return function;
@@ -78,6 +83,11 @@ public static class SymbolExtensions {
 	public static KeywordExpressionSymbol KeywordIs(this KeywordExpressionSymbol expression, KeywordExpressionType keywordType) {
 		Assert.Equal(keywordType, expression.KeywordType);
 		return expression;
+	}
+	public static FunctionInvocationExpressionSymbol ArgumentsAre(this FunctionInvocationExpressionSymbol invocation, Action<EnumerableAssert<IExpressionSymbol>> action) {
+		var assert = invocation.Arguments.AssertEnumerable();
+		action(assert);
+		return invocation;
 	}
 
 	public static LineSymbol HasLineNumber(this LineSymbol symbol, int lineNumber) {
