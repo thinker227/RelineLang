@@ -1,4 +1,6 @@
-﻿using Reline.Compilation.Symbols;
+﻿using Reline.Compilation;
+using Reline.Compilation.Binding;
+using Reline.Compilation.Symbols;
 
 namespace Reline.Tests;
 
@@ -19,6 +21,16 @@ public static class SymbolExtensions {
 		action(invocation.Function!);
 		return invocation;
 	}
+	public static FunctionDeclarationStatementSymbol FunctionIs(this FunctionDeclarationStatementSymbol declaration, Action<FunctionSymbol> action) {
+		Assert.NotNull(declaration.Function);
+		action(declaration.Function!);
+		return declaration;
+	}
+	public static FunctionPointerExpressionSymbol FunctionIs(this FunctionPointerExpressionSymbol pointer, Action<FunctionSymbol> action) {
+		Assert.NotNull(pointer.Function);
+		action(pointer.Function!);
+		return pointer;
+	}
 	public static IdentifierExpressionSymbol IdentifierIs(this IdentifierExpressionSymbol identifier, Action<IIdentifiableSymbol> action) {
 		Assert.NotNull(identifier.Identifier);
 		action(identifier.Identifier!);
@@ -34,9 +46,38 @@ public static class SymbolExtensions {
 		return identifiable;
 	}
 
+	public static FunctionSymbol RangeIs(this FunctionSymbol function, RangeValue range) {
+		Assert.Equal(range, function.Range);
+		return function;
+	}
+	public static FunctionSymbol ArityIs(this FunctionSymbol function, int arity) {
+		Assert.Equal(arity, function.Arity);
+		return function;
+	}
+	public static FunctionSymbol ParametersAre(this FunctionSymbol function, int count) {
+		Assert.Equal(count, function.Parameters.Count);
+		return function;
+	}
+	public static NativeFunctionSymbol FunctionTypeIs(this NativeFunctionSymbol function, NativeFunction functionType) {
+		Assert.Equal(function.FunctionType, functionType);
+		return function;
+	}
+	
 	public static LiteralExpressionSymbol HasValue(this LiteralExpressionSymbol literal, BoundValue value) {
 		Assert.Equal(value, literal.Literal);
 		return literal;
+	}
+	public static UnaryExpressionSymbol OperatorTypeIs(this UnaryExpressionSymbol expression, UnaryOperatorType operatorType) {
+		Assert.Equal(operatorType, expression.OperatorType);
+		return expression;
+	}
+	public static BinaryExpressionSymbol OperatorTypeIs(this BinaryExpressionSymbol expression, BinaryOperatorType operatorType) {
+		Assert.Equal(operatorType, expression.OperatorType);
+		return expression;
+	}
+	public static KeywordExpressionSymbol KeywordIs(this KeywordExpressionSymbol expression, KeywordExpressionType keywordType) {
+		Assert.Equal(keywordType, expression.KeywordType);
+		return expression;
 	}
 
 	public static LineSymbol HasLineNumber(this LineSymbol symbol, int lineNumber) {
