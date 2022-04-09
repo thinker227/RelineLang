@@ -1,10 +1,10 @@
+using Reline.Compilation.Diagnostics;
 using Reline.Compilation.Syntax;
 using Reline.Compilation.Lexing;
-using Reline.Compilation.Diagnostics;
 
-namespace Reline.Tests;
+namespace Reline.Tests.LexerTests;
 
-public class LexerTests {
+public class Tests {
 
 	[Fact]
 	public void LexesRegularTokens() {
