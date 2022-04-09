@@ -32,7 +32,7 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Install dependencies
-      run: dotnet restore ./src/Reline.CommandLine
+      run: dotnet restore ./src    # Target entire solution
 
     - name: Build
-      run: dotnet build ./src/Reline.CommandLine --configuration Release --no-restore
+      run: dotnet build ./src --configuration Release --no-restore
