@@ -162,7 +162,9 @@ function Bar 2..2";
 					.FunctionIs(f => f
 						.IdentifierIs("Foo")
 						.ParametersAre(0)
-						.RangeIs(new RangeValue(1, 1))
+						.RangeIs(r => r
+							.StartIs(1)
+							.EndIs(1))
 						.Do(x => Foo = x));
 				{
 					r.Node<BinaryExpressionSymbol>()
@@ -182,7 +184,9 @@ function Bar 2..2";
 					.FunctionIs(f => f
 						.IdentifierIs("Bar")
 						.ParametersAre(0)
-						.RangeIs(new RangeValue(2, 2))
+						.RangeIs(r => r
+							.StartIs(2)
+							.EndIs(2))
 						.Do(x => Bar = x));
 				{
 					r.Node<BinaryExpressionSymbol>()
@@ -221,7 +225,9 @@ function Baz end..end";
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
 						.IdentifierIs("Foo")
-						.RangeIs(new RangeValue(1, 1))
+						.RangeIs(r => r
+							.StartIs(1)
+							.EndIs(1))
 						.Do(x => Foo = x));
 				{
 					r.Node<BinaryExpressionSymbol>()
@@ -240,7 +246,9 @@ function Baz end..end";
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
 						.IdentifierIs("Bar")
-						.RangeIs(new RangeValue(2, 2))
+						.RangeIs(r => r
+							.StartIs(2)
+							.EndIs(2))
 						.Do(x => Bar = x));
 				{
 					r.Node<BinaryExpressionSymbol>()
@@ -259,7 +267,9 @@ function Baz end..end";
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
 						.IdentifierIs("Baz")
-						.RangeIs(new RangeValue(3, 3))
+						.RangeIs(r => r
+							.StartIs(3)
+							.EndIs(3))
 						.Do(x => Baz = x));
 				{
 					r.Node<BinaryExpressionSymbol>()
@@ -301,7 +311,9 @@ function Bar 2..2
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
 						.IdentifierIs("Foo")
-						.RangeIs(new RangeValue(1, 1))
+						.RangeIs(r => r
+							.StartIs(1)
+							.EndIs(1))
 						.Do(x => Foo = x));
 				{
 					r.Node<BinaryExpressionSymbol>()
@@ -320,7 +332,9 @@ function Bar 2..2
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
 						.IdentifierIs("Bar")
-						.RangeIs(new RangeValue(2, 2))
+						.RangeIs(r => r
+							.StartIs(2)
+							.EndIs(2))
 						.Do(x => Bar = x));
 				{
 					r.Node<BinaryExpressionSymbol>()
@@ -379,7 +393,9 @@ function Bar *Foo";
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
 						.IdentifierIs("Foo")
-						.RangeIs(new RangeValue(1, 1))
+						.RangeIs(r => r
+							.StartIs(1)
+							.EndIs(1))
 						.Do(x => Foo = x));
 				{
 					r.Node<BinaryExpressionSymbol>()
@@ -398,7 +414,9 @@ function Bar *Foo";
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
 						.IdentifierIs("Bar")
-						.RangeIs(new RangeValue(1, 1))
+						.RangeIs(r => r
+							.StartIs(1)
+							.EndIs(1))
 						.Do(x => Bar = x));
 				{
 					r.Node<FunctionPointerExpressionSymbol>()
@@ -433,7 +451,9 @@ function Bar 2..2 ()";
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
 						.IdentifierIs("Foo")
-						.RangeIs(new RangeValue(1, 1))
+						.RangeIs(r => r
+							.StartIs(1)
+							.EndIs(1))
 						.ArityIs(0)
 						.Do(x => Foo = x));
 				{
@@ -453,7 +473,9 @@ function Bar 2..2 ()";
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
 						.IdentifierIs("Bar")
-						.RangeIs(new RangeValue(2, 2))
+						.RangeIs(r => r
+							.StartIs(2)
+							.EndIs(2))
 						.ArityIs(0)
 						.Do(x => Bar = x));
 				{
@@ -501,7 +523,9 @@ function Baz 3..3 (d e f)";
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(func => func
 						.IdentifierIs("Foo")
-						.RangeIs(new RangeValue(1, 1))
+						.RangeIs(r => r
+							.StartIs(1)
+							.EndIs(1))
 						.ArityIs(1)
 						.Do(x => Foo = x)
 						.ParametersAre(parameters => parameters
@@ -528,7 +552,9 @@ function Baz 3..3 (d e f)";
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(func => func
 						.IdentifierIs("Bar")
-						.RangeIs(new RangeValue(2, 2))
+						.RangeIs(r => r
+							.StartIs(2)
+							.EndIs(2))
 						.ArityIs(2)
 						.Do(x => Bar = x)
 						.ParametersAre(parameters => parameters
@@ -560,7 +586,9 @@ function Baz 3..3 (d e f)";
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(func => func
 						.IdentifierIs("Baz")
-						.RangeIs(new RangeValue(3, 3))
+						.RangeIs(r => r
+							.StartIs(3)
+							.EndIs(3))
 						.ArityIs(3)
 						.Do(x => Baz = x)
 						.ParametersAre(parameters => parameters

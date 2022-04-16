@@ -52,8 +52,12 @@ public static class SymbolExtensions {
 		return identifiable;
 	}
 
-	public static FunctionSymbol RangeIs(this FunctionSymbol function, RangeValue range) {
-		Assert.Equal(range, function.Range);
+	//public static FunctionSymbol RangeIs(this FunctionSymbol function, RangeValue range) {
+	//	Assert.Equal(range, function.Range);
+	//	return function;
+	//}
+	public static FunctionSymbol RangeIs(this FunctionSymbol function, Action<RangeValue> action) {
+		action(function.Range);
 		return function;
 	}
 	public static FunctionSymbol ArityIs(this FunctionSymbol function, int arity) {
@@ -99,6 +103,19 @@ public static class SymbolExtensions {
 	public static LineSymbol LineNumberIs(this LineSymbol symbol, int lineNumber, [CallerArgumentExpression("symbol")] string expression = "") {
 		Assert.Equal(lineNumber, symbol.LineNumber);
 		return symbol;
+	}
+
+	public static RangeValue StartIs(this RangeValue range, int start) {
+		Assert.Equal(start, range.Start);
+		return range;
+	}
+	public static RangeValue EndIs(this RangeValue range, int end) {
+		Assert.Equal(end, range.End);
+		return range;
+	}
+	public static RangeValue LengthIs(this RangeValue range, int length) {
+		Assert.Equal(length, range.Length);
+		return range;
 	}
 
 }
