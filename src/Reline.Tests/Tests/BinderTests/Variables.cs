@@ -1,5 +1,6 @@
 ﻿using Reline.Compilation;
 using Reline.Compilation.Binding;
+using Reline.Compilation.Diagnostics;
 using Reline.Compilation.Symbols;
 
 namespace Reline.Tests.BinderTests;
@@ -134,6 +135,26 @@ d";
 		r.End();
 
 		Assert.Empty(tree.Diagnostics);
+	}
+	[Fact]
+	public void UndeclaredVariable() {
+		string source =
+@"x";
+		var (r, tree) = Compile(source);
+
+		r.Node<ProgramSymbol>();
+		{
+			r.Node<LineSymbol>()
+				.LineNumberIs(1);
+			{
+				r.Node<ExpressionStatementSymbol>();
+				{
+					r.Node<BadExpressionSymbol>();
+					tree.HasDiagnostic(r.Current, CompilerDiagnostics.undeclaredIdentifier);
+				}
+			}
+		}
+		r.End();
 	}
 
 }

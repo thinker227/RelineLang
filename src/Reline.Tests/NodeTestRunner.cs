@@ -11,6 +11,14 @@ public sealed class NodeTestRunner<TNode> where TNode : INode<TNode> {
 
 
 	/// <summary>
+	/// The current node.
+	/// </summary>
+	public TNode Current =>
+		nodeEnumerator.Current;
+
+
+
+	/// <summary>
 	/// Initializes a new <see cref="NodeTestRunner{TNode}"/> instance.
 	/// </summary>
 	/// <param name="tree">The nodes in the tree.</param>

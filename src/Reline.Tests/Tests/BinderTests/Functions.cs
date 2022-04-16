@@ -1,5 +1,6 @@
 ﻿using Reline.Compilation;
 using Reline.Compilation.Binding;
+using Reline.Compilation.Diagnostics;
 using Reline.Compilation.Symbols;
 
 namespace Reline.Tests.BinderTests;
@@ -431,6 +432,27 @@ function Bar *Foo";
 		Assert.Contains(Bar, tree.Functions);
 
 		Assert.Empty(tree.Diagnostics);
+	}
+
+	[Fact]
+	public void UndeclaredFunction() {
+		string source =
+@"Foo ()";
+		var (r, tree) = Compile(source);
+
+		r.Node<ProgramSymbol>();
+		{
+			r.Node<LineSymbol>()
+				.LineNumberIs(1);
+			{
+				r.Node<ExpressionStatementSymbol>();
+				{
+					r.Node<BadExpressionSymbol>();
+					tree.HasDiagnostic(new TextSpan(0, 3), CompilerDiagnostics.undeclaredFunction);
+				}
+			}
+		}
+		r.End();
 	}
 
 	[Fact]
