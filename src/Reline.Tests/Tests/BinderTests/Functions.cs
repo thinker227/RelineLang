@@ -7,7 +7,7 @@ namespace Reline.Tests.BinderTests;
 public class Functions : BinderTestBase {
 
 	[Fact]
-	public void NativeFunctionInvocations() {
+	public void NativeInvocations() {
 		string source =
 @"Write (""Hello world!"")
 ReadLine ()
@@ -144,7 +144,7 @@ Ascii (""a"")";
 		Assert.Empty(tree.Diagnostics);
 	}
 	[Fact]
-	public void SimpleFunctionDeclarations() {
+	public void SimpleDeclarations() {
 		string source =
 @"function Foo 1..1
 function Bar 2..2";
@@ -206,7 +206,7 @@ function Bar 2..2";
 		Assert.Contains(Bar, tree.Functions);
 	}
 	[Fact]
-	public void FunctionDeclarationsLineExpressions() {
+	public void DeclarationsLineExpressions() {
 		string source =
 @"function Foo start..start
 function Bar here..here
@@ -292,7 +292,7 @@ function Baz end..end";
 		Assert.Empty(tree.Diagnostics);
 	}
 	[Fact]
-	public void FunctionPointers() {
+	public void Pointers() {
 		string source =
 @"function Foo 1..1
 function Bar 2..2
@@ -376,7 +376,7 @@ function Bar 2..2
 		Assert.Empty(tree.Diagnostics);
 	}
 	[Fact]
-	public void FunctionDeclarationsFunctionPointers() {
+	public void DeclarationsPointers() {
 		string source =
 @"function Foo 1..1
 function Bar *Foo";
@@ -434,7 +434,7 @@ function Bar *Foo";
 	}
 
 	[Fact]
-	public void EmptyFunctionParameters() {
+	public void EmptyParameters() {
 		string source =
 @"function Foo 1..1
 function Bar 2..2 ()";
@@ -498,7 +498,7 @@ function Bar 2..2 ()";
 		Assert.Empty(tree.Diagnostics);
 	}
 	[Fact]
-	public void FunctionParameters() {
+	public void Parameters() {
 		string source =
 @"function Foo 1..1 (a)
 function Bar 2..2 (b c)
