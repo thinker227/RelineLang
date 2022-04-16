@@ -1,4 +1,5 @@
-﻿using Reline.Compilation;
+﻿using System.Runtime.CompilerServices;
+using Reline.Compilation;
 using Reline.Compilation.Binding;
 using Reline.Compilation.Symbols;
 
@@ -95,7 +96,7 @@ public static class SymbolExtensions {
 		return invocation;
 	}
 
-	public static LineSymbol HasLineNumber(this LineSymbol symbol, int lineNumber) {
+	public static LineSymbol LineNumberIs(this LineSymbol symbol, int lineNumber, [CallerArgumentExpression("symbol")] string expression = "") {
 		Assert.Equal(lineNumber, symbol.LineNumber);
 		return symbol;
 	}

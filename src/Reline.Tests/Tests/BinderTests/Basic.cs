@@ -1,4 +1,5 @@
 ﻿using Reline.Compilation.Symbols;
+using Shouldly;
 
 namespace Reline.Tests.BinderTests;
 
@@ -14,7 +15,7 @@ public class Basic : BinderTestBase {
 		{
 			for (int i = 0; i < lines; i++) {
 				r.Node<LineSymbol>()
-					.HasLineNumber(i + 1);
+					.LineNumberIs(i + 1);
 			}
 		}
 		r.End();

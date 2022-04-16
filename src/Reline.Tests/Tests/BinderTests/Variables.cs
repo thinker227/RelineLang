@@ -18,7 +18,7 @@ public class Variables : BinderTestBase {
 		r.Node<ProgramSymbol>();
 		{
 			r.Node<LineSymbol>()
-				.HasLineNumber(1)
+				.LineNumberIs(1)
 				.LabelIs(l => l
 					.IdentifierIs("a")
 					.Do(x => a = x));
@@ -60,7 +60,7 @@ d";
 		r.Node<ProgramSymbol>();
 		{
 			r.Node<LineSymbol>()
-				.HasLineNumber(1)
+				.LineNumberIs(1)
 				.LabelIs(l => l
 					.IdentifierIs("a")
 					.Do(x => a = x));
@@ -75,7 +75,7 @@ d";
 				}
 			}
 			r.Node<LineSymbol>()
-				.HasLineNumber(2)
+				.LineNumberIs(2)
 				.LabelIs(l => l
 					.IdentifierIs("c")
 					.Do(x => c = x));
@@ -91,7 +91,7 @@ d";
 			}
 			r.Node<LineSymbol>();
 			r.Node<LineSymbol>()
-				.HasLineNumber(4);
+				.LineNumberIs(4);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -101,7 +101,7 @@ d";
 				}
 			}
 			r.Node<LineSymbol>()
-				.HasLineNumber(5);
+				.LineNumberIs(5);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -111,7 +111,7 @@ d";
 				}
 			}
 			r.Node<LineSymbol>()
-				.HasLineNumber(6);
+				.LineNumberIs(6);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -121,7 +121,7 @@ d";
 				}
 			}
 			r.Node<LineSymbol>()
-				.HasLineNumber(7);
+				.LineNumberIs(7);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{

@@ -26,7 +26,7 @@ Ascii (""a"")";
 		r.Node<ProgramSymbol>();
 		{
 			r.Node<LineSymbol>()
-				.HasLineNumber(1);
+				.LineNumberIs(1);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -38,7 +38,7 @@ Ascii (""a"")";
 				}
 			}
 			r.SkipTo<LineSymbol>()
-				.HasLineNumber(2);
+				.LineNumberIs(2);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -50,9 +50,9 @@ Ascii (""a"")";
 				}
 			}
 			r.SkipTo<LineSymbol>()
-				.HasLineNumber(3);
+				.LineNumberIs(3);
 			r.SkipTo<LineSymbol>()
-				.HasLineNumber(4);
+				.LineNumberIs(4);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -64,7 +64,7 @@ Ascii (""a"")";
 				}
 			}
 			r.SkipTo<LineSymbol>()
-				.HasLineNumber(5);
+				.LineNumberIs(5);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -76,9 +76,9 @@ Ascii (""a"")";
 				}
 			}
 			r.SkipTo<LineSymbol>()
-				.HasLineNumber(6);
+				.LineNumberIs(6);
 			r.SkipTo<LineSymbol>()
-				.HasLineNumber(7);
+				.LineNumberIs(7);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -90,7 +90,7 @@ Ascii (""a"")";
 				}
 			}
 			r.SkipTo<LineSymbol>()
-				.HasLineNumber(8);
+				.LineNumberIs(8);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -102,7 +102,7 @@ Ascii (""a"")";
 				}
 			}
 			r.SkipTo<LineSymbol>()
-				.HasLineNumber(9);
+				.LineNumberIs(9);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -114,9 +114,9 @@ Ascii (""a"")";
 				}
 			}
 			r.SkipTo<LineSymbol>()
-				.HasLineNumber(10);
+				.LineNumberIs(10);
 			r.SkipTo<LineSymbol>()
-				.HasLineNumber(11);
+				.LineNumberIs(11);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -128,7 +128,7 @@ Ascii (""a"")";
 				}
 			}
 			r.SkipTo<LineSymbol>()
-				.HasLineNumber(12);
+				.LineNumberIs(12);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -156,7 +156,7 @@ function Bar 2..2";
 		r.Node<ProgramSymbol>();
 		{
 			r.Node<LineSymbol>()
-				.HasLineNumber(1);
+				.LineNumberIs(1);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
@@ -176,7 +176,7 @@ function Bar 2..2";
 				}
 			}
 			r.Node<LineSymbol>()
-				.HasLineNumber(2);
+				.LineNumberIs(2);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
@@ -216,7 +216,7 @@ function Baz end..end";
 		r.Node<ProgramSymbol>();
 		{
 			r.Node<LineSymbol>()
-				.HasLineNumber(1);
+				.LineNumberIs(1);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
@@ -235,7 +235,7 @@ function Baz end..end";
 				}
 			}
 			r.Node<LineSymbol>()
-				.HasLineNumber(2);
+				.LineNumberIs(2);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
@@ -254,7 +254,7 @@ function Baz end..end";
 				}
 			}
 			r.Node<LineSymbol>()
-				.HasLineNumber(3);
+				.LineNumberIs(3);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
@@ -296,7 +296,7 @@ function Bar 2..2
 		r.Node<ProgramSymbol>();
 		{
 			r.Node<LineSymbol>()
-				.HasLineNumber(1);
+				.LineNumberIs(1);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
@@ -315,7 +315,7 @@ function Bar 2..2
 				}
 			}
 			r.Node<LineSymbol>()
-				.HasLineNumber(2);
+				.LineNumberIs(2);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
@@ -334,7 +334,7 @@ function Bar 2..2
 				}
 			}
 			r.Node<LineSymbol>()
-				.HasLineNumber(3);
+				.LineNumberIs(3);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -344,7 +344,7 @@ function Bar 2..2
 				}
 			}
 			r.Node<LineSymbol>()
-				.HasLineNumber(4);
+				.LineNumberIs(4);
 			{
 				r.Node<ExpressionStatementSymbol>();
 				{
@@ -374,7 +374,7 @@ function Bar *Foo";
 		r.Node<ProgramSymbol>();
 		{
 			r.Node<LineSymbol>()
-				.HasLineNumber(1);
+				.LineNumberIs(1);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
@@ -393,7 +393,7 @@ function Bar *Foo";
 				}
 			}
 			r.Node<LineSymbol>()
-				.HasLineNumber(2);
+				.LineNumberIs(2);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
@@ -428,7 +428,7 @@ function Bar 2..2 ()";
 		r.Node<ProgramSymbol>();
 		{
 			r.Node<LineSymbol>()
-				.HasLineNumber(1);
+				.LineNumberIs(1);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
@@ -448,7 +448,7 @@ function Bar 2..2 ()";
 				}
 			}
 			r.Node<LineSymbol>()
-				.HasLineNumber(2);
+				.LineNumberIs(2);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(f => f
@@ -496,7 +496,7 @@ function Baz 3..3 (d e f)";
 		r.Node<ProgramSymbol>();
 		{
 			r.Node<LineSymbol>()
-				   .HasLineNumber(1);
+				   .LineNumberIs(1);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(func => func
@@ -523,7 +523,7 @@ function Baz 3..3 (d e f)";
 				}
 			}
 			r.Node<LineSymbol>()
-				   .HasLineNumber(2);
+				   .LineNumberIs(2);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(func => func
@@ -555,7 +555,7 @@ function Baz 3..3 (d e f)";
 				}
 			}
 			r.Node<LineSymbol>()
-				   .HasLineNumber(3);
+				   .LineNumberIs(3);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(func => func
