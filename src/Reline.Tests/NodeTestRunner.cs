@@ -29,7 +29,8 @@ public sealed class NodeTestRunner<TNode> where TNode : INode<TNode> {
 
 
 	/// <summary>
-	/// Asserts that the current node is of a specified type.
+	/// Moves the node enumerator forward and
+	/// asserts that the current node is of a specified type.
 	/// </summary>
 	/// <typeparam name="T">The type of the node to assert.</typeparam>
 	/// <returns>The current node as <typeparamref name="T"/>.</returns>
@@ -41,7 +42,8 @@ public sealed class NodeTestRunner<TNode> where TNode : INode<TNode> {
 		return (T)current!;
 	}
 	/// <summary>
-	/// Asserts that there are no more nodes in the tree.
+	/// Moves the node enumerator forward and
+	/// asserts that there are no more nodes in the tree.
 	/// </summary>
 	public void End() =>
 		Assert.False(nodeEnumerator.MoveNext(), "The tree contained more nodes.");
