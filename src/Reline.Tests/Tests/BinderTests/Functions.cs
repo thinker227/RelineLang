@@ -540,7 +540,7 @@ function Baz 3..3 (d e f)";
 		r.Node<ProgramSymbol>();
 		{
 			r.Node<LineSymbol>()
-				   .LineNumberIs(1);
+			   .LineNumberIs(1);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(func => func
@@ -569,7 +569,7 @@ function Baz 3..3 (d e f)";
 				}
 			}
 			r.Node<LineSymbol>()
-				   .LineNumberIs(2);
+			   .LineNumberIs(2);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(func => func
@@ -603,7 +603,7 @@ function Baz 3..3 (d e f)";
 				}
 			}
 			r.Node<LineSymbol>()
-				   .LineNumberIs(3);
+			   .LineNumberIs(3);
 			{
 				r.Node<FunctionDeclarationStatementSymbol>()
 					.FunctionIs(func => func
@@ -655,6 +655,151 @@ function Baz 3..3 (d e f)";
 		Assert.Contains(f, tree.Variables);
 
 		Assert.Empty(tree.Diagnostics);
+	}
+	[Fact]
+	public void ParameterScope() {
+		string source =
+@"function Foo 2..3 (a)
+a
+b
+
+function Bar 6..7 (b)
+a
+b
+
+a
+b";
+		var (r, tree) = Compile(source);
+
+		FunctionSymbol Foo = null!;
+		FunctionSymbol Bar = null!;
+		ParameterSymbol a = null!;
+		ParameterSymbol b = null!;
+
+		r.Node<ProgramSymbol>();
+		{
+			r.Node<LineSymbol>()
+				.LineNumberIs(1);
+			{
+				r.Node<FunctionDeclarationStatementSymbol>()
+					.FunctionIs(f => f
+						.IdentifierIs("Foo")
+						.RangeIs(r => r
+							.StartIs(2)
+							.EndIs(3))
+						.ArityIs(1)
+						.Do(x => Foo = x)
+						.ParametersAre(parameters => parameters
+							.ElementIs(param => param
+								.IdentifierIs("a")
+								.FunctionIs(pf => pf
+									.IsEqualTo(Foo))
+								.Do(x => a = x))
+							.End()));
+				{
+					r.Node<BinaryExpressionSymbol>()
+						.OperatorTypeIs(BinaryOperatorType.Range);
+					{
+						r.Node<LiteralExpressionSymbol>()
+							.HasValue(2);
+						r.Node<LiteralExpressionSymbol>()
+							.HasValue(3);
+					}
+				}
+			}
+			r.Node<LineSymbol>()
+				.LineNumberIs(2);
+			{
+				r.Node<ExpressionStatementSymbol>();
+				{
+					r.Node<IdentifierExpressionSymbol>()
+						.IdentifierIs(identifier => identifier
+							.IsType<ParameterSymbol>()
+							.IsEqualTo(a));
+				}
+			}
+			r.Node<LineSymbol>()
+				.LineNumberIs(3);
+			{
+				r.Node<ExpressionStatementSymbol>();
+				{
+					r.Node<BadExpressionSymbol>();
+					tree.HasDiagnostic(r.Current, CompilerDiagnostics.undeclaredIdentifier);
+				}
+			}
+			r.Node<LineSymbol>()
+				.LineNumberIs(4);
+			r.Node<LineSymbol>()
+				.LineNumberIs(5);
+			{
+				r.Node<FunctionDeclarationStatementSymbol>()
+					.FunctionIs(f => f
+						.IdentifierIs("Bar")
+						.RangeIs(r => r
+							.StartIs(6)
+							.EndIs(7))
+						.ArityIs(1)
+						.Do(x => Bar = x)
+						.ParametersAre(parameters => parameters
+							.ElementIs(param => param
+								.IdentifierIs("b")
+								.FunctionIs(pf => pf
+									.IsEqualTo(Bar))
+								.Do(x => b = x))
+							.End()));
+				{
+					r.Node<BinaryExpressionSymbol>()
+						.OperatorTypeIs(BinaryOperatorType.Range);
+					{
+						r.Node<LiteralExpressionSymbol>()
+							.HasValue(6);
+						r.Node<LiteralExpressionSymbol>()
+							.HasValue(7);
+					}
+				}
+			}
+			r.Node<LineSymbol>()
+				.LineNumberIs(6);
+			{
+				r.Node<ExpressionStatementSymbol>();
+				{
+					r.Node<BadExpressionSymbol>();
+					tree.HasDiagnostic(r.Current, CompilerDiagnostics.undeclaredIdentifier);
+				}
+			}
+			r.Node<LineSymbol>()
+				.LineNumberIs(7);
+			{
+				r.Node<ExpressionStatementSymbol>();
+				{
+					r.Node<IdentifierExpressionSymbol>()
+						.IdentifierIs(identifier => identifier
+							.IsType<ParameterSymbol>()
+							.IsEqualTo(b));
+				}
+			}
+			r.Node<LineSymbol>()
+				.LineNumberIs(8);
+			r.Node<LineSymbol>()
+				.LineNumberIs(9);
+			{
+				r.Node<ExpressionStatementSymbol>();
+				{
+					r.Node<BadExpressionSymbol>();
+					tree.HasDiagnostic(r.Current, CompilerDiagnostics.undeclaredIdentifier);
+				}
+			}
+			r.Node<LineSymbol>()
+				.LineNumberIs(10);
+			{
+				r.Node<ExpressionStatementSymbol>();
+				{
+					r.Node<BadExpressionSymbol>();
+					tree.HasDiagnostic(r.Current, CompilerDiagnostics.undeclaredIdentifier);
+				}
+			}
+		}
+		r.End();
 	}
 
 }
