@@ -51,11 +51,7 @@ public static class SymbolExtensions {
 		Assert.Equal(count, identifiable.References.Count);
 		return identifiable;
 	}
-
-	//public static FunctionSymbol RangeIs(this FunctionSymbol function, RangeValue range) {
-	//	Assert.Equal(range, function.Range);
-	//	return function;
-	//}
+	
 	public static FunctionSymbol RangeIs(this FunctionSymbol function, Action<RangeValue> action) {
 		action(function.Range);
 		return function;
