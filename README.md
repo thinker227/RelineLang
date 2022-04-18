@@ -7,6 +7,6 @@ See [Reline Language Basics](https://github.com/thinker227/RelineLang/releases/t
 
 **Development is currently ongoing.**
 
-----
+<br>
 
-[![build](https://github.com/thinker227/RelineLang/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/thinker227/RelineLang/actions/workflows/build.yml)
+[![build](https://img.shields.io/github/workflow/status/thinker227/RelineLang/build?logo=github&style=for-the-badge)](https://github.com/thinker227/RelineLang/actions/workflows/build.yml)
