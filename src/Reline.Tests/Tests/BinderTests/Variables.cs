@@ -1,11 +1,10 @@
-﻿using Reline.Compilation;
-using Reline.Compilation.Binding;
-using Reline.Compilation.Diagnostics;
+﻿using Reline.Compilation.Diagnostics;
 using Reline.Compilation.Symbols;
+using static Reline.Tests.BinderTestUtilities;
 
 namespace Reline.Tests.BinderTests;
 
-public class Variables : BinderTestBase {
+public class Variables {
 
 	[Fact]
 	public void SimpleLabelsAndVariables() {

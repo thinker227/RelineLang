@@ -2,10 +2,11 @@
 using Reline.Compilation.Binding;
 using Reline.Compilation.Diagnostics;
 using Reline.Compilation.Symbols;
+using static Reline.Tests.BinderTestUtilities;
 
 namespace Reline.Tests.BinderTests;
 
-public class Functions : BinderTestBase {
+public class Functions {
 
 	[Fact]
 	public void NativeInvocations() {

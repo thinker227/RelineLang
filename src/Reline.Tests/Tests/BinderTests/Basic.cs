@@ -1,9 +1,9 @@
 ﻿using Reline.Compilation.Symbols;
-using Shouldly;
+using static Reline.Tests.BinderTestUtilities;
 
 namespace Reline.Tests.BinderTests;
 
-public class Basic : BinderTestBase {
+public class Basic {
 
 	[Fact]
 	public void LineNumbers() {
