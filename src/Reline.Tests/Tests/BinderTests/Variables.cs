@@ -10,7 +10,7 @@ public class Variables {
 	public void SimpleLabelsAndVariables() {
 		string source =
 @"a: b = 0";
-		var (r, tree) = Compile(source);
+		var (r, model) = Compile(source);
 
 		LabelSymbol a = null!;
 		VariableSymbol b = null!;
@@ -35,10 +35,10 @@ public class Variables {
 		}
 		r.End();
 
-		Assert.Contains(a, tree.Labels);
-		Assert.Contains(b, tree.Variables);
+		Assert.Contains(a, model.Labels);
+		Assert.Contains(b, model.Variables);
 
-		Assert.Empty(tree.Diagnostics);
+		Assert.Empty(model.Diagnostics);
 	}
 	[Fact]
 	public void SimpleLabelAndVariableReferences() {

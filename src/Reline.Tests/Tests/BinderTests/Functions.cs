@@ -23,7 +23,7 @@ Max (3 4)
 
 StringIndex (""abc"" 2)
 Ascii (""a"")";
-		var (r, tree) = Compile(source);
+		var (r, model) = Compile(source);
 
 		r.Node<ProgramSymbol>();
 		{
@@ -143,14 +143,14 @@ Ascii (""a"")";
 			}
 		}
 
-		Assert.Empty(tree.Diagnostics);
+		Assert.Empty(model.Diagnostics);
 	}
 	[Fact]
 	public void SimpleDeclarations() {
 		string source =
 @"function Foo 1..1
 function Bar 2..2";
-		var (r, tree) = Compile(source);
+		var (r, model) = Compile(source);
 
 		FunctionSymbol Foo = null!;
 		FunctionSymbol Bar = null!;
@@ -204,8 +204,8 @@ function Bar 2..2";
 		}
 		r.End();
 
-		Assert.Contains(Foo, tree.Functions);
-		Assert.Contains(Bar, tree.Functions);
+		Assert.Contains(Foo, model.Functions);
+		Assert.Contains(Bar, model.Functions);
 	}
 	[Fact]
 	public void DeclarationsLineExpressions() {
@@ -213,7 +213,7 @@ function Bar 2..2";
 @"function Foo start..start
 function Bar here..here
 function Baz end..end";
-		var (r, tree) = Compile(source);
+		var (r, model) = Compile(source);
 
 		FunctionSymbol Foo = null!;
 		FunctionSymbol Bar = null!;
@@ -287,11 +287,11 @@ function Baz end..end";
 		}
 		r.End();
 
-		Assert.Contains(Foo, tree.Functions);
-		Assert.Contains(Bar, tree.Functions);
-		Assert.Contains(Baz, tree.Functions);
+		Assert.Contains(Foo, model.Functions);
+		Assert.Contains(Bar, model.Functions);
+		Assert.Contains(Baz, model.Functions);
 
-		Assert.Empty(tree.Diagnostics);
+		Assert.Empty(model.Diagnostics);
 	}
 	[Fact]
 	public void Pointers() {
@@ -300,7 +300,7 @@ function Baz end..end";
 function Bar 2..2
 *Foo
 *Bar";
-		var (r, tree) = Compile(source);
+		var (r, model) = Compile(source);
 
 		FunctionSymbol Foo = null!;
 		FunctionSymbol Bar = null!;
@@ -372,17 +372,17 @@ function Bar 2..2
 		}
 		r.End();
 
-		Assert.Contains(Foo, tree.Functions);
-		Assert.Contains(Bar, tree.Functions);
+		Assert.Contains(Foo, model.Functions);
+		Assert.Contains(Bar, model.Functions);
 
-		Assert.Empty(tree.Diagnostics);
+		Assert.Empty(model.Diagnostics);
 	}
 	[Fact]
 	public void DeclarationsPointers() {
 		string source =
 @"function Foo 1..1
 function Bar *Foo";
-		var (r, tree) = Compile(source);
+		var (r, model) = Compile(source);
 
 		FunctionSymbol Foo = null!;
 		FunctionSymbol Bar = null!;
@@ -429,17 +429,17 @@ function Bar *Foo";
 		}
 		r.End();
 
-		Assert.Contains(Foo, tree.Functions);
-		Assert.Contains(Bar, tree.Functions);
+		Assert.Contains(Foo, model.Functions);
+		Assert.Contains(Bar, model.Functions);
 
-		Assert.Empty(tree.Diagnostics);
+		Assert.Empty(model.Diagnostics);
 	}
 
 	[Fact]
 	public void UndeclaredFunction() {
 		string source =
 @"Foo ()";
-		var (r, tree) = Compile(source);
+		var (r, model) = Compile(source);
 
 		r.Node<ProgramSymbol>();
 		{
@@ -449,7 +449,7 @@ function Bar *Foo";
 				r.Node<ExpressionStatementSymbol>();
 				{
 					r.Node<BadExpressionSymbol>();
-					tree.HasDiagnostic(new TextSpan(0, 3), CompilerDiagnostics.undeclaredFunction);
+					model.HasDiagnostic(new TextSpan(0, 3), CompilerDiagnostics.undeclaredFunction);
 				}
 			}
 		}
@@ -461,7 +461,7 @@ function Bar *Foo";
 		string source =
 @"function Foo 1..1
 function Bar 2..2 ()";
-		var (r, tree) = Compile(source);
+		var (r, model) = Compile(source);
 
 		FunctionSymbol Foo = null!;
 		FunctionSymbol Bar = null!;
@@ -515,10 +515,10 @@ function Bar 2..2 ()";
 		}
 		r.End();
 
-		Assert.Contains(Foo, tree.Functions);
-		Assert.Contains(Bar, tree.Functions);
+		Assert.Contains(Foo, model.Functions);
+		Assert.Contains(Bar, model.Functions);
 
-		Assert.Empty(tree.Diagnostics);
+		Assert.Empty(model.Diagnostics);
 	}
 	[Fact]
 	public void Parameters() {
@@ -526,7 +526,7 @@ function Bar 2..2 ()";
 @"function Foo 1..1 (a)
 function Bar 2..2 (b c)
 function Baz 3..3 (d e f)";
-		var (r, tree) = Compile(source);
+		var (r, model) = Compile(source);
 
 		FunctionSymbol Foo = null!;
 		FunctionSymbol Bar = null!;
@@ -645,17 +645,17 @@ function Baz 3..3 (d e f)";
 		}
 		r.End();
 
-		Assert.Contains(Foo, tree.Functions);
-		Assert.Contains(Bar, tree.Functions);
-		Assert.Contains(Baz, tree.Functions);
-		Assert.Contains(a, tree.Variables);
-		Assert.Contains(b, tree.Variables);
-		Assert.Contains(c, tree.Variables);
-		Assert.Contains(d, tree.Variables);
-		Assert.Contains(e, tree.Variables);
-		Assert.Contains(f, tree.Variables);
+		Assert.Contains(Foo, model.Functions);
+		Assert.Contains(Bar, model.Functions);
+		Assert.Contains(Baz, model.Functions);
+		Assert.Contains(a, model.Variables);
+		Assert.Contains(b, model.Variables);
+		Assert.Contains(c, model.Variables);
+		Assert.Contains(d, model.Variables);
+		Assert.Contains(e, model.Variables);
+		Assert.Contains(f, model.Variables);
 
-		Assert.Empty(tree.Diagnostics);
+		Assert.Empty(model.Diagnostics);
 	}
 	[Fact]
 	public void ParameterScope() {
@@ -670,7 +670,7 @@ b
 
 a
 b";
-		var (r, tree) = Compile(source);
+		var (r, model) = Compile(source);
 
 		FunctionSymbol Foo = null!;
 		FunctionSymbol Bar = null!;
@@ -725,7 +725,7 @@ b";
 				r.Node<ExpressionStatementSymbol>();
 				{
 					r.Node<BadExpressionSymbol>();
-					tree.HasDiagnostic(r.Current, CompilerDiagnostics.undeclaredIdentifier);
+					model.HasDiagnostic(r.Current, CompilerDiagnostics.undeclaredIdentifier);
 				}
 			}
 			r.Node<LineSymbol>()
@@ -765,7 +765,7 @@ b";
 				r.Node<ExpressionStatementSymbol>();
 				{
 					r.Node<BadExpressionSymbol>();
-					tree.HasDiagnostic(r.Current, CompilerDiagnostics.undeclaredIdentifier);
+					model.HasDiagnostic(r.Current, CompilerDiagnostics.undeclaredIdentifier);
 				}
 			}
 			r.Node<LineSymbol>()
@@ -787,7 +787,7 @@ b";
 				r.Node<ExpressionStatementSymbol>();
 				{
 					r.Node<BadExpressionSymbol>();
-					tree.HasDiagnostic(r.Current, CompilerDiagnostics.undeclaredIdentifier);
+					model.HasDiagnostic(r.Current, CompilerDiagnostics.undeclaredIdentifier);
 				}
 			}
 			r.Node<LineSymbol>()
@@ -796,7 +796,7 @@ b";
 				r.Node<ExpressionStatementSymbol>();
 				{
 					r.Node<BadExpressionSymbol>();
-					tree.HasDiagnostic(r.Current, CompilerDiagnostics.undeclaredIdentifier);
+					model.HasDiagnostic(r.Current, CompilerDiagnostics.undeclaredIdentifier);
 				}
 			}
 		}

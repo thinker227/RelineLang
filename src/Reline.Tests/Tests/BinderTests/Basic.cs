@@ -9,7 +9,7 @@ public class Basic {
 	public void LineNumbers() {
 		const int lines = 200;
 		string source = new('\n', lines - 1);
-		var (r, tree) = Compile(source);
+		var (r, model) = Compile(source);
 
 		r.Node<ProgramSymbol>();
 		{
@@ -20,7 +20,7 @@ public class Basic {
 		}
 		r.End();
 
-		Assert.Empty(tree.Diagnostics);
+		Assert.Empty(model.Diagnostics);
 	}
 
 }
