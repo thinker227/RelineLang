@@ -801,6 +801,13 @@ b";
 			}
 		}
 		r.End();
+
+		Assert.Contains(Foo, model.Functions);
+		Assert.Contains(Bar, model.Functions);
+		Assert.Contains(a, model.Variables);
+		Assert.Contains(b, model.Variables);
+
+		Assert.Equal(4, model.Diagnostics.Length);
 	}
 
 }
