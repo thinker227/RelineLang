@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Reline.Compilation.Diagnostics;
 using Reline.Compilation.Syntax;
 using Reline.Compilation.Symbols;
-using System.Linq;
 using Reline.Common.Text;
-using Reline.Compilation.Diagnostics;
 using Humanizer;
 
 const string version = "v1.0.0-dev";
@@ -34,8 +35,26 @@ Console.WriteLine($"Compiling file '{path}'\n");
 
 var textMap = TextMap.Create(text);
 
+#if RELEASE
+var func = () => {
+	var parseResult = SyntaxTree.ParseString(text);
+	var bindResult = SemanticModel.BindTree(parseResult);
+	return (parseResult, bindResult);
+};
+var task = Task.Run(func);
+const int timeout = 2000;
+bool finished = Task.WaitAll(new[] { task }, timeout);
+if (!finished) {
+	Console.ForegroundColor = ConsoleColor.Red;
+	Console.WriteLine($"Compilation timed out ({timeout}ms)");
+	Console.ResetColor();
+	return 1;
+}
+var (parseResult, bindResult) = task.Result;
+#else
 var parseResult = SyntaxTree.ParseString(text);
 var bindResult = SemanticModel.BindTree(parseResult);
+#endif
 
 var diagnostics = parseResult.Diagnostics.AddRange(bindResult.Diagnostics);
 foreach (var diagnostic in diagnostics) {
