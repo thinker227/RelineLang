@@ -38,4 +38,4 @@ jobs:
       run: dotnet build ./src --configuration Release --no-restore
 
     - name: Run tests
-      run: dotnet test ./src/Reline.Tests --no-build
+      run: dotnet test ./src/Reline.Tests --configuration Release --no-build
