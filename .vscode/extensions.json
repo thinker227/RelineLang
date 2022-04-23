@@ -1,6 +1,7 @@
 {
 	"recommendations": [
 		"ms-dotnettools.csharp",
+		"formulahendry.dotnet-test-explorer",
 		"OMKOV.vscode-ebnf"
 	]
 }
