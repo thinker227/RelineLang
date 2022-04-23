@@ -810,4 +810,79 @@ b";
 		Assert.Equal(4, model.Diagnostics.Length);
 	}
 
+	[Fact]
+	public void Return() {
+		string source =
+@"function Foo 2..2
+return 0";
+		var (r, model) = Compile(source);
+
+		FunctionSymbol Foo = null!;
+
+		r.Node<ProgramSymbol>();
+		{
+			r.Node<LineSymbol>()
+				.LineNumberIs(1);
+			{
+				r.Node<FunctionDeclarationStatementSymbol>()
+					.FunctionIs(f => f
+						.IdentifierIs("Foo")
+						.RangeIs(r => r
+							.StartIs(2)
+							.EndIs(2))
+						.Do(x => Foo = x));
+				{
+					r.Node<BinaryExpressionSymbol>()
+						.OperatorTypeIs(BinaryOperatorType.Range);
+					{
+						r.Node<LiteralExpressionSymbol>()
+							.HasValue(2);
+						r.Node<LiteralExpressionSymbol>()
+							.HasValue(2);
+					}
+				}
+			}
+			r.Node<LineSymbol>()
+				.LineNumberIs(2);
+			{
+				r.Node<ReturnStatementSymbol>()
+					.FunctionIs(f => f
+						.IsEqualTo(Foo));
+				{
+					r.Node<LiteralExpressionSymbol>()
+						.HasValue(0);
+				}
+			}
+		}
+		r.End();
+
+		Assert.Contains(Foo, model.Functions);
+
+		Assert.Empty(model.Diagnostics);
+	}
+	[Fact]
+	public void ReturnOutsideFunction() {
+		string source =
+@"return 0";
+		var (r, model) = Compile(source);
+
+		r.Node<ProgramSymbol>();
+		{
+			r.Node<LineSymbol>()
+				.LineNumberIs(1);
+			{
+				var @return = r.Node<ReturnStatementSymbol>();
+				Assert.Null(@return.Function);
+				model.HasDiagnostic(r.Current, CompilerDiagnostics.returnOutsideFunction);
+				{
+					r.Node<LiteralExpressionSymbol>()
+						.HasValue(0);
+				}
+			}
+		}
+		r.End();
+
+		Assert.Single(model.Diagnostics);
+	}
+
 }
