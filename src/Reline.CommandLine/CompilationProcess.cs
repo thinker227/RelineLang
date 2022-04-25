@@ -1,13 +1,19 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Reline.Compilation.Symbols;
-using Reline.Compilation.Syntax;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using Humanizer;
+using Reline.Common.Text;
+using Reline.Compilation.Diagnostics;
+using Reline.Compilation.Syntax;
+using Reline.Compilation.Symbols;
 
 namespace Reline.CommandLine;
 
@@ -38,6 +44,7 @@ internal sealed class CompilationProcess : Command<CompilationArgs> {
 		var path = GetTextPath(Args.File.FullName);
 		Console.Write("Compiling file ");
 		Console.Write(path);
+		Console.WriteLine();
 
 		var compilationStatus = Console.Status();
 		compilationStatus.Spinner = Spinner.Known.SimpleDotsScrolling;
@@ -82,22 +89,122 @@ internal sealed class CompilationProcess : Command<CompilationArgs> {
 	}
 
 	private int HandleSuccess(SyntaxTree tree, SemanticModel model) {
-		Console.WriteLine("Compilation successful", Color.Lime);
-
 		var diagnostics = tree.Diagnostics.AddRange(model.Diagnostics);
+		int diagnosticsCount = diagnostics.Length;
+		int warnings = diagnostics
+			.Where(d => d.Level == DiagnosticLevel.Warning)
+			.Count();
+		int errors = diagnostics
+			.Where(d => d.Level == DiagnosticLevel.Error)
+			.Count();
+		bool success = errors == 0;
 
-		return 0;
+		var statusMarkup = GetCompilationStatusMarkup(success, warnings, errors);
+		var panel = GetCompilationStatusPanel(success, statusMarkup);
+		Console.Write(panel);
+		Console.WriteLine();
+
+		if (diagnosticsCount > 0) {
+			var table = GetDiagnosticsTable(diagnostics);
+			Console.Write(table);
+			Console.WriteLine();
+		}
+
+		return success ? 1 : 0;
 	}
+	private static Panel GetCompilationStatusPanel(bool success, Markup text) =>
+		new Panel(text)
+			.BorderColor(success ? Color.Green : Color.Red);
+	private static Markup GetCompilationStatusMarkup(bool success, int warnings, int errors) {
+		string status = errors == 0 ? "[green]succeeded[/]" : "[red]failed[/]";
+		
+		string warningsPlural = warnings == 1 ? "warning" : "warnings";
+		string errorsPlural = errors == 1 ? "error" : "errors";
+		string warningsMarkup = warnings == 0
+			? "no warnings"
+			: $"[yellow]{warnings} {warningsPlural}[/]";
+		string errorsMarkup = errors == 0
+			? "no errors"
+			: $"[red]{errors} {errorsPlural}[/]";
+
+		string markup = $"Compilation {status} with {warningsMarkup} and {errorsMarkup}";
+		return new Markup(markup);
+	}
+	private Table GetDiagnosticsTable(IEnumerable<Diagnostic> diagnostics) {
+		var table = new Table()
+			.Title(new TableTitle("Diagnostics", new Style(Color.White)))
+			.BorderColor(Color.White)
+			.AddColumn("Severity")
+			.AddColumn("ID")
+			.AddColumn("Description")
+			.AddColumn(new TableColumn("Location").Centered());
+
+		var map = TextMap.Create(Source);
+		foreach (var diagnostic in diagnostics) {
+			string color = GetDiagnosticColorMarkup(diagnostic);
+
+			string severity = $"[{color}]{diagnostic.Level.Humanize(LetterCasing.Sentence)}[/]";
+			string id = $"[white]{diagnostic.ErrorCode}[/]";
+			string description = $"[white]{diagnostic.Description}[/]";
+			var location = GetDiagnosticLocationMarkup(diagnostic, map);
+
+			table.AddRow(
+				new Markup(severity),
+				new Markup(id),
+				new Markup(description),
+				location);
+		}
+
+		return table;
+	}
+	private static string GetDiagnosticColorMarkup(Diagnostic diagnostic) =>
+		(diagnostic.Level switch {
+			DiagnosticLevel.Hidden => Color.Grey,
+			DiagnosticLevel.Info => Color.NavajoWhite1,
+			DiagnosticLevel.Warning => Color.Yellow,
+			DiagnosticLevel.Error => Color.Red,
+			_ => Color.Grey
+		}).ToMarkup();
+	private Markup GetDiagnosticLocationMarkup(Diagnostic diagnostic, TextMap map) {
+		string color = GetDiagnosticColorMarkup(diagnostic);
+
+		if (diagnostic.Location is null)
+			return new Markup($"[grey]<[/][{color}]global[/][grey]>[/]");
+
+		StringBuilder builder = new();
+		var source = Source.AsSpan();
+		var lines = map.GetLineAt(diagnostic.Location.Value);
+		foreach (var (lineNumber, span, _) in lines) {
+			var diagnosticSpan = diagnostic.Location.Value;
+			var init = source.Slice(new TextSpan(span.Start, diagnosticSpan.Start));
+			var body = source.Slice(diagnosticSpan);
+			var end = source.Slice(new TextSpan(diagnosticSpan.End, span.End)).TrimEnd();
+
+			string markup = $"[grey]{lineNumber}: [/][white]{init}[/][{color}]{body}[/][white]{end}[/]";
+			builder.AppendLine(markup);
+		}
+
+		return new Markup(builder.ToString());
+	}
+
 	private int HandleTimeout() {
-		Console.WriteLine($"Compilation timed out ({Args.Timeout} ms)", Color.Red);
+		string markup = $"Compilation [red]timed out[/] [grey]({Args.Timeout} ms)[/]";
+		var panel = GetCompilationStatusPanel(false, new Markup(markup));
+		Console.Write(panel);
+		Console.WriteLine();
 		return 1;
 	}
 	private int HandleInternalException(Exception exception) {
 		if (exception is AggregateException aggregate)
 			exception = aggregate.InnerException!;
 
-		Console.WriteLine("Compilation failed due to an internal compiler exception:");
-		Console.WriteException(exception);
+		var renderableException = exception.GetRenderable();
+		var table = new Table()
+			.BorderColor(Color.Red)
+			.AddColumn(new TableColumn(new Markup("Compilation [red]failed due to an internal exception[/]")))
+			.AddRow(renderableException);
+		Console.Write(table);
+		Console.WriteLine();
 		return 1;
 	}
 
