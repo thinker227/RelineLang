@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace Reline.CommandLine;
@@ -10,9 +11,17 @@ internal sealed class CompilationArgs : CommandSettings {
 	public string FilePath { get; set; }
 	public FileInfo File => new(FilePath);
 
-	[CommandOption("--do-timeout <do-timeout>")]
-	public bool DoTimeout { get; set; } = true;
 	[CommandOption("--timeout <timeout>")]
 	public int Timeout { get; set; } = 2000;
+
+
+
+	public override ValidationResult Validate() {
+		if (!File.Exists) {
+			return ValidationResult.Error($"File '{File.FullName}' does not exist.");
+		}
+		
+		return ValidationResult.Success();
+	}
 
 }
