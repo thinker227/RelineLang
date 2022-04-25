@@ -99,7 +99,7 @@ internal sealed class CompilationProcess : Command<CompilationArgs> {
 			.Count();
 		bool success = errors == 0;
 
-		var statusMarkup = GetCompilationStatusMarkup(success, warnings, errors);
+		var statusMarkup = GetCompilationStatusMarkup(warnings, errors);
 		var panel = GetCompilationStatusPanel(success, statusMarkup);
 		Console.Write(panel);
 		Console.WriteLine();
@@ -115,7 +115,7 @@ internal sealed class CompilationProcess : Command<CompilationArgs> {
 	private static Panel GetCompilationStatusPanel(bool success, Markup text) =>
 		new Panel(text)
 			.BorderColor(success ? Color.Green : Color.Red);
-	private static Markup GetCompilationStatusMarkup(bool success, int warnings, int errors) {
+	private static Markup GetCompilationStatusMarkup(int warnings, int errors) {
 		string status = errors == 0 ? "[green]succeeded[/]" : "[red]failed[/]";
 		
 		string warningsPlural = warnings == 1 ? "warning" : "warnings";
@@ -134,10 +134,11 @@ internal sealed class CompilationProcess : Command<CompilationArgs> {
 		var table = new Table()
 			.Title(new TableTitle("Diagnostics", new Style(Color.White)))
 			.BorderColor(Color.White)
+			.Width(Console.Profile.Width)
 			.AddColumn("Severity")
 			.AddColumn("ID")
 			.AddColumn("Description")
-			.AddColumn(new TableColumn("Location").Centered());
+			.AddColumn(new TableColumn("Location"));
 
 		var map = TextMap.Create(Source);
 		foreach (var diagnostic in diagnostics) {
@@ -145,7 +146,7 @@ internal sealed class CompilationProcess : Command<CompilationArgs> {
 
 			string severity = $"[{color}]{diagnostic.Level.Humanize(LetterCasing.Sentence)}[/]";
 			string id = $"[white]{diagnostic.ErrorCode}[/]";
-			string description = $"[white]{diagnostic.Description}[/]";
+			string description = $"[white]{diagnostic.Description.EscapeMarkup()}[/]";
 			var location = GetDiagnosticLocationMarkup(diagnostic, map);
 
 			table.AddRow(
@@ -172,13 +173,18 @@ internal sealed class CompilationProcess : Command<CompilationArgs> {
 			return new Markup($"[grey]<[/][{color}]global[/][grey]>[/]");
 
 		StringBuilder builder = new();
-		var source = Source.AsSpan();
 		var lines = map.GetLineAt(diagnostic.Location.Value);
 		foreach (var (lineNumber, span, _) in lines) {
 			var diagnosticSpan = diagnostic.Location.Value;
-			var init = source.Slice(new TextSpan(span.Start, diagnosticSpan.Start));
-			var body = source.Slice(diagnosticSpan);
-			var end = source.Slice(new TextSpan(diagnosticSpan.End, span.End)).TrimEnd();
+			string init = Source.Substring(new TextSpan(span.Start, diagnosticSpan.Start))
+				.ReplaceLineEndings("")
+				.EscapeMarkup();
+			string body = Source.Substring(diagnosticSpan)
+				.ReplaceLineEndings("")
+				.EscapeMarkup();
+			string end = Source.Substring(new TextSpan(diagnosticSpan.End, span.End))
+				.ReplaceLineEndings("")
+				.EscapeMarkup();
 
 			string markup = $"[grey]{lineNumber}: [/][white]{init}[/][{color}]{body}[/][white]{end}[/]";
 			builder.AppendLine(markup);
