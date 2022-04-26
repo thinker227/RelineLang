@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using Humanizer;
+using Reline.Common.Text;
 using Reline.Compilation.Diagnostics;
 using Reline.Compilation.Syntax;
 using Reline.Compilation.Symbols;
-using Reline.Common.Text;
-using Humanizer;
+using Reline.Compilation.Transpilation.Javascript;
 
 const string version = "v1.0.0-dev";
 Console.WriteLine($"--- Reline {version} ---");
@@ -111,4 +111,14 @@ Console.WriteLine($"  {warnings} {warningsString}");
 Console.WriteLine($"  {errors} {errorsString}");
 Console.WriteLine();
 
-return errors == 0 ? 0 : 1;
+if (errors > 0) return 1;
+
+JavascriptTranspilationOptions options = new() {
+	Target = JavascriptTarget.Node
+};
+var transpiled = (NodeResult)JavascriptTranspiler.Transpile(bindResult, options);
+string transpiledPath = Path.ChangeExtension(file.FullName, ".js");
+File.WriteAllText(transpiledPath, transpiled.Source.Source);
+Console.WriteLine($"Generated transpied source file '{transpiledPath}'");
+
+return 0;
